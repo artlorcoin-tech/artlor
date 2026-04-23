@@ -94,20 +94,20 @@ function QuickOrder() {
   }
 
   return (
-    <main className="paper-bg min-h-screen px-5 py-10 sm:px-8">
+    <main className="paper-bg page-pad min-h-screen">
       <BrandHeader />
-      <section className="form-shell mx-auto max-w-[560px] space-y-4 p-6 sm:p-8">
-        <img src="/brand/artlor-logo.png" alt="Artlor logo" className="mb-1 h-12 w-auto" />
+      <section className="form-shell mx-auto w-full max-w-[560px] space-y-4 p-5 sm:p-8">
+        <img src="/brand/artlor-logo.png" alt="Artlor logo" className="brand-logo-round brand-logo-md mb-1" />
         <article className="card-surface bg-[var(--brand-cream)] p-4">
           {painting ? (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <img
                 src={`https://picsum.photos/seed/artlor-${painting.seed}/220/140`}
                 alt={painting.title}
-                className="h-20 w-28 rounded-2xl object-cover"
+                className="h-16 w-24 rounded-2xl object-cover sm:h-20 sm:w-28"
               />
               <div>
-                <h2 className="font-display text-brand-dark text-2xl">{painting.title}</h2>
+                <h2 className="font-display text-brand-dark text-xl sm:text-2xl">{painting.title}</h2>
                 <p className="text-brand-brown/85 mt-1 font-body text-sm">{painting.style}</p>
               </div>
             </div>
@@ -129,7 +129,7 @@ function QuickOrder() {
           >
             {step === 0 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   Choose your canvas size
                 </h1>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -171,7 +171,7 @@ function QuickOrder() {
 
             {step === 1 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   Where should we deliver your art?
                 </h1>
                 <div className="space-y-3">
@@ -209,7 +209,7 @@ function QuickOrder() {
 
             {step === 2 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   Your contact details
                 </h1>
                 <div className="space-y-3">

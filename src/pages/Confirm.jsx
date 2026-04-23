@@ -52,9 +52,9 @@ function Confirm() {
   }
 
   return (
-    <main className="paper-bg min-h-screen px-5 py-10 sm:px-8">
+    <main className="paper-bg page-pad min-h-screen">
       <BrandHeader />
-      <section className="form-shell relative mx-auto max-w-3xl overflow-hidden p-6 sm:p-9">
+      <section className="form-shell relative mx-auto w-full max-w-3xl overflow-hidden p-5 sm:p-9">
         {!prefersReducedMotion && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center">
             {splats.map((dot) => (
@@ -75,26 +75,28 @@ function Confirm() {
         )}
 
         <div className="relative z-10 text-center">
-          <motion.svg
-            viewBox="0 0 52 52"
-            className="mx-auto mb-4 h-16 w-16"
-            initial={prefersReducedMotion ? false : { opacity: 0 }}
-            animate={prefersReducedMotion ? {} : { opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            <motion.path
-              d="M14 27 l8 8 l16 -16"
-              fill="none"
-              stroke="#2D9A4A"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={prefersReducedMotion ? false : { pathLength: 0 }}
-              animate={prefersReducedMotion ? {} : { pathLength: 1 }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-            />
-          </motion.svg>
-          <h1 className="font-display text-brand-dark text-4xl sm:text-5xl">Your Order is Placed! 🎨</h1>
+          <span className="icon-orb mx-auto mb-4 h-16 w-16 sm:h-[4.4rem] sm:w-[4.4rem]">
+            <motion.svg
+              viewBox="0 0 52 52"
+              className="h-9 w-9 sm:h-10 sm:w-10"
+              initial={prefersReducedMotion ? false : { opacity: 0 }}
+              animate={prefersReducedMotion ? {} : { opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <motion.path
+                d="M14 27 l8 8 l16 -16"
+                fill="none"
+                stroke="#2D9A4A"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={prefersReducedMotion ? false : { pathLength: 0 }}
+                animate={prefersReducedMotion ? {} : { pathLength: 1 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              />
+            </motion.svg>
+          </span>
+          <h1 className="font-display text-brand-dark text-3xl sm:text-4xl lg:text-5xl">Your Order is Placed! 🎨</h1>
         </div>
 
         <article className="card-surface relative z-10 mt-8 bg-[var(--brand-cream)] p-5">
@@ -124,7 +126,7 @@ function Confirm() {
         </article>
 
         <section className="relative z-10 mt-8">
-          <h3 className="font-display text-brand-dark text-3xl">What happens next?</h3>
+          <h3 className="font-display text-brand-dark text-2xl sm:text-3xl">What happens next?</h3>
           <div className="mt-4 space-y-3">
             {timeline.map((item, index) => {
               const Icon = item.icon
@@ -136,7 +138,7 @@ function Confirm() {
                   transition={{ duration: 0.3, delay: 0.15 + index * 0.1, ease: [0.4, 0, 0.2, 1] }}
                   className="card-surface flex items-center gap-3 p-4"
                 >
-                  <span className="rounded-full bg-[var(--brand-light)] p-2.5">
+                  <span className="icon-orb h-10 w-10">
                     <Icon className="text-brand-brown h-4.5 w-4.5" />
                   </span>
                   <div>

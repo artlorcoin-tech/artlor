@@ -30,14 +30,14 @@ function Gallery() {
   }, [activeFilter])
 
   return (
-    <main className="paper-bg min-h-screen px-5 py-10 sm:px-8 lg:px-14">
+    <main className="paper-bg page-pad min-h-screen">
       <BrandHeader />
-      <section className="mx-auto max-w-6xl">
-        <article className="dark-luxe-card mb-8 p-6 sm:p-7">
+      <section className="content-max max-w-6xl">
+        <article className="dark-luxe-card mb-7 p-5 sm:mb-8 sm:p-7">
           <p className="font-body text-xs uppercase tracking-[0.18em] text-[var(--brand-gold)]">
             Curated Collection
           </p>
-          <h1 className="font-display mt-2 text-4xl leading-tight sm:text-5xl">
+          <h1 className="font-display mt-2 text-3xl leading-tight sm:text-4xl lg:text-5xl">
             Find the piece that belongs to your wall.
           </h1>
           <p className="mt-2 max-w-2xl font-body text-sm text-[rgba(244,239,234,0.86)]">
@@ -45,7 +45,7 @@ function Gallery() {
           </p>
         </article>
 
-        <div className="mb-8 flex flex-wrap gap-3">
+        <div className="no-scrollbar mb-8 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:gap-3">
           {filters.map((filter) => {
             const active = filter === activeFilter
             return (
@@ -53,7 +53,7 @@ function Gallery() {
                 key={filter}
                 type="button"
                 onClick={() => setActiveFilter(filter)}
-                className={`pill-btn border px-5 py-2 text-sm font-medium transition-colors duration-300 ${
+                className={`pill-btn shrink-0 border px-4 py-2 text-xs font-medium transition-colors duration-300 sm:px-5 sm:text-sm ${
                   active
                     ? 'bg-brand-brown border-brand-brown text-brand-cream'
                     : 'border-brand-brown text-brand-brown hover:bg-brand-brown/10'
@@ -93,7 +93,7 @@ function Gallery() {
                   {painting.style}
                 </span>
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 p-3 opacity-0 transition duration-300 group-hover:pointer-events-auto group-hover:opacity-100">
+                <div className="pointer-events-auto absolute inset-x-0 bottom-0 p-3 opacity-100 transition duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
                   <div className="space-y-2 rounded-2xl border border-white/40 bg-black/30 p-3 backdrop-blur-md">
                     <button
                       type="button"

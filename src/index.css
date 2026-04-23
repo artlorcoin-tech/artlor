@@ -64,6 +64,39 @@ body {
     linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(244, 239, 234, 0.7));
 }
 
+.paper-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(122, 74, 46, 0.3) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 82% 24%, rgba(201, 147, 74, 0.3) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 25% 78%, rgba(31, 31, 31, 0.2) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 72% 70%, rgba(122, 74, 46, 0.25) 0 1px, transparent 1.2px);
+  background-size:
+    120px 120px,
+    150px 150px,
+    135px 135px,
+    180px 180px;
+}
+
+.page-pad {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.6rem;
+  padding-bottom: 1.8rem;
+}
+
+.content-max {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .hero-spotlight {
   position: relative;
 }
@@ -83,6 +116,9 @@ body {
 }
 
 .pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 9999px;
   font-family: var(--font-body);
   font-weight: 600;
@@ -102,6 +138,11 @@ body {
   transform: scale(0.97);
 }
 
+.pill-btn:focus,
+.pill-btn:focus-visible {
+  outline: none;
+}
+
 .pill-btn-primary {
   background: linear-gradient(135deg, var(--brand-brown-deep) 0%, var(--brand-brown) 54%, var(--brand-gold) 100%);
   color: var(--brand-cream);
@@ -115,7 +156,9 @@ body {
 .card-surface {
   border-radius: 16px;
   border: 1px solid rgba(122, 74, 46, 0.18);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8)),
+    radial-gradient(circle at 100% 0%, rgba(201, 147, 74, 0.16), transparent 36%);
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.09),
     inset 0 1px 0 rgba(255, 255, 255, 0.75);
@@ -146,6 +189,100 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.icon-orb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 44%),
+    linear-gradient(140deg, rgba(201, 147, 74, 0.22), rgba(122, 74, 46, 0.26));
+  border: 1px solid rgba(122, 74, 46, 0.2);
+  box-shadow: 0 10px 20px rgba(122, 74, 46, 0.2);
+}
+
+.brand-logo-round {
+  display: block;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  border: 2px solid var(--brand-brown);
+  background: transparent;
+  box-shadow: 0 10px 24px rgba(122, 74, 46, 0.2);
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+  flex-shrink: 0;
+}
+
+.brand-logo-sm {
+  width: 3rem;
+  height: 3rem;
+}
+
+.brand-logo-md {
+  width: 3.35rem;
+  height: 3.35rem;
+}
+
+.brand-logo-hero {
+  width: 5rem;
+  height: 5rem;
+}
+
+@media (min-width: 640px) {
+  .page-pad {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 2.4rem;
+  }
+
+  .brand-logo-round {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .brand-logo-sm {
+    width: 3.35rem;
+    height: 3.35rem;
+  }
+
+  .brand-logo-md {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+
+  .brand-logo-hero {
+    width: 5.75rem;
+    height: 5.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-pad {
+    padding-left: 2.75rem;
+    padding-right: 2.75rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .pill-btn {
+    min-height: 44px;
+  }
+
+  .form-shell {
+    border-radius: 22px;
+    padding: 1rem;
+  }
+
+  .card-surface {
+    border-radius: 18px;
+  }
 }
 
 .no-scrollbar {

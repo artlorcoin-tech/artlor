@@ -136,10 +136,10 @@ function OrderForm() {
   }
 
   return (
-    <main className="paper-bg min-h-screen px-5 py-10 sm:px-8">
+    <main className="paper-bg page-pad min-h-screen">
       <BrandHeader />
-      <section className="form-shell mx-auto max-w-[560px] p-6 sm:p-8">
-        <img src="/brand/artlor-logo.png" alt="Artlor logo" className="mb-6 h-12 w-auto" />
+      <section className="form-shell mx-auto w-full max-w-[560px] p-5 sm:p-8">
+        <img src="/brand/artlor-logo.png" alt="Artlor logo" className="brand-logo-round brand-logo-md mb-6" />
         <div className="mb-8">
           <div className="relative mb-5 h-[2px] rounded-full bg-[var(--brand-light)]">
             <motion.div
@@ -168,7 +168,7 @@ function OrderForm() {
           <motion.div key={step} {...slideMotion} className="space-y-6">
             {step === 0 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   What should we call you?
                 </h1>
                 <Field
@@ -181,7 +181,7 @@ function OrderForm() {
 
             {step === 1 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   What kind of artwork do you want?
                 </h1>
                 <div className="grid grid-cols-2 gap-3">
@@ -195,7 +195,7 @@ function OrderForm() {
                         whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
                         animate={selected && !prefersReducedMotion ? { scale: 1.04 } : { scale: 1 }}
                         transition={{ duration: 0.2, type: 'spring', bounce: 0.3 }}
-                        className={`relative overflow-hidden rounded-xl border text-left ${
+                        className={`relative overflow-hidden rounded-3xl border text-left ${
                           selected ? 'border-[2px] border-[var(--brand-brown)]' : 'border-[var(--brand-light)]'
                         }`}
                       >
@@ -208,7 +208,7 @@ function OrderForm() {
                           {style.name}
                         </div>
                         {selected && (
-                          <span className="absolute top-2 right-2 rounded-full bg-[var(--brand-brown)] p-1 text-white">
+                          <span className="absolute top-2 right-2 rounded-full bg-[var(--brand-brown)] p-1.5 text-white shadow-[0_8px_15px_rgba(0,0,0,0.2)]">
                             <Check className="h-3.5 w-3.5" />
                           </span>
                         )}
@@ -221,7 +221,7 @@ function OrderForm() {
 
             {step === 2 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   How big should your artwork be?
                 </h1>
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -268,7 +268,7 @@ function OrderForm() {
 
             {step === 3 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   Where should we deliver your art?
                 </h1>
                 <div className="space-y-4">
@@ -306,7 +306,7 @@ function OrderForm() {
 
             {step === 4 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   How can your artist reach you?
                 </h1>
                 <label className="block">
@@ -332,7 +332,7 @@ function OrderForm() {
 
             {step === 5 && (
               <>
-                <h1 className="font-display text-brand-dark text-4xl leading-tight">
+                <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   Where should we send your order confirmation?
                 </h1>
                 <Field
