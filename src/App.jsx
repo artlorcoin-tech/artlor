@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import SiteFooter from './components/SiteFooter'
 import Confirm from './pages/Confirm'
 import Gallery from './pages/Gallery'
 import Home from './pages/Home'
@@ -79,8 +80,11 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <div className="min-h-screen">
-      <AnimatedRoutes />
+    <div className="flex min-h-screen flex-col">
+      <div className="flex-1">
+        <AnimatedRoutes />
+      </div>
+      <SiteFooter />
     </div>
   )
 }
