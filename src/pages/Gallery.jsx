@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SiteFooter from '../components/SiteFooter'
 
 const filters = ['All', 'Landscape', 'Calligraphy', 'Abstract', 'Still Life']
 
@@ -165,6 +166,7 @@ function Gallery() {
           ))}
         </div>
       </section>
+      <SiteFooter />
     </main>
   )
 }

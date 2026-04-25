@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SiteFooter from '../components/SiteFooter'
 
 const easing = [0.4, 0, 0.2, 1]
 
@@ -272,6 +273,7 @@ function QuickOrder() {
           )}
         </div>
       </section>
+      <SiteFooter />
     </main>
   )
 }

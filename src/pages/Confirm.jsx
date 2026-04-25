@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { BrushCleaning, Package, UserRoundCheck } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SiteFooter from '../components/SiteFooter'
 
 const timeline = [
   {
@@ -157,6 +158,7 @@ function Confirm() {
           </Link>
         </div>
       </section>
+      <SiteFooter />
     </main>
   )
 }

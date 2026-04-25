@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Brush, MapPinHouse, PackageCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SiteFooter from '../components/SiteFooter'
 
 const values = [
   {
@@ -215,6 +216,7 @@ function Home() {
           ))}
         </div>
       </section>
+      <SiteFooter />
     </main>
   )
 }

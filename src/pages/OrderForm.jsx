@@ -4,6 +4,7 @@ import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SiteFooter from '../components/SiteFooter'
 
 const easing = [0.4, 0, 0.2, 1]
 const sizeOptions = [
@@ -378,6 +379,7 @@ function OrderForm() {
           )}
         </div>
       </section>
+      <SiteFooter />
     </main>
   )
 }
