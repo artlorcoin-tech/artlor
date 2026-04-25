@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 
 const filters = ['All', 'Landscape', 'Calligraphy', 'Abstract', 'Still Life']
@@ -18,9 +18,19 @@ const paintingData = [
 ]
 
 function Gallery() {
-  const [activeFilter, setActiveFilter] = useState('All')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const style = searchParams.get('style')
+  const activeFilter = style && filters.includes(style) ? style : 'All'
   const navigate = useNavigate()
   const prefersReducedMotion = useReducedMotion()
+
+  const selectFilter = (filter) => {
+    if (filter === 'All') {
+      setSearchParams({})
+      return
+    }
+    setSearchParams({ style: filter })
+  }
 
   const paintings = useMemo(() => {
     if (activeFilter === 'All') {
@@ -45,6 +55,48 @@ function Gallery() {
           </p>
         </article>
 
+        <motion.div
+          className="mb-7 flex justify-center sm:mb-8"
+          animate={
+            prefersReducedMotion
+              ? {}
+              : {
+                  y: [0, -4, 0],
+                }
+          }
+          transition={
+            prefersReducedMotion
+              ? {}
+              : {
+                  duration: 2.4,
+                  ease: 'easeInOut',
+                  repeat: Infinity,
+                }
+          }
+        >
+          <motion.button
+            type="button"
+            onClick={() => navigate('/order')}
+            whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+            animate={
+              prefersReducedMotion
+                ? {}
+                : {
+                    boxShadow: [
+                      '0 14px 28px rgba(122, 74, 46, 0.28), 0 0 0 rgba(201, 147, 74, 0)',
+                      '0 22px 42px rgba(92, 49, 28, 0.36), 0 0 24px rgba(201, 147, 74, 0.25)',
+                      '0 14px 28px rgba(122, 74, 46, 0.28), 0 0 0 rgba(201, 147, 74, 0)',
+                    ],
+                  }
+            }
+            transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+            className="pill-btn rounded-full border border-[var(--brand-gold)]/45 bg-[linear-gradient(125deg,var(--brand-brown-deep)_0%,var(--brand-brown)_52%,var(--brand-gold)_100%)] px-7 py-3 text-sm font-semibold tracking-[0.01em] text-[var(--brand-cream)] sm:px-8 sm:text-base"
+          >
+            Customize Your Own
+          </motion.button>
+        </motion.div>
+
         <div className="no-scrollbar mb-8 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:gap-3">
           {filters.map((filter) => {
             const active = filter === activeFilter
@@ -52,7 +104,7 @@ function Gallery() {
               <button
                 key={filter}
                 type="button"
-                onClick={() => setActiveFilter(filter)}
+                onClick={() => selectFilter(filter)}
                 className={`pill-btn shrink-0 border px-4 py-2 text-xs font-medium transition-colors duration-300 sm:px-5 sm:text-sm ${
                   active
                     ? 'bg-brand-brown border-brand-brown text-brand-cream'
@@ -94,20 +146,13 @@ function Gallery() {
                 </span>
 
                 <div className="pointer-events-auto absolute inset-x-0 bottom-0 p-3 opacity-100 transition duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
-                  <div className="space-y-2 rounded-2xl border border-white/40 bg-black/30 p-3 backdrop-blur-md">
+                  <div className="rounded-2xl border border-white/40 bg-black/30 p-3 backdrop-blur-md">
                     <button
                       type="button"
                       onClick={() => navigate('/quick-order', { state: { painting } })}
                       className="pill-btn pill-btn-primary w-full px-4 py-2 text-sm"
                     >
                       Order This
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/order', { state: { painting } })}
-                      className="pill-btn w-full border border-white bg-white/15 px-4 py-2 text-sm text-white hover:bg-white/25"
-                    >
-                      Customise
                     </button>
                   </div>
                 </div>
