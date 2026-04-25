@@ -1,7 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import SiteFooter from './components/SiteFooter'
 import Confirm from './pages/Confirm'
 import Gallery from './pages/Gallery'
 import Home from './pages/Home'
@@ -79,24 +77,10 @@ function AnimatedRoutes() {
   )
 }
 
-function ScrollToTop() {
-  const location = useLocation()
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
-  }, [location.pathname])
-
-  return null
-}
-
 function App() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <ScrollToTop />
-      <div className="flex-1">
-        <AnimatedRoutes />
-      </div>
-      <SiteFooter />
+    <div className="min-h-screen">
+      <AnimatedRoutes />
     </div>
   )
 }
