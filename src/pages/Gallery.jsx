@@ -29,7 +29,7 @@ function Gallery() {
     if (filter === 'All') {
       setSearchParams({})
       return
-    }
+    } 
     setSearchParams({ style: filter })
   }
 
