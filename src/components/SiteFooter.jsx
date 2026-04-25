@@ -15,6 +15,14 @@ const founderLinks = [
   },
 ]
 
+const muneefLinks = [
+  {
+    label: 'Gmail',
+    href: 'mailto:muhammadmuneef2928@gmail.com',
+    display: 'muhammadmuneef2928@gmail.com',
+  },
+]
+
 function SiteFooter() {
   return (
     <footer className="page-pad mt-auto pb-8 pt-10">
@@ -49,7 +57,7 @@ function SiteFooter() {
 
           <section>
             <h2 className="font-display text-lg font-semibold tracking-tight text-[var(--brand-dark)] sm:text-xl">
-              Founder
+              Founded by
             </h2>
             <p className="mt-2 font-medium text-[var(--brand-dark)]">Hammad Riyaz</p>
             <ul className="mt-4 space-y-2.5 text-sm">
@@ -80,10 +88,27 @@ function SiteFooter() {
           </section>
 
           <section className="sm:col-span-2 lg:col-span-1">
-            <h2 className="font-display text-lg font-semibold tracking-tight text-[var(--brand-dark)] sm:text-xl">
-              Co-founder
-            </h2>
-            <p className="mt-2 font-medium text-[var(--brand-dark)]">Muneef</p>
+            <p className="font-display text-lg font-semibold tracking-tight text-[var(--brand-dark)] sm:text-xl lg:mt-0">
+              Muneef
+            </p>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {muneefLinks.map((item) => (
+                <li key={item.label}>
+                  <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--brand-brown)]/80">
+                    {item.label}
+                  </span>
+                  <br />
+                  <a
+                    href={item.href}
+                    target={item.href.startsWith('http') ? '_blank' : undefined}
+                    rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
+                    className="break-all text-[var(--brand-dark)] underline decoration-[var(--brand-light)] underline-offset-2 transition hover:text-[var(--brand-brown)]"
+                  >
+                    {item.display}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </section>
         </div>
 
