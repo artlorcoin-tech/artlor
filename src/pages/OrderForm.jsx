@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import SiteFooter from '../components/SiteFooter'
+import { publicUrl } from '../publicUrl'
 
 const easing = [0.4, 0, 0.2, 1]
 const sizeOptions = [
@@ -140,7 +141,7 @@ function OrderForm() {
     <main className="paper-bg page-pad min-h-screen">
       <BrandHeader />
       <section className="form-shell mx-auto w-full max-w-[560px] p-5 sm:p-8">
-        <img src="/brand/artlor-logo.png" alt="Artlor logo" className="brand-logo-round brand-logo-md mb-6" />
+        <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor logo" className="brand-logo-round brand-logo-md mb-6" />
         <div className="mb-8">
           <div className="relative mb-5 h-[2px] rounded-full bg-[var(--brand-light)]">
             <motion.div

@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { Mail } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { publicUrl } from '../publicUrl'
 
 const links = [
   { label: 'Home', mobileLabel: 'Home', to: '/' },
@@ -52,7 +53,7 @@ function BrandHeader() {
     >
       <div className="grid min-h-[3.2rem] grid-cols-[auto_1fr_auto] items-center gap-2 md:gap-4">
         <Link to="/" className="flex items-center justify-self-start">
-          <img src="/brand/artlor-logo.png" alt="Artlor" className="brand-logo-round brand-logo-sm" />
+          <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor" className="brand-logo-round brand-logo-sm" />
         </Link>
 
         <nav className="no-scrollbar mx-1 flex min-w-0 items-center gap-2 overflow-x-auto px-1 md:mx-auto md:justify-center">

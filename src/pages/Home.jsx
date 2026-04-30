@@ -3,6 +3,7 @@ import { Brush, MapPinHouse, PackageCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import SiteFooter from '../components/SiteFooter'
+import { publicUrl } from '../publicUrl'
 
 const values = [
   {
@@ -63,7 +64,7 @@ function Home() {
       <BrandHeader />
       <section className="hero-spotlight content-max relative flex min-h-[calc(100svh-8.6rem)] max-w-5xl flex-col items-center justify-center overflow-hidden rounded-[28px] border border-[rgba(122,74,46,0.12)] text-center sm:min-h-[calc(100svh-10.5rem)] lg:min-h-[calc(100svh-11rem)]">
         <img
-          src="/brand/hero-painting-bg.png"
+          src={publicUrl('brand/hero-painting-bg.png')}
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-45"
@@ -83,7 +84,7 @@ function Home() {
             initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
             animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.12 }}
-            src="/brand/artlor-logo.png"
+            src={publicUrl('brand/artlor-logo.png')}
             alt="Artlor logo"
             className="brand-logo-round brand-logo-hero mb-3 sm:mb-4"
           />

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import SiteFooter from '../components/SiteFooter'
+import { publicUrl } from '../publicUrl'
 
 const easing = [0.4, 0, 0.2, 1]
 
@@ -98,7 +99,7 @@ function QuickOrder() {
     <main className="paper-bg page-pad min-h-screen">
       <BrandHeader />
       <section className="form-shell mx-auto w-full max-w-[560px] space-y-4 p-5 sm:p-8">
-        <img src="/brand/artlor-logo.png" alt="Artlor logo" className="brand-logo-round brand-logo-md mb-1" />
+        <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor logo" className="brand-logo-round brand-logo-md mb-1" />
         <article className="card-surface bg-[var(--brand-cream)] p-4">
           {painting ? (
             <div className="flex items-center gap-3 sm:gap-4">
