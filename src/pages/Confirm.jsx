@@ -80,6 +80,7 @@ function Confirm() {
             <motion.svg
               viewBox="0 0 52 52"
               className="h-9 w-9 sm:h-10 sm:w-10"
+              aria-hidden
               initial={prefersReducedMotion ? false : { opacity: 0 }}
               animate={prefersReducedMotion ? {} : { opacity: 1 }}
               transition={{ duration: 0.2 }}
