@@ -3,12 +3,11 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
-// GitHub Pages project sites live under /<repo>/; `public/` and router need that prefix in production.
-// Local dev uses "/" so http://localhost:5173/ works as usual.
-// Root-hosted deploy (e.g. custom domain): build with VITE_BASE_PATH=/
+// Default production base is "/" (artlor.art and most hosts). Local dev also uses "/".
+// GitHub Pages project site (…github.io/<repo>/): build with VITE_BASE_PATH=/artlor
 function productionBase() {
-  const raw = process.env.VITE_BASE_PATH ?? '/artlor'
-  if (raw === '/' || raw === '') return '/'
+  const raw = process.env.VITE_BASE_PATH
+  if (!raw || raw === '/' || raw === '') return '/'
   return raw.endsWith('/') ? raw : `${raw}/`
 }
 
