@@ -88,9 +88,13 @@ function SiteFooter() {
           </section>
 
           <section className="sm:col-span-2 lg:col-span-1">
-            <p className="font-display text-lg font-semibold tracking-tight text-[var(--brand-dark)] sm:text-xl lg:mt-0">
-              Muneef
-            </p>
+            <h2
+              className="font-display text-lg font-semibold tracking-tight text-[var(--brand-dark)] sm:text-xl hidden lg:invisible lg:block"
+              aria-hidden="true"
+            >
+              Founded by
+            </h2>
+            <p className="mt-2 font-medium text-[var(--brand-dark)]">Muneef</p>
             <ul className="mt-4 space-y-2.5 text-sm">
               {muneefLinks.map((item) => (
                 <li key={item.label}>
