@@ -4,7 +4,7 @@ import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
-import SiteFooter from '../components/SiteFooter'
+import { galleryImages } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
 const easing = [0.4, 0, 0.2, 1]
@@ -16,10 +16,10 @@ const sizeOptions = [
 ]
 
 const styleOptions = [
-  { name: 'Abstract', seed: 111 },
-  { name: 'Calligraphy', seed: 222 },
-  { name: 'Still Life', seed: 333 },
-  { name: 'Landscape', seed: 444 },
+  { name: 'Abstract', image: galleryImages.abstractMonoMuntaza },
+  { name: 'Calligraphy', image: galleryImages.calligraphyAllahMaryam },
+  { name: 'Still Life', image: galleryImages.stillLifeSeebah },
+  { name: 'Landscape', image: galleryImages.landscapeBridgeHammad },
 ]
 
 const initialData = {
@@ -202,7 +202,7 @@ function OrderForm() {
                         }`}
                       >
                         <img
-                          src={`https://picsum.photos/seed/order-style-${style.seed}/400/300`}
+                          src={publicUrl(style.image)}
                           alt={style.name}
                           className="h-28 w-full object-cover"
                         />
@@ -380,7 +380,6 @@ function OrderForm() {
           )}
         </div>
       </section>
-      <SiteFooter />
     </main>
   )
 }

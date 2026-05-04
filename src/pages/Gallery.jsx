@@ -2,21 +2,10 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
-import SiteFooter from '../components/SiteFooter'
+import { galleryPaintings } from '../galleryPaintings'
+import { publicUrl } from '../publicUrl'
 
 const filters = ['All', 'Landscape', 'Calligraphy', 'Abstract', 'Still Life']
-
-const paintingData = [
-  { id: 1, title: 'Forest Dawn', style: 'Landscape', artist: 'Aarav Menon', seed: 101 },
-  { id: 2, title: 'Silent Dunes', style: 'Landscape', artist: 'Nisha Rawal', seed: 202 },
-  { id: 3, title: 'Ink Prayer', style: 'Calligraphy', artist: 'Rehan Ali', seed: 303 },
-  { id: 4, title: 'Gold Verse', style: 'Calligraphy', artist: 'Sana Khan', seed: 404 },
-  { id: 5, title: 'Crimson Echo', style: 'Abstract', artist: 'Kabir Sethi', seed: 505 },
-  { id: 6, title: 'Whispered Geometry', style: 'Abstract', artist: 'Maya Kapoor', seed: 606 },
-  { id: 7, title: 'Pear Study', style: 'Still Life', artist: 'Tanvi Iyer', seed: 707 },
-  { id: 8, title: 'Copper Pot Morning', style: 'Still Life', artist: 'Ishaan Dutta', seed: 808 },
-  { id: 9, title: 'Valley Rain', style: 'Landscape', artist: 'Aditi Roy', seed: 909 },
-]
 
 function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -35,9 +24,9 @@ function Gallery() {
 
   const paintings = useMemo(() => {
     if (activeFilter === 'All') {
-      return paintingData
+      return galleryPaintings
     }
-    return paintingData.filter((painting) => painting.style === activeFilter)
+    return galleryPaintings.filter((painting) => painting.style === activeFilter)
   }, [activeFilter])
 
   return (
@@ -137,7 +126,7 @@ function Gallery() {
             >
               <div className="relative overflow-hidden">
                 <img
-                  src={`https://picsum.photos/seed/artlor-${painting.seed}/900/600`}
+                  src={publicUrl(painting.image)}
                   alt={`${painting.title} by ${painting.artist}`}
                   className="aspect-[4/3] w-full object-cover"
                 />
@@ -166,7 +155,6 @@ function Gallery() {
           ))}
         </div>
       </section>
-      <SiteFooter />
     </main>
   )
 }

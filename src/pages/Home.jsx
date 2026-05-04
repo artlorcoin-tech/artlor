@@ -3,6 +3,7 @@ import { Brush, MapPinHouse, PackageCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import SiteFooter from '../components/SiteFooter'
+import { galleryImages } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
 const values = [
@@ -10,49 +11,38 @@ const values = [
     title: 'Local Artists',
     description: 'Handpicked talent from your city, matched to your vision.',
     icon: MapPinHouse,
-    image:
-      'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80',
+    image: galleryImages.landscapeVintageHammad,
   },
   {
     title: 'Fully Custom',
     description: 'You describe it, we paint it. Every detail, your way.',
     icon: Brush,
-    image:
-      'https://images.unsplash.com/photo-1452802447250-470a88ac82bc?auto=format&fit=crop&w=1200&q=80',
+    image: galleryImages.calligraphyNikahMuntaza,
   },
   {
     title: 'Wall-Ready Art',
     description: 'Delivered stretched, framed, and ready to hang.',
     icon: PackageCheck,
-    image:
-      'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80',
+    image: galleryImages.calligraphyCustomMuntaza,
   },
 ]
 
 const styleCards = [
   {
     name: 'Landscape',
-    color: '#2C4A2E',
-    image:
-      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80',
+    image: galleryImages.landscapeBridgeHammad,
   },
   {
     name: 'Calligraphy',
-    color: '#1F1F1F',
-    image:
-      'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1000&q=80',
+    image: galleryImages.calligraphyAllahMaryam,
   },
   {
     name: 'Abstract',
-    color: '#7A2E4A',
-    image:
-      'https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=1000&q=80',
+    image: galleryImages.abstractMonoMuntaza,
   },
   {
     name: 'Still Life',
-    color: '#2E3A7A',
-    image:
-      'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80',
+    image: galleryImages.stillLifeSeebah,
   },
 ]
 
@@ -64,7 +54,7 @@ function Home() {
       <BrandHeader />
       <section className="hero-spotlight content-max relative flex min-h-[calc(100svh-8.6rem)] max-w-5xl flex-col items-center justify-center overflow-hidden rounded-[28px] border border-[rgba(122,74,46,0.12)] text-center sm:min-h-[calc(100svh-10.5rem)] lg:min-h-[calc(100svh-11rem)]">
         <img
-          src={publicUrl('brand/hero-painting-bg.png')}
+          src={publicUrl(galleryImages.calligraphyGoldMuntaza)}
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-45"
@@ -162,7 +152,7 @@ function Home() {
                 className="card-surface relative overflow-hidden p-6 sm:p-8"
               >
                 <img
-                  src={value.image}
+                  src={publicUrl(value.image)}
                   alt=""
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
@@ -193,14 +183,13 @@ function Home() {
               key={style.name}
               whileHover={prefersReducedMotion ? {} : { scale: 1.04, filter: 'brightness(1.12)' }}
               transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
-              className="relative h-[280px] w-[220px] min-w-[220px] overflow-hidden rounded-[20px] border border-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.28)] sm:h-[300px] sm:w-[240px] sm:min-w-[240px]"
-              style={{ backgroundColor: style.color }}
+              className="relative h-[280px] w-[220px] min-w-[220px] overflow-hidden rounded-[20px] shadow-[0_16px_40px_rgba(0,0,0,0.28)] sm:h-[300px] sm:w-[240px] sm:min-w-[240px]"
             >
               <img
-                src={style.image}
+                src={publicUrl(style.image)}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 h-full w-full object-cover opacity-40"
+                className="absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(255,255,255,0.18),transparent_30%)]" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/74 via-black/28 to-transparent" />
