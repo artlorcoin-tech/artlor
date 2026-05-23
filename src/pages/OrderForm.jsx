@@ -1,4 +1,5 @@
 import emailjs from '@emailjs/browser'
+import { supabaseInsert } from '../lib/supabase'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useState } from 'react'
@@ -112,12 +113,26 @@ function OrderForm() {
 
     try {
       setSubmitting(true)
-      await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        payload,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-      )
+
+      // Send email notification AND save to Supabase in parallel
+      const [emailResult, supabaseResult] = await Promise.allSettled([
+        emailjs.send(
+          import.meta.env.VITE_EMAILJS_SERVICE_ID,
+          import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+          payload,
+          import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        ),
+        supabaseInsert('orders', payload),
+      ])
+
+      if (emailResult.status === 'rejected') {
+        console.warn('[OrderForm] EmailJS failed:', emailResult.reason)
+      }
+      if (supabaseResult.status === 'rejected') {
+        console.warn('[OrderForm] Supabase insert failed:', supabaseResult.reason)
+      }
+
+      // Navigate to confirmation even if one channel failed
       navigate('/confirm', {
         state: {
           order: {
@@ -130,7 +145,7 @@ function OrderForm() {
         },
       })
     } catch (error) {
-      console.error('EmailJS submission failed', error)
+      console.error('Order submission failed', error)
       alert('Could not place your order right now. Please try again in a moment.')
     } finally {
       setSubmitting(false)

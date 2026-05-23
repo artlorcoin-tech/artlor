@@ -71,6 +71,7 @@ function AnimatedRoutes() {
             </PageTransition>
           }
         />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

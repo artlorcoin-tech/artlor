@@ -21,6 +21,16 @@ const muneefLinks = [
     href: 'mailto:muhammadmuneef2928@gmail.com',
     display: 'muhammadmuneef2928@gmail.com',
   },
+  {
+    label: 'Instagram',
+    href: 'https://instagram.com/m__un__ee_f',
+    display: '@m__un__ee_f',
+  },
+  {
+    label: 'LinkedIn',
+    href: 'https://in.linkedin.com/in/muhammad-muneef',
+    display: 'linkedin.com/in/muhammad-muneef',
+  },
 ]
 
 function SiteFooter() {
