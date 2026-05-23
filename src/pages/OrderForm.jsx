@@ -118,6 +118,12 @@ function OrderForm() {
     try {
       setSubmitting(true)
 
+      const supabasePayload = {
+        ...payload,
+        city: form.state ? `${form.city}, ${form.state}` : form.city,
+      }
+      delete supabasePayload.state
+
       // Send email notification AND save to Supabase in parallel
       const [emailResult, supabaseResult] = await Promise.allSettled([
         emailjs.send(
@@ -126,7 +132,7 @@ function OrderForm() {
           payload,
           import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
         ),
-        supabaseInsert('orders', payload),
+        supabaseInsert('orders', supabasePayload),
       ])
 
       if (emailResult.status === 'rejected') {

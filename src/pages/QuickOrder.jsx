@@ -101,9 +101,11 @@ function QuickOrder() {
       // Supabase row includes gallery painting info for traceability
       const supabasePayload = {
         ...payload,
+        city: form.state ? `${form.city}, ${form.state}` : form.city,
         painting_id: painting?.id ?? null,
         painting_title: painting?.title ?? null,
       }
+      delete supabasePayload.state
 
       // Send email notification AND save to Supabase in parallel
       const [emailResult, supabaseResult] = await Promise.allSettled([
