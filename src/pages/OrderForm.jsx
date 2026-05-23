@@ -5,6 +5,7 @@ import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import LocationAutocomplete from '../components/LocationAutocomplete'
 import { galleryImages } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
@@ -28,6 +29,7 @@ const initialData = {
   artStyle: '',
   artworkSize: '',
   customSize: '',
+  state: '',
   city: '',
   pincode: '',
   area: '',
@@ -76,6 +78,7 @@ function OrderForm() {
     }
     if (step === 3) {
       return (
+        form.state.trim() &&
         form.city.trim() &&
         form.pincode.trim().length === 6 &&
         form.area.trim() &&
@@ -102,6 +105,7 @@ function OrderForm() {
       art_style: form.artStyle,
       artwork_size:
         form.artworkSize === 'Custom Size' ? `${form.artworkSize} (${form.customSize})` : form.artworkSize,
+      state: form.state,
       city: form.city,
       pincode: form.pincode,
       area: form.area,
@@ -289,20 +293,19 @@ function OrderForm() {
                   Where should we deliver your art?
                 </h1>
                 <div className="space-y-4">
-                  <Field
-                    label="City"
-                    placeholder="Your city"
-                    value={form.city}
-                    onChange={(event) => setForm((prev) => ({ ...prev, city: event.target.value }))}
-                  />
-                  <Field
-                    label="Pin Code"
-                    inputMode="numeric"
-                    maxLength={6}
-                    placeholder="6-digit pin code"
-                    value={form.pincode}
-                    onChange={(event) =>
-                      setForm((prev) => ({ ...prev, pincode: event.target.value.replace(/\D/g, '').slice(0, 6) }))
+                  <LocationAutocomplete
+                    state={form.state}
+                    city={form.city}
+                    pincode={form.pincode}
+                    onChange={({ state, city, pincode, area, lane }) =>
+                      setForm((prev) => ({ 
+                        ...prev, 
+                        state, 
+                        city, 
+                        pincode,
+                        ...(area !== undefined && { area }),
+                        ...(lane !== undefined && { lane })
+                      }))
                     }
                   />
                   <Field
