@@ -50,19 +50,21 @@ function BrandHeader() {
       animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
       transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
       className="content-max mb-6 w-full rounded-[28px] border border-[rgba(31,31,31,0.08)] bg-[rgba(255,255,255,0.78)] px-2.5 py-2.5 shadow-[0_14px_35px_rgba(0,0,0,0.09)] backdrop-blur-md sm:mb-8 sm:px-4 sm:py-3 md:px-5"
+      role="banner"
     >
       <div className="grid min-h-[3.2rem] grid-cols-[auto_1fr_auto] items-center gap-2 md:gap-4">
-        <Link to="/" className="flex items-center justify-self-start">
-          <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor" className="brand-logo-round brand-logo-sm" />
+        <Link to="/" className="flex items-center justify-self-start" aria-label="Artlor home">
+          <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor Logo" className="brand-logo-round brand-logo-sm" />
         </Link>
-
-        <nav className="no-scrollbar mx-1 flex min-w-0 items-center gap-2 overflow-x-auto px-1 md:mx-auto md:justify-center">
+ 
+        <nav className="no-scrollbar mx-1 flex min-w-0 items-center gap-2 overflow-x-auto px-1 md:mx-auto md:justify-center" aria-label="Main Navigation">
           {links.map((item) => {
             const active = item.to === location.pathname
             return (
               <Link
                 key={item.to}
                 to={item.to}
+                aria-current={active ? 'page' : undefined}
                 className={`pill-btn inline-flex h-9 shrink-0 items-center justify-center px-3 py-2 text-[11px] sm:h-10 sm:px-4 sm:text-sm ${
                   active
                     ? 'bg-[var(--brand-dark)] text-[var(--brand-cream)]'

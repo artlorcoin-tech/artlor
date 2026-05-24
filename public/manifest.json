@@ -1,0 +1,19 @@
+{
+  "short_name": "Artlor",
+  "name": "Artlor — Custom Handpainted Art Commissions",
+  "description": "Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered framed, stretched, and ready to hang.",
+  "icons": [
+    {
+      "src": "/brand/artlor-logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F4EFEA",
+  "theme_color": "#7A4A2E",
+  "display": "standalone",
+  "orientation": "portrait",
+  "categories": ["shopping", "art", "marketplace"]
+}

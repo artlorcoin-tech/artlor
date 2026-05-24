@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SEO from '../components/SEO'
 import { galleryPaintings } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
@@ -28,9 +29,54 @@ function Gallery() {
     }
     return galleryPaintings.filter((painting) => painting.style === activeFilter)
   }, [activeFilter])
+  const gallerySchema = useMemo(() => {
+    const origin = window.location.origin
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": `Artlor Curated ${activeFilter === 'All' ? 'Art' : activeFilter} Gallery`,
+      "description": `Browse our beautiful curated collection of original local ${activeFilter === 'All' ? 'landscape, calligraphy, abstract and still life' : activeFilter.toLowerCase()} custom paintings.`,
+      "numberOfItems": paintings.length,
+      "itemListElement": paintings.map((painting, index) => {
+        const imagePath = painting.image.startsWith('/') ? painting.image : `/${painting.image}`
+        return {
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": {
+            "@type": "VisualArtwork",
+            "name": painting.title,
+            "creator": {
+              "@type": "Person",
+              "name": painting.artist
+            },
+            "genre": painting.style,
+            "artform": "Painting",
+            "artMedium": painting.style === 'Calligraphy' ? 'Acrylic, Ink' : 'Oil, Acrylic',
+            "artworkSurface": "Canvas",
+            "image": origin + imagePath
+          }
+        }
+      })
+    }
+  }, [paintings, activeFilter])
+
+  const galleryBreadcrumb = useMemo(() => {
+    const paths = [{ name: 'Gallery', path: '/gallery' }]
+    if (activeFilter !== 'All') {
+      paths.push({ name: activeFilter, path: `/gallery?style=${encodeURIComponent(activeFilter)}` })
+    }
+    return paths
+  }, [activeFilter])
 
   return (
     <main className="paper-bg page-pad min-h-screen">
+      <SEO 
+        title={`${activeFilter === 'All' ? 'Curated Gallery' : activeFilter + ' Paintings'}`}
+        description={`Explore our curated collection of ${activeFilter === 'All' ? 'custom landscapes, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings by top local artists.`}
+        keywords={`commission art, gallery paintings, ${activeFilter.toLowerCase()} art, buy paintings online, original artwork`}
+        schemaData={gallerySchema}
+        breadcrumbPaths={galleryBreadcrumb}
+      />
       <BrandHeader />
       <section className="content-max max-w-6xl">
         <article className="dark-luxe-card mb-7 p-5 sm:mb-8 sm:p-7">
@@ -129,6 +175,8 @@ function Gallery() {
                   src={publicUrl(painting.image)}
                   alt={`${painting.title} by ${painting.artist}`}
                   className="aspect-[4/3] w-full object-cover"
+                  loading={index < 3 ? 'eager' : 'lazy'}
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
                 <span className="absolute top-3 left-3 rounded-full bg-[rgba(122,74,46,0.85)] px-3 py-1 font-body text-[11px] text-white">

@@ -35,7 +35,7 @@ const muneefLinks = [
 
 function SiteFooter() {
   return (
-    <footer className="page-pad mt-auto pb-8 pt-10">
+    <footer className="page-pad mt-auto pb-8 pt-10" role="contentinfo" aria-label="Site Footer">
       <div className="content-max rounded-[28px] border border-[rgba(31,31,31,0.08)] bg-[rgba(255,255,255,0.78)] px-5 py-8 shadow-[0_14px_35px_rgba(0,0,0,0.06)] backdrop-blur-md sm:px-8 sm:py-10">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
           <section>

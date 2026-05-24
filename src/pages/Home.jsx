@@ -3,6 +3,7 @@ import { Brush, MapPinHouse, PackageCheck } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import SiteFooter from '../components/SiteFooter'
+import SEO from '../components/SEO'
 import { galleryImages } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
@@ -46,11 +47,60 @@ const styleCards = [
   },
 ]
 
+const homeSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://artlor.art/#webpage",
+  "url": "https://artlor.art/",
+  "name": "Artlor — Custom Handpainted Art Commissions & Paintings",
+  "description": "Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered framed, stretched, and ready to hang.",
+  "isPartOf": {
+    "@id": "https://artlor.art/#website"
+  }
+}
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How does commissioning a custom painting work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "First, select your preferred art style (Landscape, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What art styles do you offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We currently offer high-quality custom Landscape paintings, Calligraphy artwork (including custom Nikah boards and gold script), monochrome or flow Abstract paintings, and vibrant Still Life paintings."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the artwork delivered ready to hang?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! All custom paintings commissioned through Artlor are delivered fully stretched, framed, and completely wall-ready so you can hang them immediately."
+      }
+    }
+  ]
+}
+
 function Home() {
   const prefersReducedMotion = useReducedMotion()
 
   return (
     <main className="paper-bg page-pad min-h-screen">
+      <SEO 
+        title="Custom Paintings & Local Art Commissions"
+        description="Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered framed, stretched, and ready to hang on your wall."
+        keywords="custom paintings, local artists, calligraphy commission, commissioned landscapes, abstract paintings, framed wall art, painting marketplace India"
+        schemaData={[homeSchema, faqSchema]}
+      />
       <BrandHeader />
       <section className="hero-spotlight content-max relative flex min-h-[calc(100svh-8.6rem)] max-w-5xl flex-col items-center justify-center overflow-hidden rounded-[28px] border border-[rgba(122,74,46,0.12)] text-center sm:min-h-[calc(100svh-10.5rem)] lg:min-h-[calc(100svh-11rem)]">
         <img
@@ -206,6 +256,43 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {/* Visually Stunning, Highly Premium & SEO-Optimized FAQ Section */}
+      <section className="content-max mt-16 mb-12 max-w-4xl border-t border-[rgba(122,74,46,0.12)] pt-12 sm:mt-20">
+        <h2 className="font-display text-brand-dark mb-8 text-center text-3xl sm:text-4xl">
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-4">
+          <details className="group rounded-[20px] bg-white/50 p-5 shadow-sm transition duration-300 hover:bg-white/80 border border-[var(--brand-light)]">
+            <summary className="font-display text-brand-dark text-base sm:text-lg font-semibold cursor-pointer list-none flex justify-between items-center outline-none">
+              How does commissioning a custom painting work?
+              <span className="text-[var(--brand-gold)] font-bold text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+            </summary>
+            <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
+              First, select your preferred art style (Landscape, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days.
+            </p>
+          </details>
+          <details className="group rounded-[20px] bg-white/50 p-5 shadow-sm transition duration-300 hover:bg-white/80 border border-[var(--brand-light)]">
+            <summary className="font-display text-brand-dark text-base sm:text-lg font-semibold cursor-pointer list-none flex justify-between items-center outline-none">
+              What art styles do you offer?
+              <span className="text-[var(--brand-gold)] font-bold text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+            </summary>
+            <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
+              We currently offer high-quality custom Landscape paintings, Calligraphy artwork (including custom Nikah boards and gold script), monochrome or flow Abstract paintings, and vibrant Still Life paintings.
+            </p>
+          </details>
+          <details className="group rounded-[20px] bg-white/50 p-5 shadow-sm transition duration-300 hover:bg-white/80 border border-[var(--brand-light)]">
+            <summary className="font-display text-brand-dark text-base sm:text-lg font-semibold cursor-pointer list-none flex justify-between items-center outline-none">
+              Is the artwork delivered ready to hang?
+              <span className="text-[var(--brand-gold)] font-bold text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+            </summary>
+            <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
+              Yes! All custom paintings commissioned through Artlor are delivered fully stretched, framed, and completely wall-ready so you can hang them immediately.
+            </p>
+          </details>
+        </div>
+      </section>
+
       <SiteFooter />
     </main>
   )

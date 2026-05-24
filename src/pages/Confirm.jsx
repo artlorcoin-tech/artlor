@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { BrushCleaning, Package, UserRoundCheck } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
+import SEO from '../components/SEO'
 
 const timeline = [
   {
@@ -53,6 +54,12 @@ function Confirm() {
 
   return (
     <main className="paper-bg page-pad min-h-screen">
+      <SEO 
+        title="Order Placed Successfully"
+        description="Your custom painting order has been successfully placed. We have matched you with an artist and work will begin shortly."
+        keywords="art order placed, commission confirmation, custom painting order confirmed"
+        robots="noindex, nofollow"
+      />
       <BrandHeader />
       <section className="form-shell relative mx-auto w-full max-w-3xl overflow-hidden p-5 sm:p-9">
         {!prefersReducedMotion && (

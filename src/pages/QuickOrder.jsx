@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import LocationAutocomplete from '../components/LocationAutocomplete'
+import SEO from '../components/SEO'
 import { publicUrl } from '../publicUrl'
 
 const easing = [0.4, 0, 0.2, 1]
@@ -145,8 +146,42 @@ function QuickOrder() {
     }
   }
 
+  const productSchema = painting ? {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": painting.title,
+    "image": window.location.origin + '/' + painting.image.replace(/^\//, ''),
+    "description": `Commission a custom handpainted version of ${painting.title} by artist ${painting.artist}. Fully framed, stretched and delivered to your wall.`,
+    "brand": {
+      "@type": "Brand",
+      "name": "Artlor"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "INR",
+      "price": "Negotiable",
+      "availability": "https://schema.org/PreOrder",
+      "seller": {
+        "@type": "Organization",
+        "name": "Artlor"
+      }
+    }
+  } : null
+
+  const quickOrderBreadcrumb = [
+    { name: 'Gallery', path: '/gallery' },
+    { name: painting ? `Order ${painting.title}` : 'Quick Order', path: '/quick-order' }
+  ]
+
   return (
     <main className="paper-bg page-pad min-h-screen">
+      <SEO 
+        title={painting ? `Order ${painting.title}` : "Quick Art Order"}
+        description={painting ? `Commission a handpainted custom version of ${painting.title} by ${painting.artist} from talented local painters.` : "Instantly place a custom painting order with local art talent."}
+        keywords="commission painting, buy local art, handpainted reproductions, custom calligraphy order"
+        schemaData={productSchema}
+        breadcrumbPaths={quickOrderBreadcrumb}
+      />
       <BrandHeader />
       <section className="form-shell mx-auto w-full max-w-[560px] p-5 sm:p-8">
         <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor logo" className="brand-logo-round brand-logo-md mb-6" />

@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import LocationAutocomplete from '../components/LocationAutocomplete'
+import SEO from '../components/SEO'
 import { galleryImages } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
@@ -162,8 +163,44 @@ function OrderForm() {
     }
   }
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "Custom Handpainted Art Commissions",
+    "description": "Commission high-quality, custom paintings and calligraphy directly from handpicked local artists. Choose your size, style, and framing options.",
+    "provider": {
+      "@type": "Organization",
+      "name": "Artlor",
+      "url": window.location.origin
+    },
+    "areaServed": {
+      "@type": "Country",
+      "name": "India"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "INR",
+      "price": "Negotiable",
+      "eligibleRegion": {
+        "@type": "Country",
+        "name": "India"
+      }
+    }
+  }
+
+  const orderBreadcrumb = [
+    { name: 'Custom Order', path: '/order' }
+  ]
+
   return (
     <main className="paper-bg page-pad min-h-screen">
+      <SEO 
+        title="Commission Custom Artwork"
+        description="Describe your dream painting style, size, and delivery location to connect and match with talented local artists."
+        keywords="commission art, custom painting request, local painters, handpainted art commissions, custom artwork India"
+        schemaData={serviceSchema}
+        breadcrumbPaths={orderBreadcrumb}
+      />
       <BrandHeader />
       <section className="form-shell mx-auto w-full max-w-[560px] p-5 sm:p-8">
         <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor logo" className="brand-logo-round brand-logo-md mb-6" />
