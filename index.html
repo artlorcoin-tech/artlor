@@ -33,9 +33,10 @@
     <meta name="twitter:description" content="Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered framed, stretched, and ready to hang." />
     <meta name="twitter:image" content="/brand/artlor-logo.png" />
 
-    <!-- Performance Optimization: Resource Hints -->
+    <!-- Performance Optimization: Resource Hints & Preloading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="/gallery/calligraphy-gold-muntaza.png" as="image" type="image/png" />
     
     <!-- Icons & Manifest -->
     <link rel="icon" type="image/png" href="/brand/artlor-logo.png" sizes="any" />
@@ -43,7 +44,29 @@
     <link rel="manifest" href="/manifest.json" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Semantic SEO Fallback Content for Crawlers (Replaced on Hydration) -->
+      <header style="display:none;">
+        <a href="/">Artlor - Custom Handpainted Art Commissions</a>
+        <nav>
+          <a href="/gallery">Curated Art Gallery</a>
+          <a href="/order">Commission Custom Art</a>
+        </nav>
+      </header>
+      <main style="display:none;">
+        <h1>Art That Lives On Your Walls - Custom Paintings & Calligraphy Commissions</h1>
+        <p>Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered stretched, framed, and ready to hang on your wall.</p>
+        
+        <h2>Curated Handpainted Art Styles</h2>
+        <ul>
+          <li><strong>Landscape Paintings</strong>: Majestic bridges, vintage roads, and autumn hills custom-painted in oil or acrylic.</li>
+          <li><strong>Arabic Calligraphy</strong>: Custom Nikah boards, Gilded script, and modern marble pour artworks.</li>
+          <li><strong>Abstract Paintings</strong>: Contemporary monochrome flow designs for modern spaces.</li>
+          <li><strong>Still Life Artwork</strong>: Vibrant florals in bloom and classic studies.</li>
+        </ul>
+        <a href="/gallery">Explore our Curated Art Gallery</a>
+      </main>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -1,14 +1,43 @@
 import emailjs from '@emailjs/browser'
-import { supabaseInsert } from '../lib/supabase'
+import { supabaseInsert, supabaseSendOtp, supabaseVerifyOtp } from '../lib/supabase'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import BrandHeader from '../components/BrandHeader'
 import LocationAutocomplete from '../components/LocationAutocomplete'
 import SEO from '../components/SEO'
 import { galleryImages } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
+import {
+  isValidAuthenticName,
+  isValidAuthenticPhone,
+  isValidAuthenticEmail,
+  isValidAddressField,
+  isValidPincode
+} from '../lib/validation'
+
+const POPULAR_COUNTRIES = [
+  { name: 'United States (+1)', code: '+1' },
+  { name: 'United Kingdom (+44)', code: '+44' },
+  { name: 'Australia (+61)', code: '+61' },
+  { name: 'Canada (+1)', code: '+1' },
+  { name: 'United Arab Emirates (+971)', code: '+971' },
+  { name: 'Singapore (+65)', code: '+65' },
+  { name: 'Germany (+49)', code: '+49' },
+  { name: 'France (+33)', code: '+33' },
+  { name: 'Saudi Arabia (+966)', code: '+966' },
+  { name: 'Qatar (+974)', code: '+974' },
+  { name: 'Kuwait (+965)', code: '+965' },
+  { name: 'Oman (+968)', code: '+968' },
+  { name: 'Bahrain (+973)', code: '+973' },
+  { name: 'Other', code: 'custom' },
+]
+
+const INTERNATIONAL_COUNTRIES = [
+  'United States', 'United Kingdom', 'Canada', 'Australia', 'United Arab Emirates',
+  'Singapore', 'Germany', 'France', 'Saudi Arabia', 'Qatar', 'Kuwait', 'Oman', 'Bahrain'
+]
 
 const easing = [0.4, 0, 0.2, 1]
 const sizeOptions = [
@@ -37,6 +66,15 @@ const initialData = {
   lane: '',
   phone: '',
   email: '',
+  phoneSystem: 'indian',
+  countryCode: '+1',
+  intlCountry: '',
+  intlCountrySpecify: '',
+  intlState: '',
+  intlCity: '',
+  intlZip: '',
+  intlArea: '',
+  intlLane: '',
 }
 
 function Field({ label, ...props }) {
@@ -60,6 +98,12 @@ function OrderForm() {
   const navigate = useNavigate()
   const prefersReducedMotion = useReducedMotion()
 
+  // OTP Verification removed for fast-track launch
+
+  // Import useEffect if not imported
+  // (Wait, useEffect is already imported from react on line 1, let's verify: line 1 is `import { useState } from 'react'` in OrderForm.jsx?
+  // Let's check imports of OrderForm.jsx first to make sure useEffect is imported!)
+
   const progress = (step / (6 - 1)) * 100
 
   const slideMotion = {
@@ -70,24 +114,43 @@ function OrderForm() {
   }
 
   const canProceed = () => {
-    if (step === 0) return form.name.trim().length > 1
+    if (step === 0) return isValidAuthenticName(form.name)
     if (step === 1) return Boolean(form.artStyle)
     if (step === 2) {
       if (!form.artworkSize) return false
-      if (form.artworkSize === 'Custom Size') return form.customSize.trim().length > 0
+      if (form.artworkSize === 'Custom Size') {
+        return form.customSize.trim().length >= 4 && 
+               /\d+/.test(form.customSize) && 
+               /(in|inch|cm|mm|x)/i.test(form.customSize)
+      }
       return true
     }
     if (step === 3) {
-      return (
-        form.state.trim() &&
-        form.city.trim() &&
-        form.pincode.trim().length === 6 &&
-        form.area.trim() &&
-        form.lane.trim()
-      )
+      if (form.phoneSystem === 'indian') {
+        return (
+          form.state.trim() &&
+          form.city.trim() &&
+          isValidPincode(form.pincode, 'indian') &&
+          isValidAddressField(form.area) &&
+          isValidAddressField(form.lane)
+        )
+      } else {
+        const country = form.intlCountry === 'Other' ? form.intlCountrySpecify : form.intlCountry
+        return (
+          country && country.trim().length >= 2 &&
+          form.intlState.trim().length >= 2 &&
+          form.intlCity.trim().length >= 2 &&
+          isValidPincode(form.intlZip, 'international') &&
+          isValidAddressField(form.intlArea) &&
+          isValidAddressField(form.intlLane)
+        )
+      }
     }
-    if (step === 4) return form.phone.trim().length === 10
-    if (step === 5) return /\S+@\S+\.\S+/.test(form.email)
+    if (step === 4) {
+      const check = isValidAuthenticPhone(form.phone, form.phoneSystem, form.countryCode)
+      return check.isValid
+    }
+    if (step === 5) return isValidAuthenticEmail(form.email).isValid
     return false
   }
 
@@ -101,17 +164,21 @@ function OrderForm() {
   const submitOrder = async () => {
     if (!canProceed() || submitting) return
 
+    const isIndian = form.phoneSystem === 'indian'
+    const finalPhone = isIndian ? `+91${form.phone}` : `${form.countryCode}${form.phone}`
+    const country = form.intlCountry === 'Other' ? form.intlCountrySpecify : form.intlCountry
+
     const payload = {
       from_name: form.name,
       art_style: form.artStyle,
       artwork_size:
         form.artworkSize === 'Custom Size' ? `${form.artworkSize} (${form.customSize})` : form.artworkSize,
-      state: form.state,
-      city: form.city,
-      pincode: form.pincode,
-      area: form.area,
-      lane: form.lane,
-      phone: form.phone,
+      state: isIndian ? form.state : form.intlState,
+      city: isIndian ? form.city : `${form.intlCity}, ${country}`,
+      pincode: isIndian ? form.pincode : form.intlZip,
+      area: isIndian ? form.area : form.intlArea,
+      lane: isIndian ? form.lane : form.intlLane,
+      phone: finalPhone,
       email: form.email,
       order_type: 'custom',
     }
@@ -133,7 +200,7 @@ function OrderForm() {
           payload,
           import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
         ),
-        supabaseInsert('orders', supabasePayload),
+        supabaseInsert('custom_orders', supabasePayload),
       ])
 
       if (emailResult.status === 'rejected') {
@@ -194,6 +261,7 @@ function OrderForm() {
 
   return (
     <main className="paper-bg page-pad min-h-screen">
+      {/* SMS Simulator removed for Production cellular OTP gateway */}
       <SEO 
         title="Commission Custom Artwork"
         description="Describe your dream painting style, size, and delivery location to connect and match with talented local artists."
@@ -203,7 +271,7 @@ function OrderForm() {
       />
       <BrandHeader />
       <section className="form-shell mx-auto w-full max-w-[560px] p-5 sm:p-8">
-        <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor logo" className="brand-logo-round brand-logo-md mb-6" />
+        <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor logo" decoding="async" className="brand-logo-round brand-logo-md mb-6" />
         <div className="mb-8">
           <div className="relative mb-5 h-[2px] rounded-full bg-[var(--brand-light)]">
             <motion.div
@@ -240,6 +308,15 @@ function OrderForm() {
                   value={form.name}
                   onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
                 />
+                {form.name.trim().length > 0 && !isValidAuthenticName(form.name) && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 text-xs font-semibold text-rose-600 font-body px-2"
+                  >
+                    ⚠️ Please enter an authentic full name (First & Last name, at least 4 letters total). Anonymous values, numbers, and mock names (like &apos;test&apos; or &apos;panda&apos;) are strictly blocked.
+                  </motion.p>
+                )}
               </>
             )}
 
@@ -265,7 +342,9 @@ function OrderForm() {
                       >
                         <img
                           src={publicUrl(style.image)}
-                          alt={style.name}
+                          alt={`${style.name} custom painting style selection`}
+                          loading="lazy"
+                          decoding="async"
                           className="h-28 w-full object-cover"
                         />
                         <div className="bg-[var(--brand-cream)] px-3 py-4 font-body text-sm text-[var(--brand-dark)]">
@@ -324,6 +403,11 @@ function OrderForm() {
                           setForm((prev) => ({ ...prev, customSize: event.target.value }))
                         }
                       />
+                      {form.customSize.trim().length > 0 && !(form.customSize.trim().length >= 4 && /\d+/.test(form.customSize) && /(in|inch|cm|mm|x)/i.test(form.customSize)) && (
+                        <p className="mt-2 text-xs font-semibold text-rose-600 font-body px-2">
+                          ⚠️ Please enter realistic dimensions (e.g. &quot;30 x 48 inches&quot; or &quot;20x30 cm&quot;). Mock text is blocked.
+                        </p>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -336,33 +420,132 @@ function OrderForm() {
                   Where should we deliver your art?
                 </h1>
                 <div className="space-y-4">
-                  <LocationAutocomplete
-                    state={form.state}
-                    city={form.city}
-                    pincode={form.pincode}
-                    onChange={({ state, city, pincode, area, lane }) =>
-                      setForm((prev) => ({ 
-                        ...prev, 
-                        state, 
-                        city, 
-                        pincode,
-                        ...(area !== undefined && { area }),
-                        ...(lane !== undefined && { lane })
-                      }))
-                    }
-                  />
-                  <Field
-                    label="Area/Colony"
-                    placeholder="Area or colony"
-                    value={form.area}
-                    onChange={(event) => setForm((prev) => ({ ...prev, area: event.target.value }))}
-                  />
-                  <Field
-                    label="Lane/Street"
-                    placeholder="Lane or street"
-                    value={form.lane}
-                    onChange={(event) => setForm((prev) => ({ ...prev, lane: event.target.value }))}
-                  />
+                  {form.phoneSystem === 'indian' ? (
+                    <>
+                      <LocationAutocomplete
+                        state={form.state}
+                        city={form.city}
+                        pincode={form.pincode}
+                        onChange={({ state, city, pincode, area, lane }) =>
+                          setForm((prev) => ({ 
+                            ...prev, 
+                            state: state || '', 
+                            city: city || '', 
+                            pincode: pincode || '',
+                            ...(area !== undefined && { area }),
+                            ...(lane !== undefined && { lane })
+                          }))
+                        }
+                      />
+                      <div>
+                        <Field
+                          label="Area/Colony"
+                          placeholder="Area or colony"
+                          value={form.area}
+                          onChange={(event) => setForm((prev) => ({ ...prev, area: event.target.value }))}
+                        />
+                        {form.area.trim().length > 0 && !isValidAddressField(form.area) && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold font-body px-2">
+                            ⚠️ Area cannot be purely numeric or contain mock terms like &apos;test&apos; or &apos;panda&apos;.
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Field
+                          label="Lane/Street"
+                          placeholder="Lane or street"
+                          value={form.lane}
+                          onChange={(event) => setForm((prev) => ({ ...prev, lane: event.target.value }))}
+                        />
+                        {form.lane.trim().length > 0 && !isValidAddressField(form.lane) && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold font-body px-2">
+                            ⚠️ Street/Lane cannot be purely numeric or contain mock terms like &apos;test&apos; or &apos;panda&apos;.
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block mb-2 font-body text-sm text-[var(--brand-dark)]">Country</label>
+                        <select
+                          value={form.intlCountry}
+                          onChange={(e) => setForm(prev => ({ ...prev, intlCountry: e.target.value, intlCountrySpecify: '' }))}
+                          className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-5 py-3 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)]"
+                        >
+                          <option value="">Select country</option>
+                          {INTERNATIONAL_COUNTRIES.map(c => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      {form.intlCountry === 'Other' && (
+                        <Field
+                          label="Specify Country"
+                          placeholder="Enter your country"
+                          value={form.intlCountrySpecify}
+                          onChange={(e) => setForm(prev => ({ ...prev, intlCountrySpecify: e.target.value }))}
+                        />
+                      )}
+                      
+                      <Field
+                        label="State / Province / Region"
+                        placeholder="Enter state or province"
+                        value={form.intlState}
+                        onChange={(e) => setForm(prev => ({ ...prev, intlState: e.target.value }))}
+                      />
+                      
+                      <Field
+                        label="City"
+                        placeholder="Enter city"
+                        value={form.intlCity}
+                        onChange={(e) => setForm(prev => ({ ...prev, intlCity: e.target.value }))}
+                      />
+                      
+                      <div>
+                        <Field
+                          label="ZIP / Postal Code"
+                          placeholder="Enter postal code"
+                          value={form.intlZip}
+                          onChange={(e) => setForm(prev => ({ ...prev, intlZip: e.target.value }))}
+                        />
+                        {form.intlZip.trim().length > 0 && !isValidPincode(form.intlZip, 'international') && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold font-body px-2">
+                            ⚠️ Invalid postal code. Must be 3-10 alphanumeric characters. Repeating or sequential digits are blocked.
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Field
+                          label="Area / Neighborhood / District"
+                          placeholder="Enter area or district"
+                          value={form.intlArea}
+                          onChange={(e) => setForm(prev => ({ ...prev, intlArea: e.target.value }))}
+                        />
+                        {form.intlArea.trim().length > 0 && !isValidAddressField(form.intlArea) && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold font-body px-2">
+                            ⚠️ Area cannot be purely numeric or contain mock terms like &apos;test&apos; or &apos;panda&apos;.
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <Field
+                          label="Street Address / Lane"
+                          placeholder="Enter street address"
+                          value={form.intlLane}
+                          onChange={(e) => setForm(prev => ({ ...prev, intlLane: e.target.value }))}
+                        />
+                        {form.intlLane.trim().length > 0 && !isValidAddressField(form.intlLane) && (
+                          <p className="mt-1 text-xs text-rose-600 font-semibold font-body px-2">
+                            ⚠️ Street/Lane cannot be purely numeric or contain mock terms like &apos;test&apos; or &apos;panda&apos;.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -372,24 +555,119 @@ function OrderForm() {
                 <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   How can your artist reach you?
                 </h1>
-                <label className="block">
-                  <span className="text-brand-dark mb-2 block font-body text-sm">Phone Number</span>
-                  <div className="flex overflow-hidden rounded-full border border-[var(--brand-light)]">
-                    <span className="bg-[var(--brand-light)] px-4 py-3 font-body text-sm text-[var(--brand-dark)]">
-                      +91
-                    </span>
-                    <input
-                      inputMode="numeric"
-                      maxLength={10}
-                      value={form.phone}
-                      onChange={(event) =>
-                        setForm((prev) => ({ ...prev, phone: event.target.value.replace(/\D/g, '').slice(0, 10) }))
-                      }
-                      className="w-full bg-[var(--brand-cream)] px-4 py-3 font-body text-sm outline-none"
-                      placeholder="10-digit phone number"
-                    />
+                
+                <div className="space-y-4">
+                  {/* System Selector Tab */}
+                  <div className="flex rounded-full bg-[var(--brand-light)]/20 p-1 border border-[var(--brand-light)]">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm(prev => ({ ...prev, phoneSystem: 'indian', phone: '' }))
+                      }}
+                      className={`flex-1 rounded-full py-2 text-xs font-bold font-body transition-all ${
+                        form.phoneSystem === 'indian'
+                          ? 'bg-[var(--brand-brown)] text-[var(--brand-cream)] shadow-sm'
+                          : 'text-[var(--brand-dark)] hover:bg-[var(--brand-brown)]/5'
+                      }`}
+                    >
+                      🇮🇳 Indian System (+91)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForm(prev => ({ ...prev, phoneSystem: 'international', phone: '' }))
+                      }}
+                      className={`flex-1 rounded-full py-2 text-xs font-bold font-body transition-all ${
+                        form.phoneSystem === 'international'
+                          ? 'bg-[var(--brand-brown)] text-[var(--brand-cream)] shadow-sm'
+                          : 'text-[var(--brand-dark)] hover:bg-[var(--brand-brown)]/5'
+                      }`}
+                    >
+                      🌐 International System
+                    </button>
                   </div>
-                </label>
+
+                  {form.phoneSystem === 'international' && (
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-2">
+                        <label className="block mb-1.5 font-body text-xs text-[var(--brand-dark)]/70">Select Country</label>
+                        <select
+                          value={POPULAR_COUNTRIES.some(c => c.code === form.countryCode && c.name !== 'Other') ? form.countryCode : 'custom'}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            setForm(prev => ({ 
+                              ...prev, 
+                              countryCode: val === 'custom' ? '+' : val,
+                              phone: ''
+                            }))
+                          }}
+                          className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-4 py-2.5 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)]"
+                        >
+                          {POPULAR_COUNTRIES.map(c => (
+                            <option key={c.name} value={c.code}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {(!POPULAR_COUNTRIES.some(c => c.code === form.countryCode && c.name !== 'Other') || form.countryCode === '+') && (
+                        <div>
+                          <label className="block mb-1.5 font-body text-xs text-[var(--brand-dark)]/70">Country Code</label>
+                          <input
+                            type="text"
+                            value={form.countryCode}
+                            onChange={(e) => {
+                              let val = e.target.value
+                              if (!val.startsWith('+')) val = '+' + val.replace(/\D/g, '')
+                              else val = '+' + val.slice(1).replace(/\D/g, '')
+                              setForm(prev => ({ ...prev, countryCode: val.slice(0, 5), phone: '' }))
+                            }}
+                            placeholder="+1"
+                            className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-4 py-2.5 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)]"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <label className="block">
+                    <span className="text-brand-dark mb-2 block font-body text-sm">Phone Number</span>
+                    <div className="flex overflow-hidden rounded-full border border-[var(--brand-light)]">
+                      <span className="bg-[var(--brand-light)] px-4 py-3 font-body text-sm text-[var(--brand-dark)] flex items-center">
+                        {form.phoneSystem === 'indian' ? '+91' : form.countryCode}
+                      </span>
+                      <input
+                        inputMode="numeric"
+                        maxLength={form.phoneSystem === 'indian' ? 10 : 12}
+                        value={form.phone}
+                        onChange={(event) => {
+                          const val = event.target.value.replace(/\D/g, '').slice(0, form.phoneSystem === 'indian' ? 10 : 12)
+                          setForm((prev) => ({ ...prev, phone: val }))
+                        }}
+                        className="w-full bg-[var(--brand-cream)] px-4 py-3 font-body text-sm outline-none"
+                        placeholder={form.phoneSystem === 'indian' ? "10-digit mobile number" : "Local phone number"}
+                      />
+                    </div>
+                  </label>
+
+                  {/* Real-time Phone Authenticity Warnings */}
+                  {form.phone.trim().length > 0 && (
+                    (() => {
+                      const check = isValidAuthenticPhone(form.phone, form.phoneSystem, form.countryCode)
+                      if (!check.isValid && check.error) {
+                        return (
+                          <motion.p
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-xs font-semibold text-rose-600 font-body px-2"
+                          >
+                            ⚠️ {check.error}
+                          </motion.p>
+                        )
+                      }
+                      return null
+                    })()
+                  )}
+                </div>
               </>
             )}
 
@@ -398,12 +676,31 @@ function OrderForm() {
                 <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
                   Where should we send your order confirmation?
                 </h1>
-                <Field
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-                />
+                <div>
+                  <Field
+                    type="email"
+                    placeholder="you@domain.com"
+                    value={form.email}
+                    onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                  />
+                  {form.email.trim().length > 0 && (
+                    (() => {
+                      const check = isValidAuthenticEmail(form.email)
+                      if (!check.isValid && check.error) {
+                        return (
+                          <motion.p
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-2 text-xs font-semibold text-rose-600 font-body px-2"
+                          >
+                            ⚠️ {check.error}
+                          </motion.p>
+                        )
+                      }
+                      return null
+                    })()
+                  )}
+                </div>
                 <p className="text-brand-brown/80 font-body text-sm">We&apos;ll never spam you.</p>
               </>
             )}

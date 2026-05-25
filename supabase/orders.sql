@@ -33,6 +33,7 @@ create table if not exists public.orders (
   -- Gallery quick-order fields
   painting_id integer,
   painting_title text,
+  painting_image text,
 
   -- Find-artist geo-matching fields
   latitude double precision,

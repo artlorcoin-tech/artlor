@@ -209,6 +209,7 @@ create table if not exists public.orders (
   -- Quick-order specifics (null for custom orders)
   painting_id         integer references public.artworks(id) on delete set null,
   painting_title      text default null,
+  painting_image      text default null,
 
   -- Delivery address
   city                text default '',

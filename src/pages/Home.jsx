@@ -105,8 +105,10 @@ function Home() {
       <section className="hero-spotlight content-max relative flex min-h-[calc(100svh-8.6rem)] max-w-5xl flex-col items-center justify-center overflow-hidden rounded-[28px] border border-[rgba(122,74,46,0.12)] text-center sm:min-h-[calc(100svh-10.5rem)] lg:min-h-[calc(100svh-11rem)]">
         <img
           src={publicUrl(galleryImages.calligraphyGoldMuntaza)}
-          alt=""
+          alt="Gilded Script Arabic Calligraphy Painting background"
           aria-hidden="true"
+          loading="eager"
+          decoding="async"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-45"
         />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(244,239,234,0.42),rgba(244,239,234,0.62))]" />
@@ -203,8 +205,10 @@ function Home() {
               >
                 <img
                   src={publicUrl(value.image)}
-                  alt=""
+                  alt={`${value.title} custom painting style showcase`}
                   aria-hidden="true"
+                  loading="lazy"
+                  decoding="async"
                   className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-40"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(244,239,234,0.74),rgba(244,239,234,0.58))]" />
@@ -237,8 +241,10 @@ function Home() {
             >
               <img
                 src={publicUrl(style.image)}
-                alt=""
+                alt={`${style.name} custom art category selection`}
                 aria-hidden="true"
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,rgba(255,255,255,0.18),transparent_30%)]" />

@@ -54,7 +54,7 @@ export default function SEO({
     updateMetaTag('property', 'og:url', canonicalUrl || currentHref)
     updateMetaTag('property', 'og:site_name', 'Artlor')
     updateMetaTag('property', 'og:locale', 'en_US')
-    
+
     const absoluteImageUrl = ogImage.startsWith('http')
       ? ogImage
       : origin + ogImage

@@ -74,3 +74,71 @@ export async function supabaseSelect(table, query = '') {
 
   return response.json()
 }
+
+/**
+ * Send a production-grade OTP to a phone number or email address via Supabase Auth (GoTrue).
+ * Ensure Twilio (for phone) or SMTP (for email) is configured in your Supabase Dashboard.
+ * 
+ * @param {object} params - { phone: string } OR { email: string }
+ * @returns {Promise<boolean>}
+ */
+export async function supabaseSendOtp(params) {
+  const authUrl = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '/auth/v1')
+  const url = `${authUrl}/otp`
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: SUPABASE_ANON,
+    },
+    body: JSON.stringify(params),
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    console.error('[Supabase Auth] Sending OTP failed:', response.status, errorBody)
+    let message = 'Verification code sending failed.'
+    try {
+      const errJson = JSON.parse(errorBody)
+      if (errJson.msg) message = errJson.msg
+    } catch (e) {}
+    throw new Error(message)
+  }
+
+  return true
+}
+
+/**
+ * Verify a production-grade OTP token for a phone number or email address.
+ * 
+ * @param {object} params - { phone: string, token: string, type: 'sms' } OR { email: string, token: string, type: 'signup' }
+ * @returns {Promise<object>} - GoTrue session token
+ */
+export async function supabaseVerifyOtp(params) {
+  const authUrl = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '/auth/v1')
+  const url = `${authUrl}/verify`
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: SUPABASE_ANON,
+    },
+    body: JSON.stringify(params),
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    console.error('[Supabase Auth] Verification failed:', response.status, errorBody)
+    let message = 'Invalid or expired verification code. Please try again.'
+    try {
+      const errJson = JSON.parse(errorBody)
+      if (errJson.msg) message = errJson.msg
+    } catch (e) {}
+    throw new Error(message)
+  }
+
+  const session = await response.json()
+  return session
+}
