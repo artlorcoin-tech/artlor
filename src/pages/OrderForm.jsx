@@ -119,9 +119,9 @@ function OrderForm() {
     if (step === 2) {
       if (!form.artworkSize) return false
       if (form.artworkSize === 'Custom Size') {
-        return form.customSize.trim().length >= 4 && 
+        return form.customSize.trim().length >= 3 && 
                /\d+/.test(form.customSize) && 
-               /(in|inch|cm|mm|x)/i.test(form.customSize)
+               /(in|inch|cm|mm|x|\*|ft|feet)/i.test(form.customSize)
       }
       return true
     }
@@ -314,7 +314,7 @@ function OrderForm() {
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-2 text-xs font-semibold text-rose-600 font-body px-2"
                   >
-                    ⚠️ Please enter an authentic full name (First & Last name, at least 4 letters total). Anonymous values, numbers, and mock names (like &apos;test&apos; or &apos;panda&apos;) are strictly blocked.
+                    ⚠️ Please enter an authentic name (at least 4 letters total). Anonymous values, numbers, and mock names (like &apos;test&apos; or &apos;panda&apos;) are strictly blocked.
                   </motion.p>
                 )}
               </>
@@ -403,9 +403,9 @@ function OrderForm() {
                           setForm((prev) => ({ ...prev, customSize: event.target.value }))
                         }
                       />
-                      {form.customSize.trim().length > 0 && !(form.customSize.trim().length >= 4 && /\d+/.test(form.customSize) && /(in|inch|cm|mm|x)/i.test(form.customSize)) && (
+                      {form.customSize.trim().length > 0 && !(form.customSize.trim().length >= 3 && /\d+/.test(form.customSize) && /(in|inch|cm|mm|x|\*|ft|feet)/i.test(form.customSize)) && (
                         <p className="mt-2 text-xs font-semibold text-rose-600 font-body px-2">
-                          ⚠️ Please enter realistic dimensions (e.g. &quot;30 x 48 inches&quot; or &quot;20x30 cm&quot;). Mock text is blocked.
+                          ⚠️ Please enter realistic dimensions (e.g. &quot;30 * 48 inches&quot;, &quot;30 x 48&quot;, or &quot;20*30 cm&quot;). Mock text is blocked.
                         </p>
                       )}
                     </motion.div>

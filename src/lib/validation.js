@@ -39,7 +39,7 @@ export function isValidAuthenticName(name) {
   if (cleaned.length < 4) return false;
 
   const words = cleaned.split(/\s+/);
-  if (words.length < 2) return false; // First & Last name required
+  if (words.length < 1) return false; // Second name is now optional
 
   for (const word of words) {
     if (word.length < 2) return false;
