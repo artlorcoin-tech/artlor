@@ -5,6 +5,7 @@ import Gallery from './pages/Gallery'
 import Home from './pages/Home'
 import OrderForm from './pages/OrderForm'
 import QuickOrder from './pages/QuickOrder'
+import Dashboard from './pages/Dashboard'
 import EidCelebration from './components/EidCelebration'
 
 function PageTransition({ children }) {
@@ -73,6 +74,7 @@ function AnimatedRoutes() {
           }
         />
 
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

@@ -142,3 +142,25 @@ export async function supabaseVerifyOtp(params) {
   const session = await response.json()
   return session
 }
+
+/**
+ * Fetch and merge rows from custom_orders + quick_orders in parallel.
+ * Returns a single array sorted by created_at descending.
+ *
+ * @param {string} [query] — optional PostgREST query string applied to both tables
+ * @returns {Promise<Array>}
+ */
+export async function supabaseSelectBoth(query = '') {
+  const [custom, quick] = await Promise.all([
+    supabaseSelect('custom_orders', query),
+    supabaseSelect('quick_orders', query),
+  ])
+
+  const withType = [
+    ...custom.map((r) => ({ ...r, _table: 'custom' })),
+    ...quick.map((r) => ({ ...r, _table: 'quick' })),
+  ]
+
+  withType.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  return withType
+}
