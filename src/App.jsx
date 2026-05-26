@@ -5,6 +5,7 @@ import Gallery from './pages/Gallery'
 import Home from './pages/Home'
 import OrderForm from './pages/OrderForm'
 import QuickOrder from './pages/QuickOrder'
+import EidCelebration from './components/EidCelebration'
 
 function PageTransition({ children }) {
   const prefersReducedMotion = useReducedMotion()
@@ -82,6 +83,7 @@ function App() {
   return (
     <div className="min-h-screen">
       <AnimatedRoutes />
+      <EidCelebration />
     </div>
   )
 }
