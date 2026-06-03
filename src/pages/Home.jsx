@@ -103,7 +103,7 @@ function Home() {
 
   return (
     <main className="paper-bg page-pad min-h-screen">
-      <SEO 
+      <SEO
         title="Custom Paintings & Art Commissions Online India"
         description="Commission high-quality, fully custom handpainted artwork from handpicked local Indian artists. Delivered framed and ready to hang in Delhi, Mumbai, Bangalore & across India."
         keywords="custom paintings India, commission art Mumbai, calligraphy painting Delhi, Nikah board calligraphy Bangalore, local artists India, handmade canvas paintings, buy paintings online India"
@@ -154,7 +154,7 @@ function Home() {
             transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className="text-brand-brown/90 mt-4 max-w-2xl px-1 font-body text-sm sm:mt-5 sm:text-lg"
           >
-            Discover handpicked local artists in India. Commission custom canvas paintings, calligraphy boards & modern abstract art. Delivered wall-ready to Delhi, Mumbai, Bangalore, and nationwide.
+            Discover handpicked local artists in India. Commission custom canvas paintings, calligraphy boards & modern abstract art. Delivered wall-ready to Srinagar,Delhi, Mumbai, Bangalore, and nationwide.
           </motion.p>
 
           <motion.div
@@ -168,18 +168,18 @@ function Home() {
                 prefersReducedMotion
                   ? {}
                   : {
-                      y: [0, -5, 0],
-                    }
+                    y: [0, -5, 0],
+                  }
               }
               transition={
                 prefersReducedMotion
                   ? {}
                   : {
-                      duration: 2.1,
-                      ease: 'easeInOut',
-                      repeat: Infinity,
-                      repeatType: 'loop',
-                    }
+                    duration: 2.1,
+                    ease: 'easeInOut',
+                    repeat: Infinity,
+                    repeatType: 'loop',
+                  }
               }
               style={{ willChange: 'transform' }}
               className="inline-flex rounded-full"

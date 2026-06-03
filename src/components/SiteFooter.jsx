@@ -111,7 +111,8 @@ function SiteFooter() {
           <section className="space-y-5">
             <div>
               <h2 className="font-display text-base font-semibold tracking-tight text-[var(--brand-dark)]">
-                Founder: Hammad Riyaz
+                Founders:
+                Hammad Riyaz
               </h2>
               <ul className="mt-2 space-y-1.5 text-xs">
                 {founderLinks.slice(1).map((item) => (
@@ -130,7 +131,7 @@ function SiteFooter() {
             </div>
             <div>
               <h2 className="font-display text-base font-semibold tracking-tight text-[var(--brand-dark)]">
-                Co-Founder: Muneef
+                Muneef
               </h2>
               <ul className="mt-2 space-y-1.5 text-xs">
                 {muneefLinks.slice(1).map((item) => (
