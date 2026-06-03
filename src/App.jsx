@@ -6,6 +6,10 @@ import Home from './pages/Home'
 import OrderForm from './pages/OrderForm'
 import QuickOrder from './pages/QuickOrder'
 import Dashboard from './pages/Dashboard'
+import About from './pages/About'
+import Contact from './pages/Contact'
+import Privacy from './pages/Privacy'
+import Terms from './pages/Terms'
 import EidCelebration from './components/EidCelebration'
 
 function PageTransition({ children }) {
@@ -70,6 +74,38 @@ function AnimatedRoutes() {
           element={
             <PageTransition>
               <Confirm />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <PageTransition>
+              <About />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <PageTransition>
+              <Contact />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/privacy"
+          element={
+            <PageTransition>
+              <Privacy />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/terms"
+          element={
+            <PageTransition>
+              <Terms />
             </PageTransition>
           }
         />

@@ -52,8 +52,8 @@ const homeSchema = {
   "@type": "WebPage",
   "@id": "https://artlor.art/#webpage",
   "url": "https://artlor.art/",
-  "name": "Artlor — Custom Handpainted Art Commissions & Paintings",
-  "description": "Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered framed, stretched, and ready to hang.",
+  "name": "Artlor — Custom Handpainted Art Commissions & Paintings India",
+  "description": "Commission high-quality, fully custom handpainted artwork from handpicked local artists in India. Delivered framed, stretched, and ready to hang on your wall.",
   "isPartOf": {
     "@id": "https://artlor.art/#website"
   }
@@ -86,6 +86,14 @@ const faqSchema = {
         "@type": "Answer",
         "text": "Yes! All custom paintings commissioned through Artlor are delivered fully stretched, framed, and completely wall-ready so you can hang them immediately."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "Do you deliver all over India? What are the shipping charges?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, we ship custom paintings and calligraphy boards to all pincodes across India, including New Delhi, Mumbai, Bangalore, Pune, Hyderabad, Kolkata, Chennai, and other states. Shipping is 100% free, and we package every canvas in reinforced wooden crates or safe shipping tubes."
+      }
     }
   ]
 }
@@ -96,9 +104,9 @@ function Home() {
   return (
     <main className="paper-bg page-pad min-h-screen">
       <SEO 
-        title="Custom Paintings & Local Art Commissions"
-        description="Commission high-quality, fully custom handpainted artwork from handpicked local artists. Delivered framed, stretched, and ready to hang on your wall."
-        keywords="custom paintings, local artists, calligraphy commission, commissioned landscapes, abstract paintings, framed wall art, painting marketplace India"
+        title="Custom Paintings & Art Commissions Online India"
+        description="Commission high-quality, fully custom handpainted artwork from handpicked local Indian artists. Delivered framed and ready to hang in Delhi, Mumbai, Bangalore & across India."
+        keywords="custom paintings India, commission art Mumbai, calligraphy painting Delhi, Nikah board calligraphy Bangalore, local artists India, handmade canvas paintings, buy paintings online India"
         schemaData={[homeSchema, faqSchema]}
       />
       <BrandHeader />
@@ -146,7 +154,7 @@ function Home() {
             transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className="text-brand-brown/90 mt-4 max-w-2xl px-1 font-body text-sm sm:mt-5 sm:text-lg"
           >
-            Discover local artists. Commission custom paintings. Delivered to your door.
+            Discover handpicked local artists in India. Commission custom canvas paintings, calligraphy boards & modern abstract art. Delivered wall-ready to Delhi, Mumbai, Bangalore, and nationwide.
           </motion.p>
 
           <motion.div
@@ -294,6 +302,15 @@ function Home() {
             </summary>
             <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
               Yes! All custom paintings commissioned through Artlor are delivered fully stretched, framed, and completely wall-ready so you can hang them immediately.
+            </p>
+          </details>
+          <details className="group rounded-[20px] bg-white/50 p-5 shadow-sm transition duration-300 hover:bg-white/80 border border-[var(--brand-light)]">
+            <summary className="font-display text-brand-dark text-base sm:text-lg font-semibold cursor-pointer list-none flex justify-between items-center outline-none">
+              Do you deliver all over India? What are the shipping charges?
+              <span className="text-[var(--brand-gold)] font-bold text-xl group-open:rotate-45 transition-transform duration-200">+</span>
+            </summary>
+            <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
+              Yes, we ship custom commissions and calligraphy boards to all pincodes in India (including New Delhi, Mumbai, Bangalore, Pune, Hyderabad, Chennai, Kolkata, and tier-2/3 towns). Shipping is 100% free with no hidden charges, and every package is shipped in a reinforced wooden crate or secure tube.
             </p>
           </details>
         </div>

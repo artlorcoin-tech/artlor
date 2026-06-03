@@ -7,6 +7,8 @@ const links = [
   { label: 'Home', mobileLabel: 'Home', to: '/' },
   { label: 'Gallery', mobileLabel: 'Gallery', to: '/gallery' },
   { label: 'Custom Order', mobileLabel: 'Order', to: '/order' },
+  { label: 'About Us', mobileLabel: 'About', to: '/about' },
+  { label: 'Contact Us', mobileLabel: 'Contact', to: '/contact' },
 ]
 
 function InstagramGlyph() {
