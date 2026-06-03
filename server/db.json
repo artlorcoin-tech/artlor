@@ -1,0 +1,292 @@
+{
+  "artists": [
+    {
+      "name": "Hammad Riyaz",
+      "bio": "Founder of Artlor. Specializes in scenic landscapes and vintage themes.",
+      "categories": [
+        "Landscape",
+        "Still Life"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          77.5946,
+          12.9716
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.9,
+      "completedOrders": 47,
+      "phone": "9876543210",
+      "email": "hammad@artlor.co",
+      "avatar": "",
+      "_id": "0434b22664d72ad5b182d4a6",
+      "createdAt": "2026-06-03T16:49:38.532Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Muntaza Shaheen",
+      "bio": "Calligraphy artist with a passion for gold-leaf and abstract expressions.",
+      "categories": [
+        "Calligraphy",
+        "Abstract"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          77.6101,
+          12.9352
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.8,
+      "completedOrders": 38,
+      "phone": "9876543211",
+      "email": "muntaza@artlor.co",
+      "avatar": "",
+      "_id": "aeb54a146773a6e686802c80",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Maryam Khan",
+      "bio": "Islamic calligraphy and spiritual art. Each piece tells a story.",
+      "categories": [
+        "Calligraphy",
+        "Abstract"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          72.8777,
+          19.076
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.7,
+      "completedOrders": 24,
+      "phone": "9876543212",
+      "email": "maryam@artlor.co",
+      "avatar": "",
+      "_id": "90db2b38eee5e09ef047dae0",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Seebah Fathima",
+      "bio": "Still life and botanical art specialist. Inspired by nature.",
+      "categories": [
+        "Still Life",
+        "Landscape"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          77.209,
+          28.6139
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.6,
+      "completedOrders": 19,
+      "phone": "9876543213",
+      "email": "seebah@artlor.co",
+      "avatar": "",
+      "_id": "7c09a3c01f57b162ea6f6da3",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Arjun Mehta",
+      "bio": "Contemporary abstract artist blending Western and Indian aesthetics.",
+      "categories": [
+        "Abstract",
+        "Modern"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          77.5875,
+          12.985
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.5,
+      "completedOrders": 31,
+      "phone": "9876543214",
+      "email": "arjun@artlor.co",
+      "avatar": "",
+      "_id": "f0d6aa25dd0ef0560cc9398f",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Priya Nair",
+      "bio": "Portrait specialist who captures emotions on canvas.",
+      "categories": [
+        "Portrait",
+        "Still Life"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          76.2711,
+          10.8505
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.8,
+      "completedOrders": 42,
+      "phone": "9876543215",
+      "email": "priya@artlor.co",
+      "avatar": "",
+      "_id": "8514dbb37d9ba5b3b8a739ac",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Ravi Shankar",
+      "bio": "Landscape artist specializing in Himalayan and rural India scenes.",
+      "categories": [
+        "Landscape",
+        "Abstract"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          80.2707,
+          13.0827
+        ]
+      },
+      "isOnline": false,
+      "rating": 4.4,
+      "completedOrders": 15,
+      "phone": "9876543216",
+      "email": "ravi@artlor.co",
+      "avatar": "",
+      "_id": "2c748531f8aeac7832b827a5",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Zainab Ahmed",
+      "bio": "Modern art enthusiast with a focus on geometric abstraction.",
+      "categories": [
+        "Modern",
+        "Abstract"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          73.8567,
+          18.5204
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.6,
+      "completedOrders": 22,
+      "phone": "9876543217",
+      "email": "zainab@artlor.co",
+      "avatar": "",
+      "_id": "9b9538b15e234cfbb870c1bc",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Vikram Singh",
+      "bio": "Traditional calligraphy meets modern design. Multilingual scripts.",
+      "categories": [
+        "Calligraphy",
+        "Portrait"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          75.7873,
+          26.9124
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.7,
+      "completedOrders": 28,
+      "phone": "9876543218",
+      "email": "vikram@artlor.co",
+      "avatar": "",
+      "_id": "454eaf3f3b2d2118b3b96286",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Ananya Iyer",
+      "bio": "Photorealistic portraits and figurative art. Trained in Florence.",
+      "categories": [
+        "Portrait",
+        "Still Life"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          78.4867,
+          17.385
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.9,
+      "completedOrders": 55,
+      "phone": "9876543219",
+      "email": "ananya@artlor.co",
+      "avatar": "",
+      "_id": "34c50711e69179fb42f3203c",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Kabir Das",
+      "bio": "Minimalist landscapes and watercolor specialist.",
+      "categories": [
+        "Landscape",
+        "Modern"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          77.6088,
+          12.954
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.3,
+      "completedOrders": 12,
+      "phone": "9876543220",
+      "email": "kabir@artlor.co",
+      "avatar": "",
+      "_id": "68c266446eb127c538e2feb6",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    },
+    {
+      "name": "Fatima Begum",
+      "bio": "Arabic and Urdu calligraphy art. Gold and ink on handmade paper.",
+      "categories": [
+        "Calligraphy"
+      ],
+      "location": {
+        "type": "Point",
+        "coordinates": [
+          77.57,
+          13.02
+        ]
+      },
+      "isOnline": true,
+      "rating": 4.8,
+      "completedOrders": 33,
+      "phone": "9876543221",
+      "email": "fatima@artlor.co",
+      "avatar": "",
+      "_id": "7efd94da82878b3110b52bfb",
+      "createdAt": "2026-06-03T16:49:38.544Z",
+      "updatedAt": "2026-06-03T16:49:38.544Z"
+    }
+  ],
+  "orders": []
+}

@@ -4,6 +4,11 @@ import { useState } from 'react'
 import BrandHeader from '../components/BrandHeader'
 import SiteFooter from '../components/SiteFooter'
 import SEO from '../components/SEO'
+import { supabaseInsert } from '../lib/supabase'
+import { isValidAuthenticName, isValidAuthenticEmail } from '../lib/validation'
+
+const BLOCKED_WORDS = ['test', 'demo', 'dummy', 'asdf', 'qwerty', 'placeholder', 'foo', 'bar', 'panda']
+
 
 export default function Contact() {
   const prefersReducedMotion = useReducedMotion()
@@ -11,21 +16,63 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name || !formData.email || !formData.message) {
-      alert('Please fill out all required fields.')
+    
+    // Strict backend-style validations before submitting
+    if (!isValidAuthenticName(formData.name)) {
+      alert('Please enter an authentic name. Mock names and repeating characters are blocked.')
+      return
+    }
+
+    const emailCheck = isValidAuthenticEmail(formData.email)
+    if (!emailCheck.isValid) {
+      alert(emailCheck.error)
+      return
+    }
+
+    const msg = formData.message.trim()
+    if (msg.length < 10) {
+      alert('Please enter a detailed message (at least 10 characters).')
+      return
+    }
+
+    const hasBlocked = BLOCKED_WORDS.some(word => 
+      new RegExp('\\b' + word + '\\b', 'i').test(msg)
+    )
+    if (hasBlocked) {
+      alert('Mock messages containing terms like "test", "demo", "asdf" are blocked.')
       return
     }
 
     setSending(true)
-    // Emulate sending (connects to emailjs or simple success trigger)
-    setTimeout(() => {
-      setSending(false)
+    try {
+      await supabaseInsert('contact_inquiries', {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject || '',
+        message: formData.message,
+      })
       setSubmitted(true)
       setFormData({ name: '', email: '', subject: '', message: '' })
-    }, 1200)
+    } catch (err) {
+      console.error('[Contact] Supabase insert failed:', err)
+      alert('Could not submit your inquiry at this moment. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
+
+  // Real-time state validation
+  const emailVal = isValidAuthenticEmail(formData.email)
+  const isMessageValid = formData.message.trim().length >= 10 && !BLOCKED_WORDS.some(word => 
+    new RegExp('\\b' + word + '\\b', 'i').test(formData.message)
+  )
+  const isFormValid = 
+    isValidAuthenticName(formData.name) && 
+    emailVal.isValid && 
+    isMessageValid
+
 
   const origin = window.location.origin
 
@@ -214,8 +261,13 @@ export default function Contact() {
                       placeholder="e.g. Rahul Sharma"
                       className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-5 py-3 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)] focus:ring-2 focus:ring-[var(--brand-brown)]/20"
                     />
+                    {formData.name.trim().length > 0 && !isValidAuthenticName(formData.name) && (
+                      <p className="mt-1.5 text-[11px] font-semibold text-rose-600 font-body px-1">
+                        ⚠️ Please enter an authentic full name. Numbers, mock names (like &apos;test&apos; or &apos;panda&apos;) and repeating characters are blocked.
+                      </p>
+                    )}
                   </div>
-
+ 
                   <div>
                     <label className="block mb-2 font-body text-xs font-semibold text-[var(--brand-dark)]/80">
                       Email Address <span className="text-rose-500">*</span>
@@ -228,8 +280,13 @@ export default function Contact() {
                       placeholder="e.g. rahul@domain.in"
                       className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-5 py-3 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)] focus:ring-2 focus:ring-[var(--brand-brown)]/20"
                     />
+                    {formData.email.trim().length > 0 && !emailVal.isValid && (
+                      <p className="mt-1.5 text-[11px] font-semibold text-rose-600 font-body px-1">
+                        ⚠️ {emailVal.error}
+                      </p>
+                    )}
                   </div>
-
+ 
                   <div>
                     <label className="block mb-2 font-body text-xs font-semibold text-[var(--brand-dark)]/80">
                       Subject
@@ -242,7 +299,7 @@ export default function Contact() {
                       className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-5 py-3 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)] focus:ring-2 focus:ring-[var(--brand-brown)]/20"
                     />
                   </div>
-
+ 
                   <div>
                     <label className="block mb-2 font-body text-xs font-semibold text-[var(--brand-dark)]/80">
                       Message <span className="text-rose-500">*</span>
@@ -255,12 +312,22 @@ export default function Contact() {
                       placeholder="Describe what you would like to discuss..."
                       className="w-full rounded-[20px] border border-[var(--brand-light)] bg-[var(--brand-cream)] px-5 py-3.5 font-body text-sm text-[var(--brand-dark)] outline-none resize-none focus:border-[var(--brand-brown)] focus:ring-2 focus:ring-[var(--brand-brown)]/20"
                     />
+                    {formData.message.trim().length > 0 && formData.message.trim().length < 10 && (
+                      <p className="mt-1.5 text-[11px] font-semibold text-rose-600 font-body px-1">
+                        ⚠️ Message must be at least 10 characters long.
+                      </p>
+                    )}
+                    {formData.message.trim().length > 0 && BLOCKED_WORDS.some(word => new RegExp('\\b' + word + '\\b', 'i').test(formData.message)) && (
+                      <p className="mt-1.5 text-[11px] font-semibold text-rose-600 font-body px-1">
+                        ⚠️ Message contains blocked mock terms (like &apos;test&apos;, &apos;demo&apos; or &apos;placeholder&apos;).
+                      </p>
+                    )}
                   </div>
-
+ 
                   <button
                     type="submit"
-                    disabled={sending}
-                    className="pill-btn pill-btn-primary w-full py-3.5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!isFormValid || sending}
+                    className="pill-btn pill-btn-primary w-full py-3.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {sending ? 'Sending inquiry...' : 'Send Message →'}
                   </button>

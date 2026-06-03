@@ -460,7 +460,9 @@ export default function LocationAutocomplete({ state, city, pincode, onChange })
               city: foundCity, 
               pincode: foundPincode,
               area: foundArea,
-              lane: foundLane
+              lane: foundLane,
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude
             })
           } else {
             setDetectError('Could not determine address from location.')

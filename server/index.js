@@ -78,14 +78,23 @@ async function start() {
   try {
     await mongoose.connect(MONGODB_URI)
     console.log(`[DB] Connected to MongoDB: ${MONGODB_URI}`)
+  } catch (err) {
+    console.warn(`[DB] MongoDB connection failed: ${err.message}`)
+    console.warn(`[DB] Falling back to local FileDB (JSON file-based database)`)
+    global.isMockDb = true
+  }
 
+  try {
     httpServer.listen(PORT, () => {
       console.log(`[Server] Artlor matching server running on http://localhost:${PORT}`)
       console.log(`[Server] Socket.io ready for real-time connections`)
       console.log(`[Server] CORS allowed: ${CLIENT_URL}`)
+      if (global.isMockDb) {
+        console.log(`[Server] Running in offline MOCK database mode (db.json file-based backup)`)
+      }
     })
   } catch (err) {
-    console.error('[Server] Failed to start:', err.message)
+    console.error('[Server] Failed to start server:', err.message)
     process.exit(1)
   }
 }

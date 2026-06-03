@@ -167,7 +167,13 @@ async function seed() {
   try {
     await mongoose.connect(MONGODB_URI)
     console.log('[Seed] Connected to MongoDB')
+  } catch (err) {
+    console.warn(`[Seed] MongoDB connection failed: ${err.message}`)
+    console.warn(`[Seed] Falling back to seeding local FileDB (db.json)`)
+    global.isMockDb = true
+  }
 
+  try {
     // Clear existing artists
     await Artist.deleteMany({})
     console.log('[Seed] Cleared existing artists')
@@ -179,11 +185,13 @@ async function seed() {
       console.log(`  ✓ ${a.name} — ${a.categories.join(', ')} — [${a.location.coordinates}]`)
     })
 
-    // Ensure indexes are created
-    await Artist.ensureIndexes()
-    console.log('[Seed] Geospatial indexes created')
-
-    await mongoose.disconnect()
+    if (!global.isMockDb) {
+      // Ensure indexes are created
+      await Artist.ensureIndexes()
+      console.log('[Seed] Geospatial indexes created')
+      await mongoose.disconnect()
+    }
+    
     console.log('[Seed] Done!')
   } catch (err) {
     console.error('[Seed] Error:', err.message)

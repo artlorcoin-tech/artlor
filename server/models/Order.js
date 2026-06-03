@@ -106,6 +106,24 @@ const orderSchema = new mongoose.Schema(
 // Index for geo queries on customer location
 orderSchema.index({ customerLocation: '2dsphere' })
 
-const Order = mongoose.model('Order', orderSchema)
+const OrderMongoose = mongoose.model('Order', orderSchema)
+
+// Proxy wrapper to support seamless fallback to Mock database if MongoDB is offline
+import { MockOrderModel } from '../lib/fileDb.js'
+
+const Order = new Proxy(OrderMongoose, {
+  get(target, prop) {
+    if (global.isMockDb) {
+      return MockOrderModel[prop]
+    }
+    return Reflect.get(target, prop)
+  },
+  construct(target, argumentsList) {
+    if (global.isMockDb) {
+      return new MockOrderModel(...argumentsList)
+    }
+    return new OrderMongoose(...argumentsList)
+  }
+})
 
 export default Order
