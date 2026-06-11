@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 140" width="100%" height="100%">
+  <defs>
+    <!-- Brand Gradients -->
+    <linearGradient id="brushPrimary" x1="0%" y1="100%" x2="50%" y2="0%">
+      <stop offset="0%" stop-color="#5A331E" />
+      <stop offset="100%" stop-color="#7A4A2E" />
+    </linearGradient>
+    <linearGradient id="brushSecondary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C4916A" />
+      <stop offset="100%" stop-color="#7A4A2E" />
+    </linearGradient>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&amp;family=DM+Sans:wght@500&amp;display=swap');
+      .wordmark {
+        font-family: 'Cormorant Garamond', 'Playfair Display', serif;
+        font-size: 80px;
+        font-weight: 600;
+        fill: #7A4A2E;
+        letter-spacing: 1.5px;
+      }
+      .tagline {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        fill: #C4916A;
+        letter-spacing: 9.5px;
+        text-transform: uppercase;
+      }
+    </style>
+  </defs>
+
+  <!-- Logo Icon: The Letter A styled as a paint brush tip -->
+  <g id="logoIcon" transform="translate(15, 6)">
+    <!-- Left Pillar (Solid Brush Stroke) -->
+    <path d="M 42 115 C 43 100, 48 72, 66 43 C 71 35, 77 28, 83 22 C 86 19, 89 17, 91 15 C 91 15, 92 14, 93 14 L 95 16 C 95 16, 92 22, 88 32 C 82 50, 77 75, 74 115 Z" fill="url(#brushPrimary)" />
+    
+    <!-- Right Pillar (Textured Bristles/Dynamic Sweep) -->
+    <path d="M 93 14 C 93 14, 99 21, 106 29 C 117 42, 126 62, 134 85 C 141 102, 144 116, 141 120 C 137 124, 129 120, 122 113 C 111 102, 102 85, 95 68 Z" fill="url(#brushSecondary)" />
+    
+    <!-- Crossbar (Horizontal Paint Swipe) -->
+    <path d="M 58 78 C 66 75, 82 73, 104 77 C 110 78, 116 79, 118 80 C 120 81, 118 85, 111 86 C 95 89, 72 88, 58 83 C 56 82, 56 79, 58 78 Z" fill="#C4916A" />
+
+    <!-- Paint Teardrop Droplet -->
+    <path d="M 111 84 Q 111 96, 107 101 A 5 5 0 1 0 115 101 Q 111 96, 111 84 Z" fill="#C4916A" />
+  </g>
+
+  <!-- Typography Wordmark and Tagline -->
+  <text x="175" y="88" class="wordmark">Artlor</text>
+  <text x="178" y="116" class="tagline">art commissions</text>
+</svg>

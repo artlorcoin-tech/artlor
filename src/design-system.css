@@ -1,0 +1,284 @@
+/* 
+  Artlor Design System (artlor.art)
+  ---------------------------------
+  Core tokens, color variables, typography pairing, and premium utility classes.
+*/
+
+
+:root {
+  /* Core Color Palette Tokens */
+  --color-primary: #7A4A2E;         /* Luxurious Brown */
+  --color-primary-rgb: 122, 74, 46;
+  --color-secondary: #C4916A;       /* Terracotta */
+  --color-secondary-rgb: 196, 145, 106;
+  --color-accent: #F5E6D3;          /* Elegant Ivory */
+  --color-accent-rgb: 245, 230, 211;
+  --color-background: #FDFAF6;      /* Warm White */
+  --color-background-rgb: 253, 250, 246;
+
+  /* Secondary/Utility Color Tokens */
+  --color-text-main: #2A1A10;       /* High-contrast Warm Charcoal */
+  --color-text-muted: #6E5A4E;      /* Muted Medium Earth Brown */
+  --color-border-subtle: rgba(122, 74, 46, 0.12);
+  --color-white: #FFFFFF;
+
+  /* Typography */
+  --font-headings: 'Cormorant Garamond', 'Playfair Display', serif;
+  --font-body: 'DM Sans', 'Inter', sans-serif;
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 8rem;
+
+  /* Animation & Transitions */
+  --transition-luxe: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Elevation Shadows */
+  --shadow-luxe-sm: 0 4px 20px rgba(122, 74, 46, 0.04);
+  --shadow-luxe-md: 0 12px 36px rgba(122, 74, 46, 0.08);
+  --shadow-luxe-lg: 0 24px 64px rgba(122, 74, 46, 0.12);
+  --shadow-inset-white: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* 2. Base Helpers */
+.font-heading {
+  font-family: var(--font-headings);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* 3. Section & Layout Container Utilities */
+.section-container-luxe {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (max-width: 640px) {
+  .section-container-luxe {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+.section-luxe-padding {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .section-luxe-padding {
+    padding-top: calc(var(--spacing-lg) * 0.6);
+    padding-bottom: calc(var(--spacing-lg) * 0.6);
+  }
+}
+
+/* 4. Navigation Header Utilities */
+.nav-header-luxe {
+  position: sticky;
+  top: 1.5rem;
+  z-index: 1000;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  background: rgba(253, 250, 246, 0.82);
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 9999px;
+  padding: 0.6rem 1.8rem;
+  box-shadow: var(--shadow-luxe-sm), var(--shadow-inset-white);
+  transition: var(--transition-luxe);
+}
+
+.nav-header-luxe:hover {
+  border-color: rgba(122, 74, 46, 0.22);
+  box-shadow: var(--shadow-luxe-md), var(--shadow-inset-white);
+}
+
+.nav-link-luxe {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text-dark);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 1.15rem;
+  border-radius: 9999px;
+  transition: var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-link-luxe:hover {
+  color: var(--color-primary);
+  background: rgba(196, 145, 106, 0.08);
+}
+
+.nav-link-luxe.active {
+  color: var(--color-primary);
+  background: var(--color-accent);
+}
+
+/* 5. Card Style Utilities */
+.card-luxe {
+  background: var(--color-background);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 24px;
+  padding: 2.25rem;
+  box-shadow: var(--shadow-luxe-sm);
+  transition: var(--transition-luxe);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient design accent inside cards */
+.card-luxe::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(196, 145, 106, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  transition: var(--transition-luxe);
+}
+
+/* Interactive tilt-like hover state */
+.card-luxe-interactive {
+  cursor: pointer;
+}
+
+.card-luxe-interactive:hover {
+  transform: translateY(-6px);
+  border-color: rgba(122, 74, 46, 0.24);
+  box-shadow: var(--shadow-luxe-lg);
+}
+
+.card-luxe-interactive:hover::before {
+  width: 220px;
+  height: 220px;
+}
+
+.card-luxe-title {
+  font-family: var(--font-headings);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+
+.card-luxe-body {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* 6. Button Style Utilities */
+.btn-luxe {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.9rem 2.25rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: var(--transition-luxe);
+  text-decoration: none;
+  border: none;
+  outline: none;
+}
+
+.btn-luxe:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+
+/* Primary Filled Button Style */
+.btn-luxe-primary {
+  background: var(--color-primary);
+  color: var(--color-background);
+  box-shadow: 0 8px 24px rgba(122, 74, 46, 0.22);
+}
+
+.btn-luxe-primary:hover {
+  background: #5A331E; /* Deeper brown */
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(122, 74, 46, 0.32);
+}
+
+.btn-luxe-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(122, 74, 46, 0.2);
+}
+
+.btn-luxe-primary:disabled {
+  background: #D5C8BE;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary Outlined Button Style */
+.btn-luxe-secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.btn-luxe-secondary:hover {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(122, 74, 46, 0.12);
+}
+
+.btn-luxe-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-luxe-secondary:disabled {
+  border-color: #D5C8BE;
+  color: #D5C8BE;
+  background: transparent;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Accent Glow Badge */
+.badge-luxe {
+  display: inline-flex;
+  padding: 0.4rem 1.15rem;
+  border-radius: 9999px;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(122, 74, 46, 0.15);
+}

@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artlor — Custom Handpainted Art Commissions from India</title>
+  <meta name="description" content="Artlor is a custom handpainted art commission brand from India. Transform your walls with bespoke landscapes, calligraphy, abstracts, and still life pieces painted by talented artists." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+
+
+  <style>
+    /* ───────── RESET & BASE ───────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      /* brand palette — warm, earthy, zero cold tones */
+      --brand:        #7A4A2E;
+      --brand-dark:   #5C351E;
+      --brand-light:  #A66B45;
+      --terracotta:   #C4704E;
+      --sienna:       #B85C38;
+      --ivory:        #FFF8F0;
+      --cream:        #F5EDE4;
+      --sand:         #E8D8C8;
+      --espresso:     #3D2216;
+      --warm-black:   #2A1810;
+      --warm-gray:    #8B7A6E;
+      --gold:         #D4A353;
+
+      --ff-heading: 'Playfair Display', 'Georgia', serif;
+      --ff-body:    'Inter', 'Segoe UI', sans-serif;
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--ff-body);
+      color: var(--warm-black);
+      background: var(--ivory);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+    button { font-family: inherit; cursor: pointer; border: none; }
+    ul { list-style: none; }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ───────── STICKY HEADER ───────── */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0.9rem 0;
+      background: rgba(255, 248, 240, 0.85);
+      backdrop-filter: blur(18px) saturate(1.6);
+      -webkit-backdrop-filter: blur(18px) saturate(1.6);
+      border-bottom: 1px solid rgba(122, 74, 46, 0.08);
+      transition: box-shadow 0.4s ease, padding 0.4s ease;
+    }
+    .header.scrolled {
+      box-shadow: 0 4px 30px rgba(61, 34, 22, 0.1);
+      padding: 0.6rem 0;
+    }
+    .header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: var(--ff-heading);
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: 0.02em;
+    }
+    .logo span { color: var(--terracotta); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.2rem;
+    }
+    .nav-links a {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--espresso);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0%; height: 2px;
+      background: var(--terracotta);
+      border-radius: 2px;
+      transition: width 0.35s var(--ease-out-expo);
+    }
+    .nav-links a:hover { color: var(--brand); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--brand);
+      color: var(--ivory) !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 100px;
+      font-size: 0.82rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.06em !important;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+    }
+
+    /* mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      padding: 4px;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--espresso);
+      border-radius: 2px;
+      transition: 0.3s ease;
+    }
+
+    /* ───────── HERO ───────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(196, 112, 78, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(122, 74, 46, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(212, 163, 83, 0.08) 0%, transparent 60%),
+        linear-gradient(170deg, var(--ivory) 0%, var(--cream) 40%, var(--sand) 100%);
+    }
+
+    /* decorative painted blobs */
+    .hero-blob {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-blob-1 {
+      top: -80px; right: -120px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(184, 92, 56, 0.12) 0%, transparent 70%);
+      border-radius: 62% 38% 46% 54% / 60% 44% 56% 40%;
+      animation: float 14s ease-in-out infinite;
+    }
+    .hero-blob-2 {
+      bottom: -60px; left: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(212, 163, 83, 0.14) 0%, transparent 70%);
+      border-radius: 44% 56% 62% 38% / 52% 60% 40% 48%;
+      animation: float 18s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33%      { transform: translate(20px, -30px) rotate(3deg); }
+      66%      { transform: translate(-15px, 15px) rotate(-2deg); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      padding: 0 2rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(122, 74, 46, 0.1);
+      border: 1px solid rgba(122, 74, 46, 0.15);
+      padding: 0.45rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.2s both;
+    }
+    .hero-badge::before {
+      content: '🎨';
+      font-size: 0.9rem;
+    }
+
+    .hero h1 {
+      font-family: var(--ff-heading);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.08;
+      color: var(--espresso);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.35s both;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--brand);
+      position: relative;
+    }
+    .hero h1 em::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: -4px; right: -4px;
+      height: 12px;
+      background: rgba(212, 163, 83, 0.3);
+      border-radius: 4px;
+      z-index: -1;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 1.8vw, 1.2rem);
+      color: var(--warm-gray);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      font-weight: 300;
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.5s both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.65s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      border-radius: 100px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: all 0.35s var(--ease-out-expo);
+    }
+    .btn-primary {
+      background: var(--brand);
+      color: var(--ivory);
+      box-shadow: 0 4px 20px rgba(122, 74, 46, 0.35);
+    }
+    .btn-primary:hover {
+      background: var(--brand-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(122, 74, 46, 0.4);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--brand);
+      border: 2px solid rgba(122, 74, 46, 0.3);
+    }
+    .btn-secondary:hover {
+      border-color: var(--brand);
+      background: rgba(122, 74, 46, 0.06);
+      transform: translateY(-2px);
+    }
+
+    /* scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--warm-gray);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      animation: fadeUp 0.8s var(--ease-out-expo) 0.9s both;
+    }
+    .scroll-indicator .mouse {
+      width: 22px; height: 34px;
+      border: 2px solid var(--warm-gray);
+      border-radius: 12px;
+      position: relative;
+    }
+    .scroll-indicator .mouse::after {
+      content: '';
+      position: absolute;
+      top: 6px; left: 50%;
+      width: 3px; height: 8px;
+      margin-left: -1.5px;
+      background: var(--brand-light);
+      border-radius: 3px;
+      animation: scrollDot 2s ease-in-out infinite;
+    }
+    @keyframes scrollDot {
+      0%, 100% { opacity: 1; transform: translateY(0); }
+      50%      { opacity: 0.3; transform: translateY(8px); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ───────── SECTION SHARED ───────── */
+    section { padding: 6rem 0; }
+
+    .section-label {
+      font-family: var(--ff-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--terracotta);
+      margin-bottom: 0.8rem;
+    }
+    .section-title {
+      font-family: var(--ff-heading);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 700;
+      color: var(--espresso);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--warm-gray);
+      max-width: 540px;
+      font-weight: 300;
+      line-height: 1.7;
+    }
+
+    /* ───────── ART STYLES STRIP ───────── */
+    .styles-section {
+      background: var(--cream);
+      padding: 5rem 0 4rem;
+      overflow: hidden;
+    }
+    .styles-section .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .styles-section .section-desc {
+      margin: 0 auto;
+    }
+
+    .styles-track {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 2rem 2rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      /* center the cards on large screens */
+      justify-content: flex-start;
+    }
+    .styles-track::-webkit-scrollbar { display: none; }
+
+    .style-card {
+      flex: 0 0 280px;
+      scroll-snap-align: center;
+      position: relative;
+      height: 380px;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.5s var(--ease-out-expo), box-shadow 0.5s ease;
+    }
+    .style-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 50px rgba(61, 34, 22, 0.2);
+    }
+
+    .style-card-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.6s var(--ease-out-expo);
+    }
+    .style-card:hover .style-card-bg {
+      transform: scale(1.08);
+    }
+
+    /* each card has a unique painted gradient */
+    .style-card[data-style="landscape"] .style-card-bg {
+      background: linear-gradient(135deg, #8B9E6B 0%, #5C7A3A 30%, #A4B77D 60%, #6D8B44 100%);
+    }
+    .style-card[data-style="calligraphy"] .style-card-bg {
+      background: linear-gradient(135deg, var(--warm-black) 0%, #4A3428 40%, #2A1810 70%, #5C351E 100%);
+    }
+    .style-card[data-style="abstract"] .style-card-bg {
+      background: linear-gradient(135deg, var(--terracotta) 0%, #D4A353 30%, var(--sienna) 60%, #E8B878 100%);
+    }
+    .style-card[data-style="stilllife"] .style-card-bg {
+      background: linear-gradient(135deg, #A66B45 0%, #C4884E 30%, #8B5E3C 60%, #D4A87A 100%);
+    }
+
+    /* brush-stroke overlay on hover */
+    .style-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(ellipse at 30% 70%, rgba(255,255,255,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.15) 0%, transparent 40%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .style-card:hover::before { opacity: 1; }
+
+    /* brush-stroke texture accent */
+    .style-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -20px; right: -20px;
+      height: 120px;
+      z-index: 2;
+      background: linear-gradient(to top, rgba(255,248,240,0.95) 0%, rgba(255,248,240,0.6) 40%, transparent 100%);
+      border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+      transform: scaleX(1.1);
+      transition: height 0.5s var(--ease-out-expo);
+    }
+    .style-card:hover::after { height: 140px; }
+
+    .style-card-content {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 3;
+      padding: 1.5rem;
+    }
+    .style-card-content h3 {
+      font-family: var(--ff-heading);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--espresso);
+      margin-bottom: 0.3rem;
+    }
+    .style-card-content p {
+      font-size: 0.82rem;
+      color: var(--warm-gray);
+      font-weight: 400;
+    }
+
+    /* painted brush-stroke decorative line on each card */
+    .style-card-content::before {
+      content: '';
+      display: block;
+      width: 40px; height: 3px;
+      background: var(--terracotta);
+      border-radius: 3px;
+      margin-bottom: 0.8rem;
+      transition: width 0.4s var(--ease-out-expo);
+    }
+    .style-card:hover .style-card-content::before {
+      width: 60px;
+      background: var(--brand);
+    }
+
+    /* ───────── HOW IT WORKS ───────── */
+    .how-section {
+      background: var(--ivory);
+    }
+    .how-section .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .how-section .section-desc {
+      margin: 0 auto;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      position: relative;
+    }
+
+    /* connecting line between steps */
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 48px;
+      left: calc(16.66% + 48px);
+      right: calc(16.66% + 48px);
+      height: 2px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--sand) 0px,
+        var(--sand) 8px,
+        transparent 8px,
+        transparent 16px
+      );
+    }
+
+    .step {
+      text-align: center;
+      position: relative;
+    }
+    .step-icon {
+      width: 96px; height: 96px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, rgba(122,74,46,0.08) 0%, rgba(196,112,78,0.12) 100%);
+      border: 2px solid rgba(122,74,46,0.1);
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      transition: transform 0.4s var(--ease-out-expo), background 0.4s ease, border-color 0.4s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .step:hover .step-icon {
+      transform: translateY(-6px) rotate(-3deg);
+      background: linear-gradient(135deg, rgba(122,74,46,0.14) 0%, rgba(196,112,78,0.2) 100%);
+      border-color: rgba(122,74,46,0.25);
+    }
+
+    .step-number {
+      position: absolute;
+      top: -8px; right: -4px;
+      width: 28px; height: 28px;
+      background: var(--brand);
+      color: var(--ivory);
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .step h3 {
+      font-family: var(--ff-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--espresso);
+      margin-bottom: 0.6rem;
+    }
+    .step p {
+      font-size: 0.92rem;
+      color: var(--warm-gray);
+      line-height: 1.6;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    /* ───────── ARTIST SPOTLIGHT ───────── */
+    .artists-section {
+      background: var(--espresso);
+      color: var(--ivory);
+      position: relative;
+      overflow: hidden;
+    }
+    .artists-section::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(212,163,83,0.08) 0%, transparent 60%);
+      border-radius: 50%;
+    }
+
+    .artists-section .section-label { color: var(--gold); }
+    .artists-section .section-title { color: var(--ivory); }
+    .artists-section .section-desc { color: rgba(255,248,240,0.6); }
+    .artists-section .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .artists-section .section-desc { margin: 0 auto; }
+
+    .artists-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+
+    .artist-card {
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      border-radius: 20px;
+      background: rgba(255,248,240,0.04);
+      border: 1px solid rgba(255,248,240,0.06);
+      transition: all 0.4s var(--ease-out-expo);
+    }
+    .artist-card:hover {
+      background: rgba(255,248,240,0.08);
+      border-color: rgba(212,163,83,0.2);
+      transform: translateY(-6px);
+    }
+
+    .artist-avatar {
+      width: 100px; height: 100px;
+      margin: 0 auto 1.2rem;
+      border-radius: 50%;
+      position: relative;
+      overflow: hidden;
+      border: 3px solid rgba(212,163,83,0.3);
+      transition: border-color 0.3s ease;
+    }
+    .artist-card:hover .artist-avatar {
+      border-color: var(--gold);
+    }
+
+    .artist-avatar-inner {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-family: var(--ff-heading);
+      font-weight: 700;
+      color: var(--ivory);
+    }
+
+    .artist-card:nth-child(1) .artist-avatar-inner {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--terracotta) 100%);
+    }
+    .artist-card:nth-child(2) .artist-avatar-inner {
+      background: linear-gradient(135deg, var(--sienna) 0%, var(--gold) 100%);
+    }
+    .artist-card:nth-child(3) .artist-avatar-inner {
+      background: linear-gradient(135deg, var(--brand-light) 0%, var(--brand) 100%);
+    }
+    .artist-card:nth-child(4) .artist-avatar-inner {
+      background: linear-gradient(135deg, var(--terracotta) 0%, var(--sienna) 100%);
+    }
+
+    .artist-name {
+      font-family: var(--ff-heading);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--ivory);
+      margin-bottom: 0.3rem;
+    }
+    .artist-specialty {
+      font-size: 0.82rem;
+      color: rgba(255,248,240,0.5);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+    .artist-desc {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: rgba(255,248,240,0.45);
+      line-height: 1.6;
+    }
+
+    /* ───────── TESTIMONIALS ───────── */
+    .testimonials-section {
+      background: var(--cream);
+      overflow: hidden;
+    }
+    .testimonials-section .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+    .testimonials-section .section-desc { margin: 0 auto; }
+
+    .testimonials-track {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1rem 2rem 2rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .testimonials-track::-webkit-scrollbar { display: none; }
+
+    .testimonial-card {
+      flex: 0 0 360px;
+      scroll-snap-align: center;
+      background: var(--ivory);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid rgba(122,74,46,0.08);
+      transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s ease;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(61,34,22,0.08);
+    }
+
+    .testimonial-stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 1rem;
+    }
+    .testimonial-stars span {
+      color: var(--gold);
+      font-size: 1rem;
+    }
+
+    .testimonial-text {
+      font-family: var(--ff-heading);
+      font-size: 1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--espresso);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .testimonial-text::before {
+      content: '"';
+      font-family: var(--ff-heading);
+      font-size: 3rem;
+      color: rgba(122,74,46,0.15);
+      position: absolute;
+      top: -10px; left: -5px;
+      line-height: 1;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .testimonial-author-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ivory);
+      background: var(--brand);
+    }
+    .testimonial-author-info h4 {
+      font-family: var(--ff-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--espresso);
+    }
+    .testimonial-author-info p {
+      font-size: 0.75rem;
+      color: var(--warm-gray);
+    }
+
+    /* ───────── CTA BANNER ───────── */
+    .cta-section {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 50%, var(--espresso) 100%);
+      text-align: center;
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 50%, rgba(212,163,83,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 80%, rgba(255,248,240,0.05) 0%, transparent 40%);
+    }
+    .cta-section .container { position: relative; z-index: 1; }
+    .cta-section h2 {
+      font-family: var(--ff-heading);
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      color: var(--ivory);
+      margin-bottom: 1rem;
+    }
+    .cta-section p {
+      font-size: 1.05rem;
+      color: rgba(255,248,240,0.65);
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+    .btn-cta-light {
+      background: var(--ivory);
+      color: var(--brand);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .btn-cta-light:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    /* ───────── FOOTER ───────── */
+    .footer {
+      background: var(--warm-black);
+      color: rgba(255,248,240,0.5);
+      padding: 4rem 0 2rem;
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-brand .logo {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    .footer-brand p {
+      font-size: 0.88rem;
+      line-height: 1.7;
+      max-width: 300px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--ff-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ivory);
+      margin-bottom: 1.2rem;
+    }
+    .footer-col ul { display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-col a {
+      font-size: 0.85rem;
+      transition: color 0.3s ease;
+    }
+    .footer-col a:hover { color: var(--gold); }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,248,240,0.08);
+      padding-top: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78rem;
+    }
+    .footer-socials {
+      display: flex;
+      gap: 1rem;
+    }
+    .footer-socials a {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,248,240,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+    .footer-socials a:hover {
+      background: rgba(212,163,83,0.2);
+      transform: translateY(-2px);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--ivory);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--brand-light);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--brand);
+    }
+
+    /* Lenis Smooth Scroll Configuration */
+    html.lenis {
+      height: auto;
+    }
+    .lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+    .lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    .lenis-stopped {
+      overflow: hidden;
+    }
+    .lenis-scrolling iframe {
+      pointer-events: none;
+    }
+
+    /* GSAP Initial States for Smooth Staggered Load */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    /* Parallax Blob dynamic support */
+    .hero-blob {
+      will-change: transform;
+    }
+
+    /* ───────── RESPONSIVE ───────── */
+    @media (max-width: 1024px) {
+      .artists-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .menu-toggle { display: flex; }
+
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: var(--ivory);
+        padding: 1.5rem 2rem;
+        gap: 1rem;
+        border-bottom: 1px solid var(--sand);
+        box-shadow: 0 10px 30px rgba(61,34,22,0.1);
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .steps::before { display: none; }
+
+      .artists-grid { grid-template-columns: 1fr; max-width: 340px; margin: 0 auto; }
+
+      .style-card { flex: 0 0 240px; height: 320px; }
+      .testimonial-card { flex: 0 0 300px; }
+
+      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════ HEADER ═══════ -->
+  <header class="header" id="header">
+    <div class="container">
+      <a href="#" class="logo">art<span>lor</span></a>
+      <nav class="nav-links" id="navLinks">
+        <a href="#styles">Styles</a>
+        <a href="#how">How It Works</a>
+        <a href="#artists">Artists</a>
+        <a href="#testimonials">Reviews</a>
+        <a href="#commission" class="nav-cta">Commission Now</a>
+      </nav>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════ HERO ═══════ -->
+  <section class="hero" id="hero">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Handpainted in India</div>
+      <h1>Art that lives on<br /><em>your walls</em></h1>
+      <p class="hero-sub">
+        Commission bespoke, handpainted artwork crafted with love by talented
+        Indian artists. Every brushstroke tells your story.
+      </p>
+      <div class="hero-buttons">
+        <a href="#styles" class="btn btn-primary">
+          <span>Explore Gallery</span>
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a href="#commission" class="btn btn-secondary">Start a Commission</a>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="mouse"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ═══════ ART STYLES ═══════ -->
+  <section class="styles-section" id="styles">
+    <div class="section-header reveal">
+      <p class="section-label">Our Specialties</p>
+      <h2 class="section-title">Painted With Soul</h2>
+      <p class="section-desc">
+        From serene landscapes to expressive abstracts — choose the style
+        that speaks to you. Each piece is one of a kind.
+      </p>
+    </div>
+
+    <div class="styles-track">
+      <div class="style-card" data-style="landscape">
+        <div class="style-card-bg"></div>
+        <div class="style-card-content">
+          <h3>Landscape</h3>
+          <p>Breathtaking vistas & nature</p>
+        </div>
+      </div>
+
+      <div class="style-card" data-style="calligraphy">
+        <div class="style-card-bg"></div>
+        <div class="style-card-content">
+          <h3>Calligraphy</h3>
+          <p>Elegant script & lettering</p>
+        </div>
+      </div>
+
+      <div class="style-card" data-style="abstract">
+        <div class="style-card-bg"></div>
+        <div class="style-card-content">
+          <h3>Abstract</h3>
+          <p>Emotion through form & color</p>
+        </div>
+      </div>
+
+      <div class="style-card" data-style="stilllife">
+        <div class="style-card-bg"></div>
+        <div class="style-card-content">
+          <h3>Still Life</h3>
+          <p>Beauty in everyday objects</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ HOW IT WORKS ═══════ -->
+  <section class="how-section" id="how">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-label">The Process</p>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-desc">
+          From your idea to a masterpiece on your wall — in three simple steps.
+        </p>
+      </div>
+
+      <div class="steps reveal">
+        <div class="step">
+          <div class="step-icon">
+            <span class="step-number">1</span>
+            💬
+          </div>
+          <h3>Share Your Vision</h3>
+          <p>Tell us about the piece you dream of — the style, the size, the mood, the colours. We listen.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-icon">
+            <span class="step-number">2</span>
+            🎨
+          </div>
+          <h3>We Paint It</h3>
+          <p>Your assigned artist brings it to life by hand, sending you progress previews along the way.</p>
+        </div>
+
+        <div class="step">
+          <div class="step-icon">
+            <span class="step-number">3</span>
+            📦
+          </div>
+          <h3>Delivered to You</h3>
+          <p>Your finished artwork is carefully packaged and shipped to your doorstep, anywhere in the world.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ ARTIST SPOTLIGHT ═══════ -->
+  <section class="artists-section" id="artists">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-label">Meet the Creators</p>
+        <h2 class="section-title">Our Artists</h2>
+        <p class="section-desc">
+          Talented hands. Unique perspectives. Every artist brings their own magic.
+        </p>
+      </div>
+
+      <div class="artists-grid reveal">
+        <div class="artist-card">
+          <div class="artist-avatar">
+            <div class="artist-avatar-inner">H</div>
+          </div>
+          <h3 class="artist-name">Hammad</h3>
+          <p class="artist-specialty">Landscapes & Nature</p>
+          <p class="artist-desc">Captures the raw beauty of mountains, rivers, and open skies with sweeping brushwork.</p>
+        </div>
+
+        <div class="artist-card">
+          <div class="artist-avatar">
+            <div class="artist-avatar-inner">M</div>
+          </div>
+          <h3 class="artist-name">Maryam</h3>
+          <p class="artist-specialty">Calligraphy & Script</p>
+          <p class="artist-desc">Blends traditional Urdu calligraphy with modern compositions that feel timeless.</p>
+        </div>
+
+        <div class="artist-card">
+          <div class="artist-avatar">
+            <div class="artist-avatar-inner">M</div>
+          </div>
+          <h3 class="artist-name">Muntaza</h3>
+          <p class="artist-specialty">Abstract Expressions</p>
+          <p class="artist-desc">Creates bold, emotionally charged abstracts that turn walls into conversations.</p>
+        </div>
+
+        <div class="artist-card">
+          <div class="artist-avatar">
+            <div class="artist-avatar-inner">S</div>
+          </div>
+          <h3 class="artist-name">Seebah</h3>
+          <p class="artist-specialty">Still Life & Realism</p>
+          <p class="artist-desc">Finds extraordinary beauty in ordinary moments — petals, porcelain, and sunlight.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ TESTIMONIALS ═══════ -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="section-header reveal">
+      <p class="section-label">Happy Walls</p>
+      <h2 class="section-title">What Our Clients Say</h2>
+      <p class="section-desc">
+        Real stories from real people who trusted Artlor with their walls.
+      </p>
+    </div>
+
+    <div class="testimonials-track">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-text">
+          The landscape painting Hammad created for our living room is absolutely breathtaking. Guests always ask about it. Worth every rupee!
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-author-avatar">R</div>
+          <div class="testimonial-author-info">
+            <h4>Rohit S.</h4>
+            <p>Mumbai, India</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-text">
+          Maryam's calligraphy piece is the soul of our home. She perfectly captured what we envisioned — elegant, powerful, and deeply personal.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-author-avatar">A</div>
+          <div class="testimonial-author-info">
+            <h4>Aisha K.</h4>
+            <p>Hyderabad, India</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-text">
+          I gifted a custom abstract piece to my parents and they were in tears. The progress updates made the whole experience magical. Highly recommend Artlor!
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-author-avatar">N</div>
+          <div class="testimonial-author-info">
+            <h4>Neha P.</h4>
+            <p>Delhi, India</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testimonial-text">
+          Shipped internationally to London with zero damage. The still life painting is gallery-quality. Artlor's attention to detail is unmatched.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-author-avatar">J</div>
+          <div class="testimonial-author-info">
+            <h4>James W.</h4>
+            <p>London, UK</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ CTA BANNER ═══════ -->
+  <section class="cta-section" id="commission">
+    <div class="container reveal">
+      <h2>Ready to Transform Your Walls?</h2>
+      <p>Let's create something beautiful together. Your masterpiece is one conversation away.</p>
+      <a href="#" class="btn btn-cta-light">
+        Start Your Commission
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════ FOOTER ═══════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="logo">art<span>lor</span></a>
+          <p>Custom handpainted art commissions from India. Every piece is crafted with soul, shipped with care.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#styles">Art Styles</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#artists">Our Artists</a></li>
+            <li><a href="#testimonials">Reviews</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Shipping Info</a></li>
+            <li><a href="#">Returns</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Refund Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 Artlor. Handpainted with ❤️ in India.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Instagram">📷</a>
+          <a href="#" aria-label="Pinterest">📌</a>
+          <a href="#" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════ SCRIPTS ═══════ -->
+  <script>
+    // ── REGISTER GSAP PLUGINS ──
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ── INITIALIZE LENIS SMOOTH SCROLL ──
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // smooth exponential out
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1.0,
+      smoothTouch: false,
+      touchMultiplier: 1.5,
+      infinite: false,
+    });
+
+    // Request Animation Frame loop for Lenis
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // Synchronize Lenis scrolling with GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    // ── SMOOTH ANCHOR NAV LINKS ──
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          // Adjust offset for sticky header
+          const headerOffset = 80;
+          const elementPosition = targetEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+          lenis.scrollTo(offsetPosition, {
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+          });
+        }
+      });
+    });
+
+    // ── STICKY HEADER SHADOW ON SCROLL ──
+    const header = document.getElementById('header');
+    lenis.on('scroll', (e) => {
+      header.classList.toggle('scrolled', e.scroll > 40);
+    });
+
+    // ── MOBILE MENU TOGGLE ──
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+
+    // ── MOUSE PARALLAX ON HERO DETAILS ──
+    window.addEventListener('mousemove', (e) => {
+      const hero = document.querySelector('.hero');
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      if (e.clientY > rect.bottom) return;
+
+      const normX = (e.clientX / window.innerWidth - 0.5) * 2;
+      const normY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+      // Parallax shift on blobs
+      gsap.to('.hero-blob-1', { x: normX * 30, y: normY * 30, duration: 1.5, ease: "power2.out" });
+      gsap.to('.hero-blob-2', { x: -normX * 25, y: -normY * 25, duration: 1.5, ease: "power2.out" });
+      gsap.to('.hero-content', { x: normX * 10, y: normY * 10, duration: 2.0, ease: "power3.out" });
+    }, { passive: true });
+
+
+    // ── GSAP TIMELINE & ENTRANCE ANIMATIONS ──
+
+    // 1. Hero Load Entrance Animation
+    const heroTl = gsap.timeline({
+      defaults: { ease: "power4.out" }
+    });
+
+    heroTl.fromTo('.hero-badge', 
+      { opacity: 0, scale: 0.8, y: -20 },
+      { opacity: 1, scale: 1, y: 0, duration: 1.2, delay: 0.2 }
+    );
+    heroTl.fromTo('.hero h1',
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 1.4 },
+      "-=1.0"
+    );
+    heroTl.fromTo('.hero h1 em::after',
+      { scaleX: 0 },
+      { scaleX: 1, transformOrigin: "left center", duration: 1.0, ease: "power2.out" },
+      "-=0.6"
+    );
+    heroTl.fromTo('.hero-sub',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1.2 },
+      "-=0.9"
+    );
+    heroTl.fromTo('.hero-buttons .btn',
+      { opacity: 0, y: 20, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 1.0, stagger: 0.15 },
+      "-=0.9"
+    );
+    heroTl.fromTo('.scroll-indicator',
+      { opacity: 0, y: 15 },
+      { opacity: 1, y: 0, duration: 1.2 },
+      "-=0.6"
+    );
+
+    // 2. Hero Scroll Parallax Trigger
+    gsap.to('.hero-blob-1', {
+      y: 120,
+      ease: "none",
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true
+      }
+    });
+    gsap.to('.hero-blob-2', {
+      y: -100,
+      ease: "none",
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true
+      }
+    });
+    gsap.to('.hero-content', {
+      y: 80,
+      opacity: 0.1,
+      ease: "none",
+      scrollTrigger: {
+        trigger: '#hero',
+        start: 'top top',
+        end: 'bottom 20%',
+        scrub: true
+      }
+    });
+
+    // 3. Reveal Section Headers
+    document.querySelectorAll('.section-header.reveal').forEach((header) => {
+      gsap.fromTo(header,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+          scrollTrigger: {
+            trigger: header,
+            start: "top 85%",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    });
+
+    // 4. Staggered Art Style Cards Reveal
+    gsap.fromTo('.style-card',
+      { opacity: 0, scale: 0.9, y: 50, rotationY: 15 },
+      {
+        opacity: 1, scale: 1, y: 0, rotationY: 0,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: '.styles-track',
+          start: "top 85%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+
+    // 5. How It Works Steps Reveal
+    const stepsTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: '.steps',
+        start: "top 80%",
+        toggleActions: "play none none none"
+      }
+    });
+
+    stepsTimeline.fromTo('.step',
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 1.0, stagger: 0.2, ease: "power3.out" }
+    );
+    stepsTimeline.fromTo('.step-icon',
+      { scale: 0, rotation: -20 },
+      { scale: 1, rotation: 0, duration: 1.0, stagger: 0.15, ease: "elastic.out(1, 0.7)" },
+      "-=0.8"
+    );
+
+    // 6. Artists Grid Reveal
+    gsap.fromTo('.artist-card',
+      { opacity: 0, scale: 0.95, y: 40 },
+      {
+        opacity: 1, scale: 1, y: 0,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: '.artists-grid',
+          start: "top 85%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+
+    // 7. Testimonials Track Reveal
+    gsap.fromTo('.testimonial-card',
+      { opacity: 0, x: 50, scale: 0.95 },
+      {
+        opacity: 1, x: 0, scale: 1,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: '.testimonials-track',
+          start: "top 85%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+
+    // 8. CTA Banner Reveal
+    gsap.fromTo('.cta-section .container',
+      { opacity: 0, scale: 0.96, y: 30 },
+      {
+        opacity: 1, scale: 1, y: 0,
+        duration: 1.4,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: '.cta-section',
+          start: "top 85%",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+  </script>
+
+</body>
+</html>

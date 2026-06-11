@@ -13,6 +13,8 @@ import Terms from './pages/Terms'
 import EidCelebration from './components/EidCelebration'
 import LiveTracker from './pages/LiveTracker'
 import ArtistPortal from './pages/ArtistPortal'
+import DesignSystemShowcase from './pages/DesignSystemShowcase'
+
 
 function PageTransition({ children }) {
   const prefersReducedMotion = useReducedMotion()
@@ -126,6 +128,14 @@ function AnimatedRoutes() {
           element={
             <PageTransition>
               <ArtistPortal />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/design-system"
+          element={
+            <PageTransition>
+              <DesignSystemShowcase />
             </PageTransition>
           }
         />
