@@ -11,8 +11,8 @@ export default function Privacy() {
     <main className="paper-bg page-pad min-h-screen">
       <SEO
         title="Privacy Policy"
-        description="Privacy policy and data protection terms for Artlor. We respect your details and secure your delivery information."
-        keywords="privacy policy artlor, security of commissions, local art store privacy"
+        description="Privacy policy and data protection terms for Artlor. We respect your details and secure your delivery information when you buy paintings online."
+        keywords="privacy policy artlor, painting order privacy, buy paintings online India privacy"
         robots="noindex, follow"
         breadcrumbPaths={breadcrumbs}
       />

@@ -61,8 +61,8 @@ export default function About() {
     '@type': 'AboutPage',
     '@id': `${origin}/about/#webpage`,
     'url': `${origin}/about`,
-    'name': 'About Artlor — Supporting Local Indian Artists',
-    'description': 'Meet the founders Hammad Riyaz and Muneef, and our curated network of local painters across India bringing bespoke handpainted canvases directly to you.',
+    'name': 'About Artlor — Local Indian Artists & Handmade Paintings',
+    'description': 'Meet the founders Hammad Riyaz and Muneef, and our team of local painters across India creating handpainted wall art, canvas paintings, and calligraphy art.',
     'isPartOf': {
       '@id': `${origin}/#website`
     },
@@ -100,9 +100,9 @@ export default function About() {
   return (
     <main className="paper-bg page-pad min-h-screen">
       <SEO
-        title="About Us — Supporting Local Artists & Handpainted Art"
-        description="Learn about Artlor's mission to connect you with handpicked local artists in India. Meet founders Hammad Riyaz & Muneef and view our master painters."
-        keywords="about artlor, hammad riyaz, muneef, custom art india, local art network, calligraphy artists delhi, landscape painters mumbai"
+        title="About Us — Local Indian Artists & Handmade Paintings"
+        description="Learn about Artlor's mission to connect you with talented local artists in India. Meet founders Hammad Riyaz & Muneef and our painters creating wall art, landscape, calligraphy & abstract paintings."
+        keywords="about artlor, hammad riyaz, muneef, local artists India, handmade paintings India, buy paintings online, wall art artists, canvas paintings India"
         schemaData={[aboutSchema, ...artistProfilesSchema]}
         breadcrumbPaths={breadcrumbs}
       />
@@ -131,16 +131,16 @@ export default function About() {
             transition={{ delay: 0.1 }}
             className="text-brand-brown/85 mt-4 max-w-2xl mx-auto font-body text-base sm:text-lg"
           >
-            We believe that art should live, breathe, and carry a soul. In a world saturated with digital prints and mass manufacturing, Artlor connects art collectors with master local artists across India to create bespoke, fully handpainted canvases.
+            We believe that art should live, breathe, and carry a soul. In a world saturated with digital prints and mass manufacturing, Artlor connects you with talented local artists across India to create handpainted canvas paintings, wall art, and calligraphy paintings for your home.
           </motion.p>
         </div>
 
         {/* Mission Card */}
         <article className="dark-luxe-card p-6 sm:p-10 mb-12">
           <p className="font-body text-xs uppercase tracking-[0.2em] text-[var(--brand-gold)] mb-2">Our Core Mission</p>
-          <h2 className="font-display text-2xl sm:text-3xl text-white mb-4">Empowering Local Artists, Enriching Indian Homes</h2>
+          <h2 className="font-display text-2xl sm:text-3xl text-white mb-4">Empowering Local Artists, giving souls to empty walls</h2>
           <p className="font-body text-sm sm:text-base leading-relaxed text-white/90">
-            Artlor is built on a simple foundation: supporting the immense talent of local painters while making high-quality custom commissions accessible. Every stroke of a brush on our canvases is executed by a real artist based in India, paid fairly, and celebrated for their creative genius. From vintage autumn roads to shimmering Arabic calligraphy boards, your order brings authentic art directly to your wall.
+            Artlor is built on a simple foundation: supporting the immense talent of local painters while making high-quality custom commissions accessible. Every stroke of a brush on our canvases is executed by a real artist based in India, paid fairly, and celebrated for their creative genius. From vintage autumn roads to shimmering Arabic calligraphy boards, your order brings authentic art directly to your wall.Artlor works as an UBER FOR ART!
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-8 border-t border-white/10 pt-6">
             <div className="text-center">

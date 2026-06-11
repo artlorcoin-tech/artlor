@@ -35,7 +35,7 @@ function Gallery() {
       "@context": "https://schema.org",
       "@type": "ItemList",
       "name": `Artlor Curated ${activeFilter === 'All' ? 'Art' : activeFilter} Gallery`,
-      "description": `Browse our beautiful curated collection of original local ${activeFilter === 'All' ? 'landscape, calligraphy, abstract and still life' : activeFilter.toLowerCase()} custom paintings.`,
+      "description": `Browse our collection of handpainted ${activeFilter === 'All' ? 'landscape, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings. Buy wall art online India from local artists.`,
       "numberOfItems": paintings.length,
       "itemListElement": paintings.map((painting, index) => {
         const imagePath = painting.image.startsWith('/') ? painting.image : `/${painting.image}`
@@ -71,9 +71,9 @@ function Gallery() {
   return (
     <main className="paper-bg page-pad min-h-screen">
       <SEO 
-        title={`${activeFilter === 'All' ? 'Curated Gallery' : activeFilter + ' Paintings'}`}
-        description={`Explore our curated collection of ${activeFilter === 'All' ? 'custom landscapes, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings by top local artists.`}
-        keywords={`commission art, gallery paintings, ${activeFilter.toLowerCase()} art, buy paintings online, original artwork`}
+        title={`${activeFilter === 'All' ? 'Paintings Gallery' : activeFilter + ' Paintings'} | Buy Wall Art Online India`}
+        description={`Browse and buy handpainted ${activeFilter === 'All' ? 'landscape, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings online. Wall art & canvas paintings by local Indian artists.`}
+        keywords={`buy paintings online India, ${activeFilter.toLowerCase()} paintings, wall paintings, canvas art, handmade paintings, wall art India, home decor paintings`}
         schemaData={gallerySchema}
         breadcrumbPaths={galleryBreadcrumb}
       />

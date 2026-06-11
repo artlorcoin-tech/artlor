@@ -52,8 +52,8 @@ const homeSchema = {
   "@type": "WebPage",
   "@id": "https://artlor.art/#webpage",
   "url": "https://artlor.art/",
-  "name": "Artlor — Custom Handpainted Art Commissions & Paintings India",
-  "description": "Commission high-quality, fully custom handpainted artwork from handpicked local artists in India. Delivered framed, stretched, and ready to hang on your wall.",
+  "name": "Artlor — Buy Paintings Online India | Custom Wall Art & Canvas Paintings",
+  "description": "Buy handpainted paintings online in India. Custom wall paintings, landscape art, scenery paintings, calligraphy art, abstract paintings & still life canvas paintings. Delivered framed & wall-ready across India.",
   "isPartOf": {
     "@id": "https://artlor.art/#website"
   }
@@ -65,7 +65,7 @@ const faqSchema = {
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "How does commissioning a custom painting work?",
+      "name": "How do I order a custom painting from Artlor?",
       "acceptedAnswer": {
         "@type": "Answer",
         "text": "First, select your preferred art style (Landscape, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days."
@@ -76,7 +76,7 @@ const faqSchema = {
       "name": "What art styles do you offer?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "We currently offer high-quality custom Landscape paintings, Calligraphy artwork (including custom Nikah boards and gold script), monochrome or flow Abstract paintings, and vibrant Still Life paintings."
+        "text": "We offer landscape & scenery paintings, calligraphy paintings (including Nikah boards and gold script calligraphy), abstract wall paintings, and still life & floral paintings. All are 100% handpainted on canvas by local Indian artists."
       }
     },
     {
@@ -84,7 +84,7 @@ const faqSchema = {
       "name": "Is the artwork delivered ready to hang?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes! All custom paintings commissioned through Artlor are delivered fully stretched, framed, and completely wall-ready so you can hang them immediately."
+        "text": "Yes! All paintings ordered through Artlor are delivered fully stretched, framed, and completely wall-ready so you can hang them immediately."
       }
     },
     {
@@ -104,9 +104,9 @@ function Home() {
   return (
     <main className="paper-bg page-pad min-h-screen">
       <SEO
-        title="Custom Paintings & Art Commissions Online India"
-        description="Commission high-quality, fully custom handpainted artwork from handpicked local Indian artists. Delivered framed and ready to hang in Delhi, Mumbai, Bangalore & across India."
-        keywords="custom paintings India, commission art Mumbai, calligraphy painting Delhi, Nikah board calligraphy Bangalore, local artists India, handmade canvas paintings, buy paintings online India"
+        title="Buy Paintings Online India | Custom Wall Art & Canvas Paintings"
+        description="Buy handpainted paintings online in India. Custom wall paintings, landscape art, scenery paintings, calligraphy art, abstract & still life canvas paintings. Delivered framed & wall-ready to Delhi, Mumbai, Bangalore, Srinagar & pan India."
+        keywords="buy paintings online India, wall paintings, canvas paintings, custom paintings India, handmade paintings, artists near me, wall art online, home decor paintings, landscape paintings, scenery paintings, calligraphy paintings, abstract paintings, still life paintings"
         schemaData={[homeSchema, faqSchema]}
       />
       <BrandHeader />
@@ -127,7 +127,7 @@ function Home() {
             transition={{ duration: 0.34, ease: [0.4, 0, 0.2, 1] }}
             className="mb-3 rounded-full border border-[var(--brand-light)] bg-white/75 px-4 py-2 font-body text-[10px] uppercase tracking-[0.2em] text-[var(--brand-brown)] sm:mb-4 sm:px-5 sm:text-xs sm:tracking-[0.22em]"
           >
-            Painting Marketplace
+            Online Paintings Store
           </motion.p>
 
           <motion.img
@@ -154,7 +154,7 @@ function Home() {
             transition={{ duration: 0.4, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className="text-brand-brown/90 mt-4 max-w-2xl px-1 font-body text-sm sm:mt-5 sm:text-lg"
           >
-            Discover handpicked local artists in India. Commission custom canvas paintings, calligraphy boards & modern abstract art. Delivered wall-ready to Srinagar,Delhi, Mumbai, Bangalore, and nationwide.
+            Get your artwork made from talented artists in India. Commission custom canvas paintings,Sceneries, calligraphy boards & modern abstract art. Delivered wall-ready to Srinagar,Delhi, Mumbai, Bangalore, and pan India.
           </motion.p>
 
           <motion.div

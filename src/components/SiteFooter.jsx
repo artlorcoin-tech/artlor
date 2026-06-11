@@ -46,7 +46,7 @@ function SiteFooter() {
               About Artlor
             </h2>
             <p className="mt-3 text-xs leading-relaxed text-[var(--brand-brown)]">
-              Artlor connects You with Artists across India to commission fully custom, wall-ready handpainted paintings, custom Nikah boards, Customised Calligraphy.
+              Artlor connects you with talented local artists across India to create custom handpainted wall paintings, calligraphy art, canvas paintings & wall art for your home.
             </p>
             <ul className="mt-4 space-y-2 text-xs">
               {artlorLinks.slice(0, 3).map((item) => (
@@ -78,7 +78,7 @@ function SiteFooter() {
                 Curated Gallery
               </Link>
               <Link to="/order" className="text-[var(--brand-dark)] hover:text-[var(--brand-brown)] transition">
-                Commission Custom Art
+                Order Custom Paintings
               </Link>
               <Link to="/about" className="text-[var(--brand-dark)] hover:text-[var(--brand-brown)] transition">
                 About Our Team
@@ -152,7 +152,7 @@ function SiteFooter() {
         </div>
 
         <p className="mt-10 border-t border-[rgba(31,31,31,0.08)] pt-8 text-center text-xs text-[var(--brand-brown)]/90">
-          © {new Date().getFullYear()} Artlor Art Network. Delivered Framed & Ready to Hang.
+          © {new Date().getFullYear()} Artlor. Buy Paintings Online India. Delivered Framed & Ready to Hang.
         </p>
       </div>
     </footer>

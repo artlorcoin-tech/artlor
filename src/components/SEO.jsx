@@ -24,15 +24,15 @@ export default function SEO({
     const currentHref = origin + location.pathname + location.search
 
     // 1. Update Document Title
-    const baseTitle = 'Artlor — Custom Handpainted Art Commissions'
+    const baseTitle = 'Artlor — Buy Paintings Online India | Custom Wall Art'
     document.title = title ? `${title} | ${baseTitle}` : baseTitle
 
     // 2. Update Meta Description
-    const finalDescription = description || 'Artlor connects you with talented local artists to commission fully custom, wall-ready handpainted artwork delivered right to your door.'
+    const finalDescription = description || 'Buy handpainted paintings online in India. Custom wall art, landscape paintings, calligraphy art, abstract paintings & still life canvas art. Handmade by talented local artists, delivered wall-ready to your door.'
     updateMetaTag('name', 'description', finalDescription)
 
     // 3. Update Keywords
-    const finalKeywords = keywords || 'custom paintings, commission art, local artists, handpainted artwork, wall art, custom calligraphy, abstract art painting, original landscapes, still life painting'
+    const finalKeywords = keywords || 'buy paintings online India, wall paintings, canvas paintings, custom paintings, handmade paintings, artists near me, wall art online, home decor paintings, landscape paintings, abstract paintings, calligraphy paintings, still life paintings, painting shop online India'
     updateMetaTag('name', 'keywords', finalKeywords)
 
     // 4. Update Robots Tag
@@ -90,7 +90,7 @@ export default function SEO({
       'url': origin,
       'logo': `${origin}/brand/artlor-logo.png`,
       'image': `${origin}/brand/hero-painting-bg.png`,
-      'description': 'Artlor connects you with handpicked local art talent to commission bespoke, high-quality handpainted wall art.',
+      'description': 'Buy handpainted paintings online in India. Custom wall paintings, landscape art, calligraphy paintings, abstract art & still life canvas paintings by local Indian artists.',
       'telephone': '+91-XXXXXXXXXX',
       'priceRange': '$$',
       'sameAs': [
@@ -111,7 +111,7 @@ export default function SEO({
       '@id': `${origin}/#website`,
       'name': 'Artlor',
       'url': origin,
-      'description': 'Commission custom art and handpainted masterpieces from local artists.',
+      'description': 'Buy paintings online India. Custom wall art, canvas paintings & handmade artwork by local artists.',
       'publisher': {
         '@id': `${origin}/#organization`
       },

@@ -11,8 +11,8 @@ export default function Terms() {
     <main className="paper-bg page-pad min-h-screen">
       <SEO
         title="Terms of Service"
-        description="Terms of service and custom commissioning rules for Artlor. Learn how custom artwork is coordinated, painted, and delivered."
-        keywords="terms of service artlor, commission rules, handpainted canvases India"
+        description="Terms of service for ordering paintings from Artlor. Learn how custom paintings are coordinated, painted, and delivered across India."
+        keywords="terms of service artlor, painting order rules, buy paintings online India terms"
         robots="noindex, follow"
         breadcrumbPaths={breadcrumbs}
       />

@@ -34,8 +34,8 @@ export default function Contact() {
     '@type': 'ContactPage',
     '@id': `${origin}/contact/#webpage`,
     'url': `${origin}/contact`,
-    'name': 'Contact Artlor — Commission Art & Customer Support',
-    'description': 'Get in touch with the Artlor team for custom oil & acrylic painting inquiries, Nikah board commissions, and general support across India.',
+    'name': 'Contact Artlor — Custom Paintings & Wall Art Inquiries',
+    'description': 'Get in touch with the Artlor team for custom painting orders, wall art inquiries, calligraphy paintings, and shipping questions across India.',
     'isPartOf': {
       '@id': `${origin}/#website`
     }
@@ -90,9 +90,9 @@ export default function Contact() {
   return (
     <main className="paper-bg page-pad min-h-screen">
       <SEO
-        title="Contact Us — Inquire Custom Paintings & Calligraphy India"
-        description="Reach out to the Artlor team. Submit custom painting inquiries, Nikah board calligraphy requests, or ask questions about shipping in India."
-        keywords="contact artlor, custom painting inquiry, order art delhi, calligraphy commissions mumbai, artlor customer care"
+        title="Contact Us — Custom Paintings & Wall Art Inquiries India"
+        description="Reach out to the Artlor team. Submit custom painting orders, wall art inquiries, calligraphy painting requests, or ask questions about shipping across India."
+        keywords="contact artlor, custom painting order, buy paintings India, wall art inquiry, calligraphy paintings order, artists near me India"
         schemaData={[contactSchema, localBusinessSchema]}
         breadcrumbPaths={breadcrumbs}
       />
@@ -108,7 +108,7 @@ export default function Contact() {
             Connect With Artlor
           </h1>
           <p className="text-brand-brown/85 mt-4 max-w-xl mx-auto font-body text-base">
-            Have a custom theme, sizing query, or special gifting order? Reach out to our curation team and local artist network.
+            Have a custom painting request, sizing query, or special gifting order? Reach out to our team and local artist network.
           </p>
         </div>
 
