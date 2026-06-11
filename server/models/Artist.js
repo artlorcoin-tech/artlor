@@ -103,6 +103,24 @@ artistSchema.index({ location: '2dsphere' })
 // Compound index: category + online status + location for the matching query
 artistSchema.index({ categories: 1, isOnline: 1, location: '2dsphere' })
 
-const Artist = mongoose.model('Artist', artistSchema)
+const ArtistMongoose = mongoose.model('Artist', artistSchema)
+
+// Proxy wrapper to support seamless fallback to Mock database if MongoDB is offline
+import { MockArtistModel } from '../lib/fileDb.js'
+
+const Artist = new Proxy(ArtistMongoose, {
+  get(target, prop) {
+    if (global.isMockDb) {
+      return MockArtistModel[prop]
+    }
+    return Reflect.get(target, prop)
+  },
+  construct(target, argumentsList) {
+    if (global.isMockDb) {
+      return new MockArtistModel(...argumentsList)
+    }
+    return new ArtistMongoose(...argumentsList)
+  }
+})
 
 export default Artist

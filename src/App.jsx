@@ -11,6 +11,8 @@ import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import EidCelebration from './components/EidCelebration'
+import LiveTracker from './pages/LiveTracker'
+import ArtistPortal from './pages/ArtistPortal'
 
 function PageTransition({ children }) {
   const prefersReducedMotion = useReducedMotion()
@@ -111,6 +113,22 @@ function AnimatedRoutes() {
         />
 
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/track/:orderId"
+          element={
+            <PageTransition>
+              <LiveTracker />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/artist"
+          element={
+            <PageTransition>
+              <ArtistPortal />
+            </PageTransition>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

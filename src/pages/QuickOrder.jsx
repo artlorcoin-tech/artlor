@@ -87,6 +87,8 @@ function QuickOrder() {
     intlZip: '',
     intlArea: '',
     intlLane: '',
+    latitude: null,
+    longitude: null,
   })
 
   // OTP Verification removed for fast-track launch
@@ -190,18 +192,90 @@ function QuickOrder() {
         console.warn('[QuickOrder] Supabase insert failed:', supabaseResult.reason)
       }
 
-      // Navigate to confirmation even if one channel failed
-      navigate('/confirm', {
-        state: {
-          order: {
-            name: form.name,
-            artStyle: selectedArtworkLabel,
-            size: payload.artwork_size,
-            location: `${form.lane}, ${form.area}, ${form.city} - ${form.pincode}`,
-            contact: `${form.phone} · ${form.email}`,
+      // Map cities to coordinates if geolocation wasn't used
+      const CITY_COORDINATES = {
+        'bangalore': { lat: 12.9716, lng: 77.5946 },
+        'bengaluru': { lat: 12.9716, lng: 77.5946 },
+        'mumbai': { lat: 19.0760, lng: 72.8777 },
+        'delhi': { lat: 28.6139, lng: 77.2090 },
+        'new delhi': { lat: 28.6139, lng: 77.2090 },
+        'kochi': { lat: 10.8505, lng: 76.2711 },
+        'cochin': { lat: 10.8505, lng: 76.2711 },
+        'chennai': { lat: 13.0827, lng: 80.2707 },
+        'madras': { lat: 13.0827, lng: 80.2707 },
+        'pune': { lat: 18.5204, lng: 73.8567 },
+        'jaipur': { lat: 26.9124, lng: 75.7873 },
+        'hyderabad': { lat: 17.3850, lng: 78.4867 },
+      }
+
+      let lat = form.latitude
+      let lng = form.longitude
+
+      if (!lat || !lng) {
+        const cityKey = (isIndian ? form.city : form.intlCity).toLowerCase().trim()
+        const coords = CITY_COORDINATES[cityKey]
+        if (coords) {
+          lat = coords.lat
+          lng = coords.lng
+        } else {
+          lat = 12.9716 // Default fallback
+          lng = 77.5946
+        }
+      }
+
+      // Map style to expected backend category enum
+      let category = 'Landscape'
+      if (painting && painting.style) {
+        const style = painting.style.toLowerCase()
+        if (style.includes('abstract')) category = 'Abstract'
+        else if (style.includes('calligraphy')) category = 'Calligraphy'
+        else if (style.includes('still life')) category = 'Still Life'
+        else if (style.includes('landscape')) category = 'Landscape'
+        else if (style.includes('portrait')) category = 'Portrait'
+        else if (style.includes('modern')) category = 'Modern'
+      }
+
+      // Dispatch matching request to Express/Socket.io backend
+      let matchedOrderId = null
+      try {
+        const orderRes = await fetch('http://localhost:4000/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerName: form.name,
+            customerEmail: form.email,
+            customerPhone: finalPhone,
+            category,
+            description: `Reproduce gallery painting: "${painting?.title || 'Selected art'}" (Size: ${form.artworkSize === 'Custom Size' ? form.customSize : form.artworkSize})`,
+            size: form.artworkSize,
+            latitude: lat,
+            longitude: lng,
+            deliveryAddress: `${form.lane}, ${form.area}, ${isIndian ? form.city : form.intlCity} - ${isIndian ? form.pincode : form.intlZip}`,
+          }),
+        })
+        const orderData = await orderRes.json()
+        if (orderData.success) {
+          matchedOrderId = orderData.data._id
+        }
+      } catch (err) {
+        console.warn('[QuickOrder] Local matching server offline:', err.message)
+      }
+
+      if (matchedOrderId) {
+        navigate(`/track/${matchedOrderId}`)
+      } else {
+        navigate('/confirm', {
+          state: {
+            order: {
+              name: form.name,
+              artStyle: selectedArtworkLabel,
+              size: payload.artwork_size,
+              location: `${form.lane}, ${form.area}, ${form.city} - ${form.pincode}`,
+              contact: `${form.phone} · ${form.email}`,
+            },
           },
-        },
-      })
+        })
+      }
     } catch (error) {
       console.error('Quick order submission failed', error)
       alert('Could not confirm this order right now. Please try again.')
@@ -391,14 +465,16 @@ function QuickOrder() {
                         state={form.state}
                         city={form.city}
                         pincode={form.pincode}
-                        onChange={({ state, city, pincode, area, lane }) =>
+                        onChange={({ state, city, pincode, area, lane, latitude, longitude }) =>
                           setForm((prev) => ({ 
                             ...prev, 
                             state: state || '', 
                             city: city || '', 
                             pincode: pincode || '',
                             ...(area !== undefined && { area }),
-                            ...(lane !== undefined && { lane })
+                            ...(lane !== undefined && { lane }),
+                            latitude: latitude || null,
+                            longitude: longitude || null
                           }))
                         }
                       />
