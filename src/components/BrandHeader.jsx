@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Mail } from 'lucide-react'
+import { Mail, User } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { publicUrl } from '../publicUrl'
+import { supabase } from '../lib/supabaseClient'
 
 const links = [
   { label: 'Home', mobileLabel: 'Home', to: '/' },
@@ -45,6 +47,23 @@ function LinkedInGlyph() {
 function BrandHeader() {
   const location = useLocation()
   const prefersReducedMotion = useReducedMotion()
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Listen to changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
 
   return (
     <motion.header
@@ -81,6 +100,33 @@ function BrandHeader() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {user ? (
+            <Link
+              to="/customer-dashboard"
+              title="View Dashboard"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--brand-gold)] bg-[var(--brand-cream)] px-2.5 text-[11px] font-bold text-[var(--brand-brown)] transition-all hover:bg-[var(--brand-light)] sm:h-10 sm:px-4 sm:text-xs outline-none"
+            >
+              {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
+                <img
+                  src={user.user_metadata.avatar_url || user.user_metadata.picture}
+                  alt="Profile"
+                  className="h-5 w-5 rounded-full object-cover border border-[var(--brand-gold)]/50 shrink-0"
+                />
+              ) : (
+                <User className="h-3.5 w-3.5" />
+              )}
+              <span className="hidden md:inline">Dashboard</span>
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[var(--brand-dark)] px-3 text-[11px] font-bold text-[var(--brand-cream)] transition-all hover:bg-[var(--brand-brown)] sm:h-10 sm:px-4.5 sm:text-xs outline-none"
+            >
+              <User className="h-3.5 w-3.5 shrink-0" />
+              Sign In
+            </Link>
+          )}
+
           <a
             href="https://instagram.com/artlor.co"
             target="_blank"
