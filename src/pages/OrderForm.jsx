@@ -1,5 +1,6 @@
 import emailjs from '@emailjs/browser'
 import { supabaseInsert, supabaseSendOtp, supabaseVerifyOtp } from '../lib/supabase'
+import { supabase } from '../lib/supabaseClient'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -16,6 +17,30 @@ import {
   isValidAddressField,
   isValidPincode
 } from '../lib/validation'
+
+// SVG Google Logo Component
+function GoogleIcon() {
+  return (
+    <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+      <path
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        fill="#4285F4"
+      />
+      <path
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        fill="#34A853"
+      />
+      <path
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+        fill="#EA4335"
+      />
+    </svg>
+  )
+}
 
 const POPULAR_COUNTRIES = [
   { name: 'United States (+1)', code: '+1' },
@@ -100,11 +125,86 @@ function OrderForm() {
   const navigate = useNavigate()
   const prefersReducedMotion = useReducedMotion()
 
-  // OTP Verification removed for fast-track launch
+  const [session, setSession] = useState(null)
+  const [authLoading, setAuthLoading] = useState(false)
 
-  // Import useEffect if not imported
-  // (Wait, useEffect is already imported from react on line 1, let's verify: line 1 is `import { useState } from 'react'` in OrderForm.jsx?
-  // Let's check imports of OrderForm.jsx first to make sure useEffect is imported!)
+  useEffect(() => {
+    async function initAuth() {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession()
+        setSession(currentSession)
+        
+        const pendingKey = 'artlor_pending_custom_order'
+        const saved = sessionStorage.getItem(pendingKey)
+        
+        if (currentSession) {
+          if (saved) {
+            try {
+              const parsed = JSON.parse(saved)
+              if (parsed.form) {
+                setForm({
+                  ...parsed.form,
+                  email: currentSession.user.email
+                })
+              }
+              if (parsed.step !== undefined) {
+                setStep(parsed.step)
+              }
+            } catch (e) {
+              console.error('Failed to parse saved custom order:', e)
+            } finally {
+              sessionStorage.removeItem(pendingKey)
+            }
+          } else {
+            // Fill session details if form is empty
+            setForm(prev => ({
+              ...prev,
+              name: prev.name || currentSession.user.user_metadata?.full_name || currentSession.user.user_metadata?.name || '',
+              email: currentSession.user.email || ''
+            }))
+          }
+        }
+      } catch (err) {
+        console.error('Auth initialization error:', err)
+      }
+    }
+    initAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession)
+      if (currentSession) {
+        setForm(prev => ({
+          ...prev,
+          name: prev.name || currentSession.user.user_metadata?.full_name || currentSession.user.user_metadata?.name || '',
+          email: currentSession.user.email
+        }))
+      } else {
+        setForm(prev => ({ ...prev, email: '' }))
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleGoogleVerify = async () => {
+    setAuthLoading(true)
+    try {
+      sessionStorage.setItem('artlor_pending_custom_order', JSON.stringify({ form, step }))
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + window.location.pathname
+        }
+      })
+      if (error) throw error
+    } catch (err) {
+      console.error('Google verification error:', err)
+      alert(err.message || 'Verification failed. Please try again.')
+      setAuthLoading(false)
+    }
+  }
 
   const progress = (step / (6 - 1)) * 100
 
@@ -152,7 +252,7 @@ function OrderForm() {
       const check = isValidAuthenticPhone(form.phone, form.phoneSystem, form.countryCode)
       return check.isValid
     }
-    if (step === 5) return isValidAuthenticEmail(form.email).isValid
+    if (step === 5) return session ? isValidAuthenticEmail(form.email).isValid : true
     return false
   }
 
@@ -738,39 +838,57 @@ function OrderForm() {
             {step === 5 && (
               <>
                 <h1 className="font-display text-brand-dark text-3xl leading-tight sm:text-4xl">
-                  Where should we send your order confirmation?
+                  {session ? 'Ready to confirm your order?' : 'Verify your Gmail account'}
                 </h1>
-                <div>
-                  <Field
-                    type="email"
-                    placeholder="you@domain.com"
-                    value={form.email}
-                    onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-                  />
-                  {form.email.trim().length > 0 && (
-                    (() => {
-                      const check = isValidAuthenticEmail(form.email)
-                      if (!check.isValid && check.error) {
-                        return (
-                          <motion.p
-                            initial={{ opacity: 0, y: -4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-2 text-xs font-semibold text-rose-600 font-body px-2"
-                          >
-                            ⚠️ {check.error}
-                          </motion.p>
-                        )
-                      }
-                      return null
-                    })()
-                  )}
-                </div>
-                <p className="text-brand-brown/80 font-body text-sm">We&apos;ll never spam you.</p>
+                {session ? (
+                  <div className="rounded-3xl border border-emerald-500/25 bg-emerald-500/5 p-6 text-center">
+                    <div className="mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                      <Check className="h-6 w-6" />
+                    </div>
+                    <p className="font-display text-lg font-bold text-[var(--brand-dark)]">
+                      Gmail Verified Successfully
+                    </p>
+                    <p className="mt-1 font-body text-sm text-slate-600">
+                      {session.user.email}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await supabase.auth.signOut()
+                      }}
+                      className="mt-4 font-body text-xs text-rose-600 underline hover:text-rose-700 outline-none"
+                    >
+                      Use different account
+                    </button>
+                  </div>
+                ) : (
+                  <div className="rounded-3xl border border-[var(--brand-light)] bg-[var(--brand-cream)] p-6 text-center">
+                    <p className="font-body text-sm text-[var(--brand-dark)] mb-4">
+                      To prevent fake orders and allow real-time commission tracking, please verify your Gmail address with Google. Your form details are saved.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={authLoading}
+                      onClick={handleGoogleVerify}
+                      className="mx-auto flex items-center justify-center gap-3 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 px-6 py-3 font-body text-sm font-semibold transition-all hover:border-slate-300 hover:shadow-md active:scale-98 disabled:opacity-50 cursor-pointer outline-none"
+                    >
+                      {authLoading ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--brand-gold)] border-t-transparent" />
+                      ) : (
+                        <GoogleIcon />
+                      )}
+                      Verify with Google
+                    </button>
+                  </div>
+                )}
+                <p className="text-brand-brown/80 font-body text-xs text-center">
+                  We verify your account to keep our artist marketplace safe.
+                </p>
               </>
             )}
           </motion.div>
         </AnimatePresence>
-
+ 
         <div className="mt-8 flex flex-col gap-3">
           {step > 0 && (
             <button
@@ -790,7 +908,7 @@ function OrderForm() {
             >
               Next →
             </button>
-          ) : (
+          ) : session ? (
             <button
               type="button"
               disabled={!canProceed() || submitting}
@@ -798,6 +916,20 @@ function OrderForm() {
               className="pill-btn pill-btn-primary w-full px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-40"
             >
               {submitting ? 'Placing Order...' : 'Place My Order →'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={authLoading}
+              onClick={handleGoogleVerify}
+              className="pill-btn bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 w-full px-6 py-3.5 text-sm flex items-center justify-center gap-3 font-semibold transition-all hover:border-slate-300 hover:shadow-md active:scale-98 cursor-pointer outline-none"
+            >
+              {authLoading ? (
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--brand-gold)] border-t-transparent" />
+              ) : (
+                <GoogleIcon />
+              )}
+              {authLoading ? 'Verifying...' : 'Verify Gmail & Place Order'}
             </button>
           )}
         </div>
