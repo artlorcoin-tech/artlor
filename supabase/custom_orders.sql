@@ -25,6 +25,7 @@ create table if not exists public.custom_orders (
 alter table public.custom_orders enable row level security;
 
 -- Allow anonymous inserts (the storefront uses the anon key)
+drop policy if exists "Allow anonymous inserts for custom_orders" on public.custom_orders;
 create policy "Allow anonymous inserts for custom_orders"
   on public.custom_orders
   for insert
@@ -32,8 +33,10 @@ create policy "Allow anonymous inserts for custom_orders"
   with check (true);
 
 -- Allow anonymous reads so the dashboard can list custom orders
+drop policy if exists "Allow anonymous reads for custom_orders" on public.custom_orders;
 create policy "Allow anonymous reads for custom_orders"
   on public.custom_orders
   for select
   to anon
   using (true);
+

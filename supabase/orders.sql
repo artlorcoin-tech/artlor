@@ -46,6 +46,7 @@ create table if not exists public.orders (
 alter table public.orders enable row level security;
 
 -- 3) Allow anonymous inserts (the storefront uses the anon key)
+drop policy if exists "Allow anonymous inserts for orders" on public.orders;
 create policy "Allow anonymous inserts for orders"
   on public.orders
   for insert
@@ -53,8 +54,10 @@ create policy "Allow anonymous inserts for orders"
   with check (true);
 
 -- 4) Allow anonymous reads so the admin/dashboard can list orders
+drop policy if exists "Allow anonymous reads for orders" on public.orders;
 create policy "Allow anonymous reads for orders"
   on public.orders
   for select
   to anon
   using (true);
+
