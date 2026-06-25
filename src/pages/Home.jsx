@@ -30,7 +30,7 @@ const values = [
 
 const styleCards = [
   {
-    name: 'Landscape',
+    name: 'Sceneries',
     image: galleryImages.landscapeBridgeHammad,
   },
   {
@@ -53,7 +53,7 @@ const homeSchema = {
   "@id": "https://artlor.art/#webpage",
   "url": "https://artlor.art/",
   "name": "Artlor — Buy Paintings Online India | Custom Wall Art & Canvas Paintings",
-  "description": "Buy handpainted paintings online in India. Custom wall paintings, landscape art, scenery paintings, calligraphy art, abstract paintings & still life canvas paintings. Delivered framed & wall-ready across India.",
+  "description": "Artlor is a platform that connects artists and clients to create custom handpainted paintings. Order custom sceneries, calligraphy art, abstract & still life paintings online. Delivered framed & wall-ready across India.",
   "isPartOf": {
     "@id": "https://artlor.art/#website"
   }
@@ -68,7 +68,7 @@ const faqSchema = {
       "name": "How do I order a custom painting from Artlor?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "First, select your preferred art style (Landscape, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days."
+        "text": "First, select your preferred art style (Sceneries, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days."
       }
     },
     {
@@ -76,7 +76,7 @@ const faqSchema = {
       "name": "What art styles do you offer?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "We offer landscape & scenery paintings, calligraphy paintings (including Nikah boards and gold script calligraphy), abstract wall paintings, and still life & floral paintings. All are 100% handpainted on canvas by local Indian artists."
+        "text": "We offer scenery paintings, calligraphy paintings (including Nikah boards and gold script calligraphy), abstract wall paintings, and still life & floral paintings. All are 100% handpainted on canvas by local Indian artists."
       }
     },
     {
@@ -105,7 +105,7 @@ function Home() {
     <main className="paper-bg page-pad min-h-screen">
       <SEO
         title="Buy Paintings Online India | Custom Wall Art & Canvas Paintings"
-        description="Buy handpainted paintings online in India. Custom wall paintings, landscape art, scenery paintings, calligraphy art, abstract & still life canvas paintings. Delivered framed & wall-ready to Delhi, Mumbai, Bangalore, Srinagar & pan India."
+        description="Artlor is a platform that connects artists and clients to create custom handpainted paintings. Order custom sceneries, calligraphy art, abstract & still life paintings online. Delivered framed & wall-ready across India."
         keywords="buy paintings online India, wall paintings, canvas paintings, custom paintings India, handmade paintings, artists near me, wall art online, home decor paintings, landscape paintings, scenery paintings, calligraphy paintings, abstract paintings, still life paintings"
         schemaData={[homeSchema, faqSchema]}
       />
@@ -192,7 +192,7 @@ function Home() {
               </Link>
             </motion.div>
             <p className="text-brand-brown/80 mt-4 font-body text-sm italic">
-              Landscapes · Calligraphy · Abstract · Still Life
+              Sceneries · Calligraphy · Abstract · Still Life
             </p>
           </motion.div>
         </div>
@@ -283,7 +283,7 @@ function Home() {
               <span className="text-[var(--brand-gold)] font-bold text-xl group-open:rotate-45 transition-transform duration-200">+</span>
             </summary>
             <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
-              First, select your preferred art style (Landscape, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days.
+              First, select your preferred art style (Sceneries, Calligraphy, Abstract, or Still Life) and choice of size. Give us details about your delivery address and contact info. We will then match you with a talented local artist who specializes in that style. The artist will begin work after a quick confirmation call with you, and deliver it to your door in 7-14 days.
             </p>
           </details>
           <details className="group rounded-[20px] bg-white/50 p-5 shadow-sm transition duration-300 hover:bg-white/80 border border-[var(--brand-light)]">
@@ -292,7 +292,7 @@ function Home() {
               <span className="text-[var(--brand-gold)] font-bold text-xl group-open:rotate-45 transition-transform duration-200">+</span>
             </summary>
             <p className="text-brand-brown/85 mt-3 font-body text-sm leading-relaxed pl-1">
-              We currently offer high-quality custom Landscape paintings, Calligraphy artwork (including custom Nikah boards and gold script), monochrome or flow Abstract paintings, and vibrant Still Life paintings.
+              We currently offer high-quality custom Sceneries paintings, Calligraphy artwork (including custom Nikah boards and gold script), monochrome or flow Abstract paintings, and vibrant Still Life paintings.
             </p>
           </details>
           <details className="group rounded-[20px] bg-white/50 p-5 shadow-sm transition duration-300 hover:bg-white/80 border border-[var(--brand-light)]">

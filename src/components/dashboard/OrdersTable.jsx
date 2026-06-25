@@ -6,7 +6,7 @@ import {
 } from 'lucide-react'
 
 const TYPE_TABS = ['All', 'Custom', 'Quick']
-const STYLES = ['All Styles', 'Calligraphy', 'Landscape', 'Abstract', 'Still Life']
+const STYLES = ['All Styles', 'Calligraphy', 'Sceneries', 'Landscape', 'Abstract', 'Still Life']
 
 function fmt(dateStr) {
   if (!dateStr) return '—'

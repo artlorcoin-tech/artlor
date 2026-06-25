@@ -51,7 +51,7 @@ const styleOptions = [
   { name: 'Abstract', image: galleryImages.abstractMonoMuntaza },
   { name: 'Calligraphy', image: galleryImages.calligraphyAllahMaryam },
   { name: 'Still Life', image: galleryImages.stillLifeSeebah },
-  { name: 'Landscape', image: galleryImages.landscapeBridgeHammad },
+  { name: 'Sceneries', image: galleryImages.landscapeBridgeHammad },
 ]
 
 const initialData = {

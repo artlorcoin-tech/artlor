@@ -230,7 +230,7 @@ function QuickOrder() {
         if (style.includes('abstract')) category = 'Abstract'
         else if (style.includes('calligraphy')) category = 'Calligraphy'
         else if (style.includes('still life')) category = 'Still Life'
-        else if (style.includes('landscape')) category = 'Landscape'
+        else if (style.includes('landscape') || style.includes('sceneries')) category = 'Landscape'
         else if (style.includes('portrait')) category = 'Portrait'
         else if (style.includes('modern')) category = 'Modern'
       }

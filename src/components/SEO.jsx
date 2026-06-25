@@ -28,7 +28,7 @@ export default function SEO({
     document.title = title ? `${title} | ${baseTitle}` : baseTitle
 
     // 2. Update Meta Description
-    const finalDescription = description || 'Buy handpainted paintings online in India. Custom wall art, landscape paintings, calligraphy art, abstract paintings & still life canvas art. Handmade by talented local artists, delivered wall-ready to your door.'
+    const finalDescription = description || 'Artlor is a platform that connects artists and clients to create custom handpainted paintings. Commission custom sceneries, calligraphy, abstract & still life art from local artists.'
     updateMetaTag('name', 'description', finalDescription)
 
     // 3. Update Keywords
@@ -90,7 +90,7 @@ export default function SEO({
       'url': origin,
       'logo': `${origin}/brand/artlor-logo.png`,
       'image': `${origin}/brand/hero-painting-bg.png`,
-      'description': 'Buy handpainted paintings online in India. Custom wall paintings, landscape art, calligraphy paintings, abstract art & still life canvas paintings by local Indian artists.',
+      'description': 'Artlor is a platform that connects artists and clients to create custom handpainted paintings. Commission custom sceneries, calligraphy, abstract & still life art from local artists.',
       'telephone': '+91-XXXXXXXXXX',
       'priceRange': '$$',
       'sameAs': [
@@ -111,7 +111,7 @@ export default function SEO({
       '@id': `${origin}/#website`,
       'name': 'Artlor',
       'url': origin,
-      'description': 'Buy paintings online India. Custom wall art, canvas paintings & handmade artwork by local artists.',
+      'description': 'Artlor is a platform that connects artists and clients for custom handpainted wall art and canvas paintings.',
       'publisher': {
         '@id': `${origin}/#organization`
       },

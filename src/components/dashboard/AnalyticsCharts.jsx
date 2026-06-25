@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 const STYLE_COLORS = {
   Calligraphy: '#c9934a',
   Landscape:   '#7eb8a4',
+  Sceneries:   '#7eb8a4',
   Abstract:    '#9b8ec4',
   'Still Life': '#e07b7b',
   Other:        '#6b7280',

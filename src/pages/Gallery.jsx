@@ -6,7 +6,7 @@ import SEO from '../components/SEO'
 import { galleryPaintings } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
 
-const filters = ['All', 'Landscape', 'Calligraphy', 'Abstract', 'Still Life']
+const filters = ['All', 'Sceneries', 'Calligraphy', 'Abstract', 'Still Life']
 
 function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -35,7 +35,7 @@ function Gallery() {
       "@context": "https://schema.org",
       "@type": "ItemList",
       "name": `Artlor Curated ${activeFilter === 'All' ? 'Art' : activeFilter} Gallery`,
-      "description": `Browse our collection of handpainted ${activeFilter === 'All' ? 'landscape, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings. Buy wall art online India from local artists.`,
+      "description": `Browse our collection of handpainted ${activeFilter === 'All' ? 'sceneries, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings. Buy wall art online India from local artists.`,
       "numberOfItems": paintings.length,
       "itemListElement": paintings.map((painting, index) => {
         const imagePath = painting.image.startsWith('/') ? painting.image : `/${painting.image}`
@@ -72,7 +72,7 @@ function Gallery() {
     <main className="paper-bg page-pad min-h-screen">
       <SEO 
         title={`${activeFilter === 'All' ? 'Paintings Gallery' : activeFilter + ' Paintings'} | Buy Wall Art Online India`}
-        description={`Browse and buy handpainted ${activeFilter === 'All' ? 'landscape, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings online. Wall art & canvas paintings by local Indian artists.`}
+        description={`Browse and buy handpainted ${activeFilter === 'All' ? 'sceneries, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings online. Wall art & canvas paintings by local Indian artists.`}
         keywords={`buy paintings online India, ${activeFilter.toLowerCase()} paintings, wall paintings, canvas art, handmade paintings, wall art India, home decor paintings`}
         schemaData={gallerySchema}
         breadcrumbPaths={galleryBreadcrumb}
@@ -196,7 +196,7 @@ function Gallery() {
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-display text-brand-dark text-2xl">{painting.title}</h3>
+                <h3 className="font-display text-brand-dark text-2xl">{painting.style}</h3>
                 <p className="text-brand-brown/80 mt-1 font-body text-sm">{painting.artist}</p>
               </div>
             </motion.article>

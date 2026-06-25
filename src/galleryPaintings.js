@@ -48,14 +48,14 @@ export const galleryPaintings = [
   {
     id: 5,
     title: 'Stone & Stream',
-    style: 'Landscape',
+    style: 'Sceneries',
     artist: 'Hammad',
     image: galleryImages.landscapeBridgeHammad,
   },
   {
     id: 6,
     title: 'Teal Road, Autumn Hills',
-    style: 'Landscape',
+    style: 'Sceneries',
     artist: 'Hammad',
     image: galleryImages.landscapeVintageHammad,
   },
