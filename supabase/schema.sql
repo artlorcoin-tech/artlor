@@ -88,11 +88,12 @@ comment on table public.profiles is 'User profiles. Can be linked to Supabase Au
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, email)
+  insert into public.profiles (id, full_name, email, avatar_url)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'full_name', ''),
-    coalesce(new.email, '')
+    coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', ''),
+    coalesce(new.email, ''),
+    coalesce(new.raw_user_meta_data ->> 'avatar_url', new.raw_user_meta_data ->> 'picture', '')
   );
   return new;
 end;
@@ -102,12 +103,13 @@ $$ language plpgsql security definer;
 do $$
 begin
   if exists (select 1 from information_schema.tables where table_schema = 'auth' and table_name = 'users') then
-    drop trigger if exists on_auth_user_created on auth.users;
-    create trigger on_auth_user_created
+    execute 'drop trigger if exists on_auth_user_created on auth.users';
+    execute 'create trigger on_auth_user_created
       after insert on auth.users
-      for each row execute function public.handle_new_user();
+      for each row execute function public.handle_new_user()';
   end if;
 end $$;
+
 
 
 -- ═══════════════════════════════════════════════════════════════════════
@@ -363,10 +365,12 @@ end $$;
 -- ── Profiles ──
 alter table public.profiles enable row level security;
 
+drop policy if exists "Users can view own profile" on public.profiles;
 create policy "Users can view own profile"
   on public.profiles for select
   using (auth.uid() = id);
 
+drop policy if exists "Users can update own profile" on public.profiles;
 create policy "Users can update own profile"
   on public.profiles for update
   using (auth.uid() = id);
@@ -374,11 +378,13 @@ create policy "Users can update own profile"
 -- ── Artists (public read, self-edit) ──
 alter table public.artists enable row level security;
 
+drop policy if exists "Anyone can view artists" on public.artists;
 create policy "Anyone can view artists"
   on public.artists for select
   to anon, authenticated
   using (true);
 
+drop policy if exists "Artists can update own profile" on public.artists;
 create policy "Artists can update own profile"
   on public.artists for update
   using (profile_id = auth.uid());
@@ -386,6 +392,7 @@ create policy "Artists can update own profile"
 -- ── Artworks (public read) ──
 alter table public.artworks enable row level security;
 
+drop policy if exists "Anyone can view artworks" on public.artworks;
 create policy "Anyone can view artworks"
   on public.artworks for select
   to anon, authenticated
@@ -394,26 +401,31 @@ create policy "Anyone can view artworks"
 -- ── Orders ──
 alter table public.orders enable row level security;
 
+drop policy if exists "Anon can insert orders" on public.orders;
 create policy "Anon can insert orders"
   on public.orders for insert
   to anon
   with check (true);
 
+drop policy if exists "Authenticated can insert orders" on public.orders;
 create policy "Authenticated can insert orders"
   on public.orders for insert
   to authenticated
   with check (true);
 
+drop policy if exists "Anon can read orders" on public.orders;
 create policy "Anon can read orders"
   on public.orders for select
   to anon
   using (true);
 
+drop policy if exists "Customers can view own orders" on public.orders;
 create policy "Customers can view own orders"
   on public.orders for select
   to authenticated
   using (customer_id = auth.uid());
 
+drop policy if exists "Assigned artist can view order" on public.orders;
 create policy "Assigned artist can view order"
   on public.orders for select
   to authenticated
@@ -426,6 +438,7 @@ create policy "Assigned artist can view order"
 -- ── Order Rejections ──
 alter table public.order_rejections enable row level security;
 
+drop policy if exists "Anon can read rejections" on public.order_rejections;
 create policy "Anon can read rejections"
   on public.order_rejections for select
   to anon
@@ -434,11 +447,13 @@ create policy "Anon can read rejections"
 -- ── Reviews (public read, customer write) ──
 alter table public.reviews enable row level security;
 
+drop policy if exists "Anyone can view reviews" on public.reviews;
 create policy "Anyone can view reviews"
   on public.reviews for select
   to anon, authenticated
   using (true);
 
+drop policy if exists "Customers can create reviews" on public.reviews;
 create policy "Customers can create reviews"
   on public.reviews for insert
   to authenticated
@@ -447,11 +462,13 @@ create policy "Customers can create reviews"
 -- ── Notifications (private) ──
 alter table public.notifications enable row level security;
 
+drop policy if exists "Users see own notifications" on public.notifications;
 create policy "Users see own notifications"
   on public.notifications for select
   to authenticated
   using (user_id = auth.uid());
 
+drop policy if exists "Users can mark own notifications read" on public.notifications;
 create policy "Users can mark own notifications read"
   on public.notifications for update
   to authenticated
@@ -493,6 +510,10 @@ insert into public.artworks (id, title, style, artist_name, image_path) values
   (7, 'Monochrome Flow',          'Abstract',    'Muntaza', 'gallery/abstract-monochrome-muntaza.png'),
   (8, 'Florals in Bloom',         'Still Life',  'Seebah',  'gallery/still-life-florals-seebah.png')
 on conflict (id) do nothing;
+
+-- Update the auto-incrementing serial sequence to match the max id seeded above
+select setval(pg_get_serial_sequence('public.artworks', 'id'), coalesce((select max(id) from public.artworks), 1));
+
 
 
 -- ═══════════════════════════════════════════════════════════════════════

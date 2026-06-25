@@ -30,6 +30,7 @@ create table if not exists public.quick_orders (
 alter table public.quick_orders enable row level security;
 
 -- Allow anonymous inserts (the storefront uses the anon key)
+drop policy if exists "Allow anonymous inserts for quick_orders" on public.quick_orders;
 create policy "Allow anonymous inserts for quick_orders"
   on public.quick_orders
   for insert
@@ -37,8 +38,10 @@ create policy "Allow anonymous inserts for quick_orders"
   with check (true);
 
 -- Allow anonymous reads so the dashboard can list quick orders
+drop policy if exists "Allow anonymous reads for quick_orders" on public.quick_orders;
 create policy "Allow anonymous reads for quick_orders"
   on public.quick_orders
   for select
   to anon
   using (true);
+

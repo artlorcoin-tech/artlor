@@ -131,7 +131,7 @@ function SiteFooter() {
             </div>
             <div>
               <h2 className="font-display text-base font-semibold tracking-tight text-[var(--brand-dark)]">
-                Muneef
+                Muhammad Muneef
               </h2>
               <ul className="mt-2 space-y-1.5 text-xs">
                 {muneefLinks.slice(1).map((item) => (
