@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Upload, Trash2, Image as ImageIcon, Plus, CheckCircle,
-  AlertCircle, RefreshCw, ExternalLink, Tag, Edit3, Save, Layers
+  AlertCircle, RefreshCw, ExternalLink, Tag, Edit3, Save, Layers, Sparkles, X
 } from 'lucide-react'
 import { publicUrl } from '../../publicUrl'
 import {
   supabaseGetGalleryPaintings,
   supabaseUpdateGalleryPainting,
+  supabaseAddGalleryPainting,
   supabaseGetGalleryReferences,
   supabaseAddGalleryReference,
   supabaseDeleteGalleryReference,
@@ -21,8 +22,20 @@ export default function GalleryReferencesAdmin() {
   const [loading, setLoading] = useState(false)
   const [savingPainting, setSavingPainting] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [creatingPainting, setCreatingPainting] = useState(false)
+  const [showAddPaintingModal, setShowAddPaintingModal] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  // New Painting Form State
+  const [newTitle, setNewTitle] = useState('')
+  const [newStyle, setNewStyle] = useState('Calligraphy')
+  const [newCustomCategory, setNewCustomCategory] = useState('')
+  const [newArtist, setNewArtist] = useState('Artlor Artist')
+  const [newImageFile, setNewImageFile] = useState(null)
+  const [newImagePreview, setNewImagePreview] = useState('')
+  const [newImageUrl, setNewImageUrl] = useState('')
+  const [newImageMode, setNewImageMode] = useState('file') // 'file' | 'url'
 
   // Painting Edit Form State
   const [editTitle, setEditTitle] = useState('')
@@ -31,11 +44,11 @@ export default function GalleryReferencesAdmin() {
   const [editArtist, setEditArtist] = useState('')
 
   // Reference Upload Form State
-  const [file, setFile] = useState(null)
-  const [filePreview, setFilePreview] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [caption, setCaption] = useState('')
-  const [uploadMode, setUploadMode] = useState('file') // 'file' | 'url'
+  const [refFile, setRefFile] = useState(null)
+  const [refFilePreview, setRefFilePreview] = useState('')
+  const [refImageUrl, setRefImageUrl] = useState('')
+  const [refCaption, setRefCaption] = useState('')
+  const [refUploadMode, setRefUploadMode] = useState('file')
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -49,7 +62,6 @@ export default function GalleryReferencesAdmin() {
       setReferences(refsData)
 
       if (paintingsData.length > 0) {
-        // Retain current selection if valid, or pick first
         setSelectedPainting((prev) => {
           if (!prev) return paintingsData[0]
           return paintingsData.find((p) => String(p.id) === String(prev.id)) || paintingsData[0]
@@ -67,7 +79,6 @@ export default function GalleryReferencesAdmin() {
     loadData()
   }, [loadData])
 
-  // Sync edit form fields when selected painting changes
   useEffect(() => {
     if (selectedPainting) {
       setEditTitle(selectedPainting.title || '')
@@ -77,7 +88,69 @@ export default function GalleryReferencesAdmin() {
     }
   }, [selectedPainting])
 
-  // Save Painting Title & Style/Category edits
+  // Derive unique categories across paintings
+  const existingCategories = Array.from(
+    new Set(['Calligraphy', 'Sceneries', 'Abstract', 'Still Life', ...paintings.map((p) => p.style).filter(Boolean)])
+  )
+
+  // Handle Creating a Brand New Painting
+  const handleCreatePainting = async (e) => {
+    e.preventDefault()
+    setCreatingPainting(true)
+    setError('')
+    setSuccess('')
+
+    const finalStyle = (newStyle === '__NEW__' ? newCustomCategory : newStyle).trim()
+
+    if (!newTitle.trim()) {
+      setError('Painting title is required.')
+      setCreatingPainting(false)
+      return
+    }
+    if (!finalStyle) {
+      setError('Category / Style is required.')
+      setCreatingPainting(false)
+      return
+    }
+
+    try {
+      let finalImgUrl = newImageUrl.trim()
+      if (newImageMode === 'file') {
+        if (!newImageFile) {
+          throw new Error('Please select an artwork image file.')
+        }
+        finalImgUrl = await supabaseUploadGalleryReferenceFile(newImageFile)
+      } else {
+        if (!finalImgUrl) {
+          throw new Error('Please enter a valid artwork image URL.')
+        }
+      }
+
+      const created = await supabaseAddGalleryPainting({
+        title: newTitle.trim(),
+        style: finalStyle,
+        artist: newArtist.trim() || 'Artlor Artist',
+        image: finalImgUrl,
+      })
+
+      setSuccess(`🎉 Successfully added new painting "${created.title}" to Gallery!`)
+      setShowAddPaintingModal(false)
+      setNewTitle('')
+      setNewImageFile(null)
+      setNewImagePreview('')
+      setNewImageUrl('')
+      setNewCustomCategory('')
+      await loadData()
+      if (created) setSelectedPainting(created)
+    } catch (err) {
+      console.error(err)
+      setError(err.message || 'Failed to create new painting.')
+    } finally {
+      setCreatingPainting(false)
+    }
+  }
+
+  // Save Painting Details Edits
   const handleSavePainting = async (e) => {
     e.preventDefault()
     if (!selectedPainting) return
@@ -106,7 +179,7 @@ export default function GalleryReferencesAdmin() {
         artist: editArtist.trim() || selectedPainting.artist,
       })
 
-      setSuccess(`Updated "${updated.title}" successfully!`)
+      setSuccess(`Updated "${updated.title}" details!`)
       await loadData()
     } catch (err) {
       console.error(err)
@@ -114,14 +187,6 @@ export default function GalleryReferencesAdmin() {
     } finally {
       setSavingPainting(false)
     }
-  }
-
-  const handleFileChange = (e) => {
-    const selected = e.target.files?.[0]
-    if (!selected) return
-    setFile(selected)
-    const previewUrl = URL.createObjectURL(selected)
-    setFilePreview(previewUrl)
   }
 
   const handleAddReference = async (e) => {
@@ -132,13 +197,13 @@ export default function GalleryReferencesAdmin() {
     setUploading(true)
 
     try {
-      let finalUrl = imageUrl.trim()
+      let finalUrl = refImageUrl.trim()
 
-      if (uploadMode === 'file') {
-        if (!file) {
+      if (refUploadMode === 'file') {
+        if (!refFile) {
           throw new Error('Please select an image file to upload.')
         }
-        finalUrl = await supabaseUploadGalleryReferenceFile(file)
+        finalUrl = await supabaseUploadGalleryReferenceFile(refFile)
       } else {
         if (!finalUrl) {
           throw new Error('Please enter a valid image URL.')
@@ -149,14 +214,14 @@ export default function GalleryReferencesAdmin() {
         painting_id: selectedPainting.id,
         painting_title: editTitle.trim() || selectedPainting.title,
         image_url: finalUrl,
-        caption: caption.trim() || 'Reference Image',
+        caption: refCaption.trim() || 'Reference Image',
       })
 
       setSuccess(`Reference picture added for "${editTitle || selectedPainting.title}"!`)
-      setFile(null)
-      setFilePreview('')
-      setImageUrl('')
-      setCaption('')
+      setRefFile(null)
+      setRefFilePreview('')
+      setRefImageUrl('')
+      setRefCaption('')
       await loadData()
     } catch (err) {
       console.error(err)
@@ -179,36 +244,41 @@ export default function GalleryReferencesAdmin() {
     }
   }
 
-  // Derive all unique categories across paintings
-  const existingCategories = Array.from(
-    new Set(paintings.map((p) => p.style).filter(Boolean))
-  )
-
   const paintingRefs = selectedPainting
     ? references.filter((r) => String(r.painting_id) === String(selectedPainting.id))
     : []
 
   return (
     <div className="space-y-8">
-      {/* Top Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.07] pb-4">
+      {/* Header Bar with Action Button */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/[0.07] pb-4">
         <div>
           <h2 className="font-display text-xl font-medium text-white flex items-center gap-2">
             <ImageIcon className="h-5 w-5 text-[#c9934a]" />
-            Gallery &amp; Reference Management
+            Gallery &amp; Artwork Management
           </h2>
           <p className="font-body text-xs text-white/50">
-            Edit painting titles, categories/styles, artist names, and manage reference photos.
+            Add new paintings, update titles &amp; categories, or attach customer reference photos.
           </p>
         </div>
-        <button
-          onClick={loadData}
-          disabled={loading}
-          className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-xs font-body text-white/70 hover:bg-white/[0.08] hover:text-white transition disabled:opacity-50 cursor-pointer"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowAddPaintingModal(true)}
+            className="flex items-center gap-2 rounded-xl bg-[linear-gradient(125deg,var(--brand-brown-deep)_0%,var(--brand-brown)_52%,var(--brand-gold)_100%)] px-4 py-2.5 font-body text-xs font-semibold text-white shadow-md hover:opacity-90 transition cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            + Add New Painting to Gallery
+          </button>
+
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.04] px-3 py-2.5 text-xs font-body text-white/70 hover:bg-white/[0.08] hover:text-white transition disabled:opacity-50 cursor-pointer"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Alert Notifications */}
@@ -237,11 +307,20 @@ export default function GalleryReferencesAdmin() {
         )}
       </AnimatePresence>
 
-      {/* 1. Painting Selector Bar */}
+      {/* Paintings Carousel Selection */}
       <div>
-        <label className="mb-3 block font-body text-xs font-semibold uppercase tracking-widest text-white/40">
-          Select Painting to Edit &amp; Attach References ({paintings.length})
-        </label>
+        <div className="flex items-center justify-between mb-3">
+          <label className="font-body text-xs font-semibold uppercase tracking-widest text-white/40">
+            Select Painting to Edit or Attach References ({paintings.length})
+          </label>
+          <button
+            onClick={() => setShowAddPaintingModal(true)}
+            className="text-xs font-body text-[#c9934a] hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <Plus className="h-3 w-3" /> Add New Artwork
+          </button>
+        </div>
+
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
           {paintings.map((painting) => {
             const count = references.filter((r) => String(r.painting_id) === String(painting.id)).length
@@ -299,13 +378,12 @@ export default function GalleryReferencesAdmin() {
                     Editing Artwork #{selectedPainting.id}
                   </p>
                   <h3 className="font-display text-base font-medium text-white">
-                    Edit Painting &amp; Category
+                    Edit Title &amp; Category
                   </h3>
                 </div>
               </div>
 
               <form onSubmit={handleSavePainting} className="space-y-4">
-                {/* Title */}
                 <div>
                   <label className="mb-1 block font-body text-xs text-white/70 flex items-center gap-1.5">
                     <Edit3 className="h-3.5 w-3.5 text-[#c9934a]" />
@@ -321,7 +399,6 @@ export default function GalleryReferencesAdmin() {
                   />
                 </div>
 
-                {/* Category / Style */}
                 <div>
                   <label className="mb-1 block font-body text-xs text-white/70 flex items-center gap-1.5">
                     <Layers className="h-3.5 w-3.5 text-[#c9934a]" />
@@ -347,14 +424,13 @@ export default function GalleryReferencesAdmin() {
                         required
                         value={customCategory}
                         onChange={(e) => setCustomCategory(e.target.value)}
-                        placeholder="Type new category name (e.g. Modern Resin, Islamic Art)"
+                        placeholder="Type new category name (e.g. Modern Resin)"
                         className="w-full rounded-xl border border-[#c9934a]/60 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:outline-none"
                       />
                     </div>
                   )}
                 </div>
 
-                {/* Artist Name */}
                 <div>
                   <label className="mb-1 block font-body text-xs text-white/70">
                     Artist Name
@@ -393,57 +469,62 @@ export default function GalleryReferencesAdmin() {
               <div className="border-b border-white/[0.07] pb-3">
                 <h3 className="font-display text-base font-medium text-white flex items-center gap-2">
                   <Upload className="h-4 w-4 text-[#c9934a]" />
-                  Upload Reference Photo
+                  Attach Reference Photo
                 </h3>
                 <p className="font-body text-xs text-white/40">
-                  Attach real customer photos or detail shots for "{editTitle || selectedPainting.title}"
+                  Attach customer room photos or detail shots for "{editTitle || selectedPainting.title}"
                 </p>
               </div>
 
               <form onSubmit={handleAddReference} className="space-y-4">
-                {/* Upload Mode Switch */}
                 <div className="flex gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1">
                   <button
                     type="button"
-                    onClick={() => setUploadMode('file')}
+                    onClick={() => setRefUploadMode('file')}
                     className={`flex-1 rounded-lg py-1.5 font-body text-xs font-medium transition ${
-                      uploadMode === 'file' ? 'bg-[rgba(201,147,74,0.2)] text-[#c9934a]' : 'text-white/40'
+                      refUploadMode === 'file' ? 'bg-[rgba(201,147,74,0.2)] text-[#c9934a]' : 'text-white/40'
                     }`}
                   >
                     Upload File
                   </button>
                   <button
                     type="button"
-                    onClick={() => setUploadMode('url')}
+                    onClick={() => setRefUploadMode('url')}
                     className={`flex-1 rounded-lg py-1.5 font-body text-xs font-medium transition ${
-                      uploadMode === 'url' ? 'bg-[rgba(201,147,74,0.2)] text-[#c9934a]' : 'text-white/40'
+                      refUploadMode === 'url' ? 'bg-[rgba(201,147,74,0.2)] text-[#c9934a]' : 'text-white/40'
                     }`}
                   >
                     Paste Image URL
                   </button>
                 </div>
 
-                {uploadMode === 'file' ? (
+                {refUploadMode === 'file' ? (
                   <div>
-                    <div className="relative flex min-h-[100px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/[0.02] p-4 text-center hover:border-[#c9934a]/60 hover:bg-white/[0.04]">
+                    <div className="relative flex min-h-[90px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/[0.02] p-4 text-center hover:border-[#c9934a]/60 hover:bg-white/[0.04]">
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleFileChange}
+                        onChange={(e) => {
+                          const selected = e.target.files?.[0]
+                          if (selected) {
+                            setRefFile(selected)
+                            setRefFilePreview(URL.createObjectURL(selected))
+                          }
+                        }}
                         className="absolute inset-0 opacity-0 cursor-pointer"
                       />
-                      {filePreview ? (
+                      {refFilePreview ? (
                         <div className="relative w-full flex items-center gap-3">
-                          <img src={filePreview} alt="Preview" className="h-14 w-14 rounded-lg object-cover border border-white/20" />
+                          <img src={refFilePreview} alt="Preview" className="h-12 w-12 rounded-lg object-cover border border-white/20" />
                           <div className="text-left overflow-hidden">
-                            <p className="truncate font-body text-xs text-white font-medium">{file?.name}</p>
-                            <p className="font-body text-[10px] text-white/40">{(file.size / 1024).toFixed(1)} KB</p>
+                            <p className="truncate font-body text-xs text-white font-medium">{refFile?.name}</p>
+                            <p className="font-body text-[10px] text-white/40">{(refFile.size / 1024).toFixed(1)} KB</p>
                           </div>
                         </div>
                       ) : (
                         <>
                           <Upload className="mb-1 h-5 w-5 text-[#c9934a]" />
-                          <p className="font-body text-xs text-white/80">Click or drag photo here</p>
+                          <p className="font-body text-xs text-white/80">Click or drag reference photo</p>
                         </>
                       )}
                     </div>
@@ -452,24 +533,20 @@ export default function GalleryReferencesAdmin() {
                   <div>
                     <input
                       type="url"
-                      placeholder="https://example.com/photo.jpg"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://example.com/customer-photo.jpg"
+                      value={refImageUrl}
+                      onChange={(e) => setRefImageUrl(e.target.value)}
                       className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="mb-1 block font-body text-xs text-white/70 flex items-center gap-1">
-                    <Tag className="h-3 w-3 text-[#c9934a]" />
-                    Photo Caption / Tag
-                  </label>
                   <input
                     type="text"
-                    placeholder="e.g. Living room wall preview, stroke close-up"
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
+                    placeholder="Caption (e.g. Living room wall preview)"
+                    value={refCaption}
+                    onChange={(e) => setRefCaption(e.target.value)}
                     className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
                   />
                 </div>
@@ -477,12 +554,12 @@ export default function GalleryReferencesAdmin() {
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(125deg,var(--brand-brown-deep)_0%,var(--brand-brown)_52%,var(--brand-gold)_100%)] px-4 py-3 font-body text-xs font-semibold text-white shadow-lg transition hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/10 border border-white/20 px-4 py-2.5 font-body text-xs font-semibold text-white hover:bg-white/20 transition disabled:opacity-50 cursor-pointer"
                 >
                   {uploading ? (
                     <>
                       <RefreshCw className="h-4 w-4 animate-spin" />
-                      Uploading Photo...
+                      Uploading...
                     </>
                   ) : (
                     <>
@@ -503,7 +580,7 @@ export default function GalleryReferencesAdmin() {
                   Attached Reference Photos ({paintingRefs.length})
                 </h3>
                 <p className="font-body text-xs text-white/40">
-                  Showing references for "{editTitle || selectedPainting.title}"
+                  Showing customer photos for "{editTitle || selectedPainting.title}"
                 </p>
               </div>
               <span className="rounded-full border border-[#c9934a]/30 bg-[rgba(201,147,74,0.1)] px-2.5 py-1 font-body text-[10px] font-medium text-[#c9934a]">
@@ -518,7 +595,7 @@ export default function GalleryReferencesAdmin() {
                   No reference photos attached yet.
                 </p>
                 <p className="font-body text-[11px] text-white/30 max-w-xs mt-1">
-                  Upload customer photos or angle shots using the upload card on the left.
+                  Upload customer photos or angle shots using the upload section.
                 </p>
               </div>
             ) : (
@@ -570,6 +647,197 @@ export default function GalleryReferencesAdmin() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Modal: + Add Brand New Painting to Gallery */}
+      {showAddPaintingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0d0d0f] p-6 shadow-2xl space-y-5"
+          >
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="rounded-full bg-[rgba(201,147,74,0.15)] p-2 text-[#c9934a]">
+                  <Sparkles className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-medium text-white">
+                    Add New Painting to Gallery
+                  </h3>
+                  <p className="font-body text-xs text-white/40">
+                    Upload a new artwork image, specify title, category, and artist.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowAddPaintingModal(false)}
+                className="rounded-lg p-1.5 text-white/40 hover:bg-white/10 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreatePainting} className="space-y-4">
+              {/* Title */}
+              <div>
+                <label className="mb-1 block font-body text-xs font-medium text-white/80">
+                  Painting Title *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Celestial Harmony, Golden Horizon"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
+                />
+              </div>
+
+              {/* Category / Style */}
+              <div>
+                <label className="mb-1 block font-body text-xs font-medium text-white/80">
+                  Category / Style *
+                </label>
+                <select
+                  value={newStyle}
+                  onChange={(e) => setNewStyle(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-[#161619] px-3.5 py-2.5 font-body text-xs text-white focus:border-[#c9934a] focus:outline-none cursor-pointer"
+                >
+                  {existingCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                  <option value="__NEW__">+ Type Custom New Category...</option>
+                </select>
+
+                {newStyle === '__NEW__' && (
+                  <input
+                    type="text"
+                    required
+                    placeholder="Type new category name (e.g. Resin Art, Architecture)"
+                    value={newCustomCategory}
+                    onChange={(e) => setNewCustomCategory(e.target.value)}
+                    className="mt-2 w-full rounded-xl border border-[#c9934a]/60 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:outline-none"
+                  />
+                )}
+              </div>
+
+              {/* Artist Name */}
+              <div>
+                <label className="mb-1 block font-body text-xs font-medium text-white/80">
+                  Artist Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Maryam, Muntaza, Hammad"
+                  value={newArtist}
+                  onChange={(e) => setNewArtist(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
+                />
+              </div>
+
+              {/* Image Upload Mode */}
+              <div>
+                <label className="mb-2 block font-body text-xs font-medium text-white/80">
+                  Artwork Image *
+                </label>
+
+                <div className="mb-3 flex gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] p-1">
+                  <button
+                    type="button"
+                    onClick={() => setNewImageMode('file')}
+                    className={`flex-1 rounded-lg py-1.5 font-body text-xs font-medium transition ${
+                      newImageMode === 'file' ? 'bg-[rgba(201,147,74,0.2)] text-[#c9934a]' : 'text-white/40'
+                    }`}
+                  >
+                    Upload Image File
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewImageMode('url')}
+                    className={`flex-1 rounded-lg py-1.5 font-body text-xs font-medium transition ${
+                      newImageMode === 'url' ? 'bg-[rgba(201,147,74,0.2)] text-[#c9934a]' : 'text-white/40'
+                    }`}
+                  >
+                    Paste Image URL
+                  </button>
+                </div>
+
+                {newImageMode === 'file' ? (
+                  <div className="relative flex min-h-[110px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/[0.02] p-4 text-center hover:border-[#c9934a]/60 hover:bg-white/[0.04]">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          setNewImageFile(file)
+                          setNewImagePreview(URL.createObjectURL(file))
+                        }
+                      }}
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                    />
+                    {newImagePreview ? (
+                      <div className="relative flex items-center gap-3">
+                        <img src={newImagePreview} alt="Preview" className="h-16 w-16 rounded-lg object-cover border border-[#c9934a]/40" />
+                        <div className="text-left overflow-hidden">
+                          <p className="truncate font-body text-xs text-white font-medium">{newImageFile?.name}</p>
+                          <p className="font-body text-[10px] text-white/40">{(newImageFile.size / 1024).toFixed(1)} KB</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="mb-1.5 h-6 w-6 text-[#c9934a]" />
+                        <p className="font-body text-xs text-white/80">Click to upload artwork image</p>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <input
+                    type="url"
+                    placeholder="https://example.com/painting.png"
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
+                  />
+                )}
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddPaintingModal(false)}
+                  className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] py-2.5 font-body text-xs text-white/70 hover:bg-white/10"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={creatingPainting}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[linear-gradient(125deg,var(--brand-brown-deep)_0%,var(--brand-brown)_52%,var(--brand-gold)_100%)] py-2.5 font-body text-xs font-semibold text-white shadow-lg hover:opacity-90 disabled:opacity-50 cursor-pointer"
+                >
+                  {creatingPainting ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Creating Painting...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" />
+                      Publish to Gallery
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </motion.div>
         </div>
       )}
     </div>

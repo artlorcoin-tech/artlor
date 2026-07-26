@@ -266,32 +266,39 @@ export async function supabaseUploadGalleryReferenceFile(file) {
 
 
 /**
- * Fetch all gallery paintings from `gallery_paintings` table.
- * Falls back to default `galleryPaintings` static array if table not populated yet.
+ * Fetch all gallery paintings from `gallery_paintings` table (or static fallback + custom local paintings).
  *
  * @returns {Promise<Array>}
  */
 export async function supabaseGetGalleryPaintings() {
+  const { galleryPaintings } = await import('../galleryPaintings')
+  let paintingsList = [...galleryPaintings]
+
   try {
     const data = await supabaseSelect('gallery_paintings', 'order=id.asc')
     if (data && data.length > 0) {
-      // Merge with local overrides if any exist in localStorage
-      const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
-      return data.map(p => ({
-        ...p,
-        ...(localEdits[p.id] || {})
-      }))
+      paintingsList = data
     }
   } catch (err) {
-    console.warn('[Supabase] Fetch gallery_paintings table failed, using static/local fallback:', err.message)
+    console.warn('[Supabase] Fetch gallery_paintings table failed, using fallback:', err.message)
   }
 
-  // Fallback to static list + local overrides
-  const { galleryPaintings } = await import('../galleryPaintings')
+  // Combine custom newly created paintings stored locally
+  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const merged = [...paintingsList]
+
+  // Add custom paintings if not already in list
+  customPaintings.forEach((custom) => {
+    if (!merged.some((p) => String(p.id) === String(custom.id))) {
+      merged.push(custom)
+    }
+  })
+
+  // Apply edits (titles/categories)
   const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
-  return galleryPaintings.map(p => ({
+  return merged.map((p) => ({
     ...p,
-    ...(localEdits[p.id] || {})
+    ...(localEdits[p.id] || {}),
   }))
 }
 
@@ -303,10 +310,15 @@ export async function supabaseGetGalleryPaintings() {
  * @returns {Promise<object>}
  */
 export async function supabaseUpdateGalleryPainting(id, updates) {
-  // Always update local cache fallback
+  // Update local cache fallback
   const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
   localEdits[id] = { ...(localEdits[id] || {}), ...updates }
   localStorage.setItem('artlor_painting_edits', JSON.stringify(localEdits))
+
+  // Update in custom paintings if present
+  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const updatedCustoms = customPaintings.map((c) => (String(c.id) === String(id) ? { ...c, ...updates } : c))
+  localStorage.setItem('artlor_custom_paintings', JSON.stringify(updatedCustoms))
 
   // Try updating Supabase table
   try {
@@ -340,13 +352,37 @@ export async function supabaseUpdateGalleryPainting(id, updates) {
  * @returns {Promise<object>}
  */
 export async function supabaseAddGalleryPainting(paintingData) {
-  try {
-    const data = await supabaseInsert('gallery_paintings', paintingData)
-    return data[0] || data
-  } catch (err) {
-    console.warn('[Supabase] Add gallery painting failed:', err.message)
-    throw err
+  const newPainting = {
+    id: Date.now(),
+    title: paintingData.title,
+    style: paintingData.style,
+    artist: paintingData.artist || 'Artlor Artist',
+    image: paintingData.image,
+    created_at: new Date().toISOString(),
   }
+
+  // Always save to custom local cache for instant UI rendering
+  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  customPaintings.push(newPainting)
+  localStorage.setItem('artlor_custom_paintings', JSON.stringify(customPaintings))
+
+  // Try inserting into Supabase table
+  try {
+    const data = await supabaseInsert('gallery_paintings', {
+      title: newPainting.title,
+      style: newPainting.style,
+      artist: newPainting.artist,
+      image: newPainting.image,
+    })
+    if (data && data.length > 0) {
+      return data[0]
+    }
+  } catch (err) {
+    console.warn('[Supabase] Add gallery painting to table failed, using local cache:', err.message)
+  }
+
+  return newPainting
 }
+
 
 
