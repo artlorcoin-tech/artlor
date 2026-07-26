@@ -5,27 +5,46 @@ import { Image as ImageIcon, Sparkles } from 'lucide-react'
 import BrandHeader from '../components/BrandHeader'
 import SEO from '../components/SEO'
 import GalleryReferenceModal from '../components/GalleryReferenceModal'
-import { galleryPaintings } from '../galleryPaintings'
+import { galleryPaintings as initialGalleryPaintings } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
-import { supabaseGetGalleryReferences } from '../lib/supabase'
+import { supabaseGetGalleryReferences, supabaseGetGalleryPaintings } from '../lib/supabase'
 
-const filters = ['All', 'Sceneries', 'Calligraphy', 'Abstract', 'Still Life']
+const defaultFilters = ['All', 'Sceneries', 'Calligraphy', 'Abstract', 'Still Life']
 
 function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams()
   const style = searchParams.get('style')
-  const activeFilter = style && filters.includes(style) ? style : 'All'
   const navigate = useNavigate()
   const prefersReducedMotion = useReducedMotion()
 
+  const [paintingsData, setPaintingsData] = useState(initialGalleryPaintings)
   const [references, setReferences] = useState([])
   const [selectedPaintingForModal, setSelectedPaintingForModal] = useState(null)
 
   useEffect(() => {
+    // Load dynamic paintings (with updated titles & categories)
+    supabaseGetGalleryPaintings()
+      .then((data) => {
+        if (data && data.length > 0) setPaintingsData(data)
+      })
+      .catch((err) => console.warn('[Gallery] Error loading paintings:', err))
+
+    // Load reference photos
     supabaseGetGalleryReferences()
       .then((data) => setReferences(data || []))
       .catch((err) => console.warn('[Gallery] Error loading references:', err))
   }, [])
+
+  // Dynamically compute category filters
+  const filters = useMemo(() => {
+    const categories = new Set(defaultFilters)
+    paintingsData.forEach((p) => {
+      if (p.style) categories.add(p.style)
+    })
+    return Array.from(categories)
+  }, [paintingsData])
+
+  const activeFilter = style && filters.includes(style) ? style : 'All'
 
   const selectFilter = (filter) => {
     if (filter === 'All') {
@@ -37,10 +56,11 @@ function Gallery() {
 
   const paintings = useMemo(() => {
     if (activeFilter === 'All') {
-      return galleryPaintings
+      return paintingsData
     }
-    return galleryPaintings.filter((painting) => painting.style === activeFilter)
-  }, [activeFilter])
+    return paintingsData.filter((painting) => painting.style === activeFilter)
+  }, [activeFilter, paintingsData])
+
 
   const gallerySchema = useMemo(() => {
     const origin = window.location.origin

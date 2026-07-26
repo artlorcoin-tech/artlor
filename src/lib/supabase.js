@@ -253,3 +253,88 @@ export async function supabaseUploadGalleryReferenceFile(file) {
   return publicUrl
 }
 
+/**
+ * Fetch all gallery paintings from `gallery_paintings` table.
+ * Falls back to default `galleryPaintings` static array if table not populated yet.
+ *
+ * @returns {Promise<Array>}
+ */
+export async function supabaseGetGalleryPaintings() {
+  try {
+    const data = await supabaseSelect('gallery_paintings', 'order=id.asc')
+    if (data && data.length > 0) {
+      // Merge with local overrides if any exist in localStorage
+      const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
+      return data.map(p => ({
+        ...p,
+        ...(localEdits[p.id] || {})
+      }))
+    }
+  } catch (err) {
+    console.warn('[Supabase] Fetch gallery_paintings table failed, using static/local fallback:', err.message)
+  }
+
+  // Fallback to static list + local overrides
+  const { galleryPaintings } = await import('../galleryPaintings')
+  const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
+  return galleryPaintings.map(p => ({
+    ...p,
+    ...(localEdits[p.id] || {})
+  }))
+}
+
+/**
+ * Update a painting's title, style/category, or artist in Supabase (and sync to LocalStorage fallback).
+ *
+ * @param {number|string} id - Painting ID
+ * @param {object} updates - { title, style, artist }
+ * @returns {Promise<object>}
+ */
+export async function supabaseUpdateGalleryPainting(id, updates) {
+  // Always update local cache fallback
+  const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
+  localEdits[id] = { ...(localEdits[id] || {}), ...updates }
+  localStorage.setItem('artlor_painting_edits', JSON.stringify(localEdits))
+
+  // Try updating Supabase table
+  try {
+    const url = `${SUPABASE_URL}/gallery_paintings?id=eq.${id}`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON,
+        Authorization: `Bearer ${SUPABASE_ANON}`,
+        Prefer: 'return=representation',
+      },
+      body: JSON.stringify(updates),
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      return data[0] || { id, ...updates }
+    }
+  } catch (err) {
+    console.warn('[Supabase] Could not update remote gallery_paintings table:', err.message)
+  }
+
+  return { id, ...updates }
+}
+
+/**
+ * Add a new custom painting to `gallery_paintings`.
+ *
+ * @param {object} paintingData - { title, style, artist, image }
+ * @returns {Promise<object>}
+ */
+export async function supabaseAddGalleryPainting(paintingData) {
+  try {
+    const data = await supabaseInsert('gallery_paintings', paintingData)
+    return data[0] || data
+  } catch (err) {
+    console.warn('[Supabase] Add gallery painting failed:', err.message)
+    throw err
+  }
+}
+
+
