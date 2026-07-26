@@ -264,9 +264,10 @@ function Gallery() {
                 </div>
                 <div className="p-4 flex items-center justify-between">
                   <div>
-                    <h3 className="font-display text-brand-dark text-xl">{painting.title}</h3>
-                    <p className="text-brand-brown/80 mt-0.5 font-body text-xs">{painting.style} by {painting.artist}</p>
+                    <h3 className="font-display text-brand-dark text-xl">{painting.title || painting.style || 'Artwork'}</h3>
+                    <p className="text-brand-brown/80 mt-0.5 font-body text-xs">{painting.style} by {painting.artist || 'Artlor Artist'}</p>
                   </div>
+
                   {refCount > 0 && (
                     <span className="text-[10px] font-body text-[var(--brand-brown)] bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
                       {refCount} photos

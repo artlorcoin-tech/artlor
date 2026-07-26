@@ -102,11 +102,6 @@ export default function GalleryReferencesAdmin() {
 
     const finalStyle = (newStyle === '__NEW__' ? newCustomCategory : newStyle).trim()
 
-    if (!newTitle.trim()) {
-      setError('Painting title is required.')
-      setCreatingPainting(false)
-      return
-    }
     if (!finalStyle) {
       setError('Category / Style is required.')
       setCreatingPainting(false)
@@ -126,8 +121,10 @@ export default function GalleryReferencesAdmin() {
         }
       }
 
+      const titleToSave = newTitle.trim() || `${finalStyle} Artwork`
+
       const created = await supabaseAddGalleryPainting({
-        title: newTitle.trim(),
+        title: titleToSave,
         style: finalStyle,
         artist: newArtist.trim() || 'Artlor Artist',
         image: finalImgUrl,
@@ -160,26 +157,22 @@ export default function GalleryReferencesAdmin() {
 
     const finalStyle = (editStyle === '__NEW__' ? customCategory : editStyle).trim()
 
-    if (!editTitle.trim()) {
-      setError('Painting Title cannot be empty.')
-      setSavingPainting(false)
-      return
-    }
-
     if (!finalStyle) {
       setError('Category / Style cannot be empty.')
       setSavingPainting(false)
       return
     }
 
+    const titleToSave = editTitle.trim() || finalStyle || 'Artwork'
+
     try {
       const updated = await supabaseUpdateGalleryPainting(selectedPainting.id, {
-        title: editTitle.trim(),
+        title: titleToSave,
         style: finalStyle,
         artist: editArtist.trim() || selectedPainting.artist,
       })
 
-      setSuccess(`Updated "${updated.title}" details!`)
+      setSuccess(`Updated details!`)
       await loadData()
     } catch (err) {
       console.error(err)
@@ -188,6 +181,7 @@ export default function GalleryReferencesAdmin() {
       setSavingPainting(false)
     }
   }
+
 
   const handleAddReference = async (e) => {
     e.preventDefault()
@@ -387,17 +381,17 @@ export default function GalleryReferencesAdmin() {
                 <div>
                   <label className="mb-1 block font-body text-xs text-white/70 flex items-center gap-1.5">
                     <Edit3 className="h-3.5 w-3.5 text-[#c9934a]" />
-                    Painting Title / Name
+                    Painting Title (Optional)
                   </label>
                   <input
                     type="text"
-                    required
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
-                    placeholder="e.g. Luminous Name"
+                    placeholder="e.g. Luminous Name (optional)"
                     className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
                   />
                 </div>
+
 
                 <div>
                   <label className="mb-1 block font-body text-xs text-white/70 flex items-center gap-1.5">
@@ -685,17 +679,17 @@ export default function GalleryReferencesAdmin() {
               {/* Title */}
               <div>
                 <label className="mb-1 block font-body text-xs font-medium text-white/80">
-                  Painting Title *
+                  Painting Title (Optional)
                 </label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. Celestial Harmony, Golden Horizon"
+                  placeholder="e.g. Celestial Harmony (optional)"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
                 />
               </div>
+
 
               {/* Category / Style */}
               <div>

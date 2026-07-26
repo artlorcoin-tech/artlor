@@ -101,8 +101,9 @@ export default function GalleryReferenceModal({ painting, references = [], onClo
                 </div>
 
                 <h2 className="font-display text-2xl sm:text-3xl text-white">
-                  {painting.title}
+                  {painting.title || painting.style || 'Artwork'}
                 </h2>
+
 
                 <p className="mt-3 font-body text-xs text-white/70 leading-relaxed">
                   Handcrafted on premium canvas using high-grade acrylics and oils. Order an exact recreation or customize colors and dimensions to fit your space.
