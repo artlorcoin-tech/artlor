@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Delete, Lock, ShieldCheck } from 'lucide-react'
 
-const CORRECT_PIN = import.meta.env.VITE_DASHBOARD_PIN || '1234'
+const CORRECT_PIN = import.meta.env.VITE_DASHBOARD_PIN || '1626'
 const SESSION_KEY = 'artlor-dashboard-auth'
+
 
 const PAD = [
   ['1','2','3'],

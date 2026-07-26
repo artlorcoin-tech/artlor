@@ -3,14 +3,16 @@ import { motion } from 'framer-motion'
 import {
   LayoutDashboard, ShoppingBag, BarChart2, LogOut,
   RefreshCw, Paintbrush2, MapPin, Zap, Users, TrendingUp,
-  Package
+  Package, Image as ImageIcon
 } from 'lucide-react'
 import PinGate, { isDashboardAuthenticated } from '../components/dashboard/PinGate'
 import StatCard from '../components/dashboard/StatCard'
 import OrdersTable from '../components/dashboard/OrdersTable'
 import { BarChart, DonutChart, TypeSplit, CityRankings } from '../components/dashboard/AnalyticsCharts'
+import GalleryReferencesAdmin from '../components/dashboard/GalleryReferencesAdmin'
 import { supabaseSelectBoth } from '../lib/supabase'
 import { publicUrl } from '../publicUrl'
+
 
 const REFRESH_INTERVAL = 30 * 1000 // 30 seconds
 
@@ -48,6 +50,7 @@ const NAV = [
   { label: 'Overview',   icon: LayoutDashboard, id: 'overview' },
   { label: 'Orders',     icon: ShoppingBag,      id: 'orders'   },
   { label: 'Analytics',  icon: BarChart2,         id: 'analytics'},
+  { label: 'References', icon: ImageIcon,        id: 'references'},
 ]
 
 function Sidebar({ active, onNav, onLogout }) {
@@ -156,7 +159,13 @@ export default function Dashboard() {
         <header className="flex flex-shrink-0 items-center justify-between border-b border-white/[0.07] bg-[#0d0d0f] px-6 py-4">
           <div>
             <h1 className="font-display text-lg font-medium text-white">
-              {activeNav === 'overview' ? 'Overview' : activeNav === 'orders' ? 'Orders' : 'Analytics'}
+              {activeNav === 'overview'
+                ? 'Overview'
+                : activeNav === 'orders'
+                ? 'Orders'
+                : activeNav === 'analytics'
+                ? 'Analytics'
+                : 'Gallery Reference Images'}
             </h1>
             {lastUpdated && (
               <p className="font-body text-[10px] text-white/30">
@@ -263,8 +272,16 @@ export default function Dashboard() {
               <CityRankings orders={orders} />
             </section>
           )}
+
+          {/* ── References Section ── */}
+          {activeNav === 'references' && (
+            <section className="space-y-5">
+              <GalleryReferencesAdmin />
+            </section>
+          )}
         </main>
       </div>
     </div>
   )
 }
+

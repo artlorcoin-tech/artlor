@@ -1,10 +1,13 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Image as ImageIcon, Sparkles } from 'lucide-react'
 import BrandHeader from '../components/BrandHeader'
 import SEO from '../components/SEO'
+import GalleryReferenceModal from '../components/GalleryReferenceModal'
 import { galleryPaintings } from '../galleryPaintings'
 import { publicUrl } from '../publicUrl'
+import { supabaseGetGalleryReferences } from '../lib/supabase'
 
 const filters = ['All', 'Sceneries', 'Calligraphy', 'Abstract', 'Still Life']
 
@@ -14,6 +17,15 @@ function Gallery() {
   const activeFilter = style && filters.includes(style) ? style : 'All'
   const navigate = useNavigate()
   const prefersReducedMotion = useReducedMotion()
+
+  const [references, setReferences] = useState([])
+  const [selectedPaintingForModal, setSelectedPaintingForModal] = useState(null)
+
+  useEffect(() => {
+    supabaseGetGalleryReferences()
+      .then((data) => setReferences(data || []))
+      .catch((err) => console.warn('[Gallery] Error loading references:', err))
+  }, [])
 
   const selectFilter = (filter) => {
     if (filter === 'All') {
@@ -29,6 +41,7 @@ function Gallery() {
     }
     return galleryPaintings.filter((painting) => painting.style === activeFilter)
   }, [activeFilter])
+
   const gallerySchema = useMemo(() => {
     const origin = window.location.origin
     return {
@@ -68,6 +81,11 @@ function Gallery() {
     return paths
   }, [activeFilter])
 
+  const selectedPaintingRefs = useMemo(() => {
+    if (!selectedPaintingForModal) return []
+    return references.filter((r) => String(r.painting_id) === String(selectedPaintingForModal.id))
+  }, [references, selectedPaintingForModal])
+
   return (
     <main className="paper-bg page-pad min-h-screen">
       <SEO 
@@ -87,7 +105,7 @@ function Gallery() {
             Find the piece that belongs to your wall.
           </h1>
           <p className="mt-2 max-w-2xl font-body text-sm text-[rgba(244,239,234,0.86)]">
-            Browse by style, pick an artwork instantly, or request a custom interpretation from nearby artists.
+            Browse by style, inspect real customer reference photos, or request a custom interpretation from nearby artists.
           </p>
         </article>
 
@@ -154,57 +172,104 @@ function Gallery() {
         </div>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {paintings.map((painting, index) => (
-            <motion.article
-              key={painting.id}
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
-              transition={{ duration: 0.32, delay: index * 0.05, ease: [0.4, 0, 0.2, 1] }}
-              whileHover={
-                prefersReducedMotion
-                  ? {}
-                  : {
-                      scale: 1.03,
-                      boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-                    }
-              }
-              className="group card-surface overflow-hidden border-[rgba(31,31,31,0.12)]"
-            >
-              <div className="relative overflow-hidden">
-                <img
-                  src={publicUrl(painting.image)}
-                  alt={`${painting.title} by ${painting.artist}`}
-                  className="aspect-[4/3] w-full object-cover"
-                  loading={index < 3 ? 'eager' : 'lazy'}
-                  decoding="async"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
-                <span className="absolute top-3 left-3 rounded-full bg-[rgba(122,74,46,0.85)] px-3 py-1 font-body text-[11px] text-white">
-                  {painting.style}
-                </span>
+          {paintings.map((painting, index) => {
+            const itemRefs = references.filter((r) => String(r.painting_id) === String(painting.id))
+            const refCount = itemRefs.length
 
-                <div className="pointer-events-auto absolute inset-x-0 bottom-0 p-3 opacity-100 transition duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
-                  <div className="rounded-2xl border border-white/40 bg-black/30 p-3 backdrop-blur-md">
-                    <button
-                      type="button"
-                      onClick={() => navigate('/quick-order', { state: { painting } })}
-                      className="pill-btn pill-btn-primary w-full px-4 py-2 text-sm"
-                    >
-                      Order This
-                    </button>
+            return (
+              <motion.article
+                key={painting.id}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+                animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+                transition={{ duration: 0.32, delay: index * 0.05, ease: [0.4, 0, 0.2, 1] }}
+                whileHover={
+                  prefersReducedMotion
+                    ? {}
+                    : {
+                        scale: 1.03,
+                        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+                      }
+                }
+                className="group card-surface overflow-hidden border-[rgba(31,31,31,0.12)] cursor-pointer"
+                onClick={() => setSelectedPaintingForModal(painting)}
+              >
+                <div className="relative overflow-hidden">
+                  <img
+                    src={publicUrl(painting.image)}
+                    alt={`${painting.title} by ${painting.artist}`}
+                    className="aspect-[4/3] w-full object-cover"
+                    loading={index < 3 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
+                  
+                  {/* Style Badge */}
+                  <span className="absolute top-3 left-3 rounded-full bg-[rgba(122,74,46,0.85)] px-3 py-1 font-body text-[11px] text-white backdrop-blur-md">
+                    {painting.style}
+                  </span>
+
+                  {/* Reference Photos Count Badge */}
+                  {refCount > 0 && (
+                    <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full border border-white/30 bg-black/60 px-2.5 py-1 font-body text-[10px] text-amber-200 backdrop-blur-md">
+                      <ImageIcon className="h-3 w-3" />
+                      {refCount} {refCount === 1 ? 'Reference' : 'References'}
+                    </span>
+                  )}
+
+                  {/* Hover Overlay Action Buttons */}
+                  <div className="pointer-events-auto absolute inset-x-0 bottom-0 p-3 opacity-100 transition duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
+                    <div className="flex gap-2 rounded-2xl border border-white/40 bg-black/40 p-2 backdrop-blur-md">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedPaintingForModal(painting)
+                        }}
+                        className="flex-1 rounded-xl border border-white/20 bg-white/10 py-2 text-xs font-medium text-white hover:bg-white/20"
+                      >
+                        View References
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigate('/quick-order', { state: { painting } })
+                        }}
+                        className="pill-btn pill-btn-primary flex-1 py-2 text-xs"
+                      >
+                        Order This
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-display text-brand-dark text-2xl">{painting.style}</h3>
-                <p className="text-brand-brown/80 mt-1 font-body text-sm">{painting.artist}</p>
-              </div>
-            </motion.article>
-          ))}
+                <div className="p-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-display text-brand-dark text-xl">{painting.title}</h3>
+                    <p className="text-brand-brown/80 mt-0.5 font-body text-xs">{painting.style} by {painting.artist}</p>
+                  </div>
+                  {refCount > 0 && (
+                    <span className="text-[10px] font-body text-[var(--brand-brown)] bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                      {refCount} photos
+                    </span>
+                  )}
+                </div>
+              </motion.article>
+            )
+          })}
         </div>
       </section>
+
+      {/* Reference & Artwork Lightbox Modal */}
+      {selectedPaintingForModal && (
+        <GalleryReferenceModal
+          painting={selectedPaintingForModal}
+          references={selectedPaintingRefs}
+          onClose={() => setSelectedPaintingForModal(null)}
+        />
+      )}
     </main>
   )
 }
 
 export default Gallery
+

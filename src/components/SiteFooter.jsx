@@ -15,25 +15,10 @@ const founderLinks = [
     href: 'https://www.linkedin.com/in/hammadriyaz',
     display: 'linkedin.com/in/hammadriyaz',
   },
+  {label: 'Whatsapp', href: 'https://wa.me/+919541666449', display: 'Chat on WhatsApp' }
 ]
 
-const muneefLinks = [
-  {
-    label: 'Gmail',
-    href: 'mailto:muhammadmuneef2928@gmail.com',
-    display: 'muhammadmuneef2928@gmail.com',
-  },
-  {
-    label: 'Instagram',
-    href: 'https://instagram.com/m__un__ee_f',
-    display: '@m__un__ee_f',
-  },
-  {
-    label: 'LinkedIn',
-    href: 'https://in.linkedin.com/in/muhammad-muneef',
-    display: 'linkedin.com/in/muhammad-muneef',
-  },
-]
+
 
 function SiteFooter() {
   return (
@@ -102,7 +87,7 @@ function SiteFooter() {
                 Terms of Service
               </Link>
               <div className="pt-3 border-t border-[rgba(31,31,31,0.06)] text-xs text-[var(--brand-brown)]/80 leading-relaxed">
-                We deliver stretched & framed paintings ready to hang on your wall. Shipping nationwide across major Indian metros.
+                We deliver stretched & framed paintings ready to hang on your wall. Shipping nationwide across Pan India.
               </div>
             </nav>
           </section>
@@ -129,26 +114,8 @@ function SiteFooter() {
                 ))}
               </ul>
             </div>
-            <div>
-              <h2 className="font-display text-base font-semibold tracking-tight text-[var(--brand-dark)]">
-                Muhammad Muneef
-              </h2>
-              <ul className="mt-2 space-y-1.5 text-xs">
-                {muneefLinks.slice(1).map((item) => (
-                  <li key={item.label}>
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[var(--brand-dark)] underline decoration-[var(--brand-light)] underline-offset-2 hover:text-[var(--brand-brown)] transition"
-                    >
-                      {item.display}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
+            
+            </section>
         </div>
 
         <p className="mt-10 border-t border-[rgba(31,31,31,0.08)] pt-8 text-center text-xs text-[var(--brand-brown)]/90">

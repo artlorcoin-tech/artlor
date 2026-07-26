@@ -164,3 +164,92 @@ export async function supabaseSelectBoth(query = '') {
   withType.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   return withType
 }
+
+/**
+ * Fetch reference images from `gallery_references` table.
+ *
+ * @param {number|string} [paintingId] - optional filter by painting_id
+ * @returns {Promise<Array>}
+ */
+export async function supabaseGetGalleryReferences(paintingId = null) {
+  const query = paintingId ? `painting_id=eq.${paintingId}&order=created_at.desc` : 'order=created_at.desc'
+  try {
+    return await supabaseSelect('gallery_references', query)
+  } catch (err) {
+    console.warn('[Supabase] Could not fetch gallery_references (table may not exist yet):', err.message)
+    return []
+  }
+}
+
+/**
+ * Add a new reference image record to `gallery_references`.
+ *
+ * @param {object} refData - { painting_id, painting_title, image_url, caption }
+ * @returns {Promise<object>}
+ */
+export async function supabaseAddGalleryReference(refData) {
+  return await supabaseInsert('gallery_references', refData)
+}
+
+/**
+ * Delete a reference image record by ID.
+ *
+ * @param {string} id - UUID of reference image record
+ * @returns {Promise<boolean>}
+ */
+export async function supabaseDeleteGalleryReference(id) {
+  const url = `${SUPABASE_URL}/gallery_references?id=eq.${id}`
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+      apikey: SUPABASE_ANON,
+      Authorization: `Bearer ${SUPABASE_ANON}`,
+    },
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    console.error('[Supabase] Delete reference failed:', response.status, errorBody)
+    throw new Error(`Delete failed (${response.status})`)
+  }
+
+  return true
+}
+
+/**
+ * Upload a reference file to Supabase Storage bucket `gallery-references`.
+ * Returns the public URL of the uploaded image.
+ *
+ * @param {File} file - Browser File object
+ * @returns {Promise<string>} - Public image URL
+ */
+export async function supabaseUploadGalleryReferenceFile(file) {
+  const sanitizeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+  const fileName = `${Date.now()}_${sanitizeName}`
+  
+  // Storage REST URL
+  const storageUrl = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '/storage/v1')
+  const uploadUrl = `${storageUrl}/object/gallery-references/${fileName}`
+
+  const response = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON,
+      Authorization: `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': file.type || 'application/octet-stream',
+      'x-upsert': 'true',
+    },
+    body: file,
+  })
+
+  if (!response.ok) {
+    const errorBody = await response.text()
+    console.error('[Supabase Storage] File upload failed:', response.status, errorBody)
+    throw new Error(`Upload failed (${response.status}): ensure 'gallery-references' bucket exists and is public in Supabase.`)
+  }
+
+  // Public storage URL format
+  const publicUrl = `${storageUrl}/object/public/gallery-references/${fileName}`
+  return publicUrl
+}
+
