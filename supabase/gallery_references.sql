@@ -1,7 +1,7 @@
 -- ==============================================================================
 -- Artlor Supabase Migration: gallery_references Table & Storage Bucket Setup
 -- ==============================================================================
--- Copy & paste this entire script into your Supabase SQL Editor and run it.
+-- Copy & paste this entire script into your Supabase SQL Editor and click RUN:
 -- SQL Editor URL: https://supabase.com/dashboard/project/_/sql
 
 -- 1. Create gallery_references table
@@ -18,32 +18,41 @@ CREATE TABLE IF NOT EXISTS public.gallery_references (
 CREATE INDEX IF NOT EXISTS idx_gallery_references_painting_id 
 ON public.gallery_references(painting_id);
 
--- 3. Enable Row Level Security (RLS)
+-- 3. Enable Row Level Security (RLS) on gallery_references table
 ALTER TABLE public.gallery_references ENABLE ROW LEVEL SECURITY;
 
--- 4. Create RLS Policies
--- Allow anyone (public) to view reference images
+-- 4. Create RLS Policies for gallery_references table
 DROP POLICY IF EXISTS "Allow public read access to gallery_references" ON public.gallery_references;
 CREATE POLICY "Allow public read access to gallery_references"
-ON public.gallery_references FOR SELECT
-USING (true);
+ON public.gallery_references FOR SELECT USING (true);
 
--- Allow anonymous / authenticated users to insert reference images (Admin Panel)
 DROP POLICY IF EXISTS "Allow insert to gallery_references" ON public.gallery_references;
 CREATE POLICY "Allow insert to gallery_references"
-ON public.gallery_references FOR INSERT
-WITH CHECK (true);
+ON public.gallery_references FOR INSERT WITH CHECK (true);
 
--- Allow anonymous / authenticated users to delete reference images (Admin Panel)
 DROP POLICY IF EXISTS "Allow delete to gallery_references" ON public.gallery_references;
 CREATE POLICY "Allow delete to gallery_references"
-ON public.gallery_references FOR DELETE
-USING (true);
+ON public.gallery_references FOR DELETE USING (true);
+
 
 -- ==============================================================================
--- STORAGE BUCKET INSTRUCTIONS:
--- 1. Go to Supabase Dashboard -> Storage -> Buckets
--- 2. Click "New Bucket", name it: gallery-references
--- 3. Toggle "Public Bucket" to ON so reference images can be publicly viewed.
--- 4. Under Storage Policies for 'gallery-references', allow SELECT, INSERT, and DELETE for public/anon roles.
+-- AUTOMATIC STORAGE BUCKET CREATION & PERMISSIONS
 -- ==============================================================================
+
+-- 5. Create storage bucket 'gallery-references' automatically
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('gallery-references', 'gallery-references', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- 6. Enable public access & uploads on storage.objects for 'gallery-references'
+DROP POLICY IF EXISTS "Public Read Objects gallery_references" ON storage.objects;
+CREATE POLICY "Public Read Objects gallery_references"
+ON storage.objects FOR SELECT USING (bucket_id = 'gallery-references');
+
+DROP POLICY IF EXISTS "Public Insert Objects gallery_references" ON storage.objects;
+CREATE POLICY "Public Insert Objects gallery_references"
+ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'gallery-references');
+
+DROP POLICY IF EXISTS "Public Delete Objects gallery_references" ON storage.objects;
+CREATE POLICY "Public Delete Objects gallery_references"
+ON storage.objects FOR DELETE USING (bucket_id = 'gallery-references');

@@ -1,5 +1,8 @@
+import { supabase } from './supabaseClient'
+
 /**
  * Supabase Client — Lightweight REST API wrapper
+
  * 
  * Uses the Supabase REST (PostgREST) endpoint directly via fetch,
  * so no extra SDK dependency is needed. Every order placed through
@@ -218,7 +221,8 @@ export async function supabaseDeleteGalleryReference(id) {
 
 /**
  * Upload a reference file to Supabase Storage bucket `gallery-references`.
- * Returns the public URL of the uploaded image.
+
+ * Returns the public URL of the uploaded image. Fallbacks to Data URL if storage not set up.
  *
  * @param {File} file - Browser File object
  * @returns {Promise<string>} - Public image URL
@@ -226,32 +230,40 @@ export async function supabaseDeleteGalleryReference(id) {
 export async function supabaseUploadGalleryReferenceFile(file) {
   const sanitizeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
   const fileName = `${Date.now()}_${sanitizeName}`
-  
-  // Storage REST URL
-  const storageUrl = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '/storage/v1')
-  const uploadUrl = `${storageUrl}/object/gallery-references/${fileName}`
 
-  const response = await fetch(uploadUrl, {
-    method: 'POST',
-    headers: {
-      apikey: SUPABASE_ANON,
-      Authorization: `Bearer ${SUPABASE_ANON}`,
-      'Content-Type': file.type || 'application/octet-stream',
-      'x-upsert': 'true',
-    },
-    body: file,
-  })
+  try {
+    const { data, error } = await supabase.storage
+      .from('gallery-references')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: true,
+      })
 
-  if (!response.ok) {
-    const errorBody = await response.text()
-    console.error('[Supabase Storage] File upload failed:', response.status, errorBody)
-    throw new Error(`Upload failed (${response.status}): ensure 'gallery-references' bucket exists and is public in Supabase.`)
+    if (!error && data?.path) {
+      const { data: publicUrlData } = supabase.storage
+        .from('gallery-references')
+        .getPublicUrl(data.path)
+      if (publicUrlData?.publicUrl) {
+        return publicUrlData.publicUrl
+      }
+    }
+
+    if (error) {
+      console.warn('[Supabase Storage] Storage API error:', error.message)
+    }
+  } catch (err) {
+    console.warn('[Supabase Storage] Storage upload failed, falling back to data URL:', err.message)
   }
 
-  // Public storage URL format
-  const publicUrl = `${storageUrl}/object/public/gallery-references/${fileName}`
-  return publicUrl
+  // Fallback: Convert small/medium images to Data URL (Base64) so image works immediately!
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (err) => reject(err)
+    reader.readAsDataURL(file)
+  })
 }
+
 
 /**
  * Fetch all gallery paintings from `gallery_paintings` table.
