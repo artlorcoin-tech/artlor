@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Upload, Trash2, Image as ImageIcon, Plus, CheckCircle,
-  AlertCircle, RefreshCw, ExternalLink, Tag, Edit3, Save, Layers, Sparkles, X
+  AlertCircle, RefreshCw, ExternalLink, Tag, Edit3, Save, Layers, Sparkles, X, GripVertical
 } from 'lucide-react'
 import { publicUrl } from '../../publicUrl'
 import {
@@ -12,7 +12,8 @@ import {
   supabaseGetGalleryReferences,
   supabaseAddGalleryReference,
   supabaseDeleteGalleryReference,
-  supabaseUploadGalleryReferenceFile
+  supabaseUploadGalleryReferenceFile,
+  supabaseReorderGalleryPaintings
 } from '../../lib/supabase'
 
 export default function GalleryReferencesAdmin() {
@@ -26,6 +27,12 @@ export default function GalleryReferencesAdmin() {
   const [showAddPaintingModal, setShowAddPaintingModal] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [savingOrder, setSavingOrder] = useState(false)
+
+  // Drag and Drop state
+  const [draggedIndex, setDraggedIndex] = useState(null)
+  const [dragOverIndex, setDragOverIndex] = useState(null)
+  const dragCounter = useRef(0)
 
   // New Painting Form State
   const [newTitle, setNewTitle] = useState('')
@@ -92,6 +99,108 @@ export default function GalleryReferencesAdmin() {
   const existingCategories = Array.from(
     new Set(['Calligraphy', 'Sceneries', 'Abstract', 'Still Life', ...paintings.map((p) => p.style).filter(Boolean)])
   )
+
+  // ────────────────── Drag & Drop Handlers ──────────────────
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+    // Set a transparent drag image for better UX
+    const el = e.currentTarget
+    e.dataTransfer.setDragImage(el, el.offsetWidth / 2, el.offsetHeight / 2)
+  }
+
+  const handleDragEnter = (e, index) => {
+    e.preventDefault()
+    dragCounter.current++
+    if (index !== draggedIndex) {
+      setDragOverIndex(index)
+    }
+  }
+
+  const handleDragLeave = (e) => {
+    dragCounter.current--
+    if (dragCounter.current === 0) {
+      setDragOverIndex(null)
+    }
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+  }
+
+  const handleDrop = async (e, dropIndex) => {
+    e.preventDefault()
+    dragCounter.current = 0
+    setDragOverIndex(null)
+
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null)
+      return
+    }
+
+    // Reorder paintings array
+    const reordered = [...paintings]
+    const [dragged] = reordered.splice(draggedIndex, 1)
+    reordered.splice(dropIndex, 0, dragged)
+
+    // Optimistic update
+    setPaintings(reordered)
+    setDraggedIndex(null)
+
+    // Save new order
+    setSavingOrder(true)
+    setError('')
+    try {
+      const orderedIds = reordered.map((p) => p.id)
+      await supabaseReorderGalleryPaintings(orderedIds)
+      setSuccess('✨ Gallery order updated!')
+    } catch (err) {
+      console.error(err)
+      setError('Failed to save new order.')
+    } finally {
+      setSavingOrder(false)
+    }
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+    dragCounter.current = 0
+  }
+
+  // Touch-based reorder (move up/down) for mobile
+  const handleMoveUp = async (index) => {
+    if (index === 0) return
+    const reordered = [...paintings]
+    ;[reordered[index - 1], reordered[index]] = [reordered[index], reordered[index - 1]]
+    setPaintings(reordered)
+    setSavingOrder(true)
+    try {
+      await supabaseReorderGalleryPaintings(reordered.map((p) => p.id))
+      setSuccess('✨ Gallery order updated!')
+    } catch (err) {
+      setError('Failed to save order.')
+    } finally {
+      setSavingOrder(false)
+    }
+  }
+
+  const handleMoveDown = async (index) => {
+    if (index >= paintings.length - 1) return
+    const reordered = [...paintings]
+    ;[reordered[index], reordered[index + 1]] = [reordered[index + 1], reordered[index]]
+    setPaintings(reordered)
+    setSavingOrder(true)
+    try {
+      await supabaseReorderGalleryPaintings(reordered.map((p) => p.id))
+      setSuccess('✨ Gallery order updated!')
+    } catch (err) {
+      setError('Failed to save order.')
+    } finally {
+      setSavingOrder(false)
+    }
+  }
 
   // Handle Creating a Brand New Painting
   const handleCreatePainting = async (e) => {
@@ -301,42 +410,97 @@ export default function GalleryReferencesAdmin() {
         )}
       </AnimatePresence>
 
-      {/* Paintings Carousel Selection */}
+      {/* Paintings Grid Selection with Drag & Drop Reordering */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="font-body text-xs font-semibold uppercase tracking-widest text-white/40">
-            Select Painting to Edit or Attach References ({paintings.length})
-          </label>
-          <button
-            onClick={() => setShowAddPaintingModal(true)}
-            className="text-xs font-body text-[#c9934a] hover:underline flex items-center gap-1 cursor-pointer"
-          >
-            <Plus className="h-3 w-3" /> Add New Artwork
-          </button>
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div>
+            <label className="font-body text-xs font-semibold uppercase tracking-widest text-white/40">
+              Gallery Order — Drag to Rearrange ({paintings.length})
+            </label>
+            <p className="font-body text-[10px] text-white/25 mt-0.5">
+              Drag paintings to reorder how they appear in the public gallery. Use ↑↓ arrows on mobile.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {savingOrder && (
+              <span className="flex items-center gap-1.5 text-[10px] font-body text-amber-400">
+                <RefreshCw className="h-3 w-3 animate-spin" /> Saving order...
+              </span>
+            )}
+            <button
+              onClick={() => setShowAddPaintingModal(true)}
+              className="text-xs font-body text-[#c9934a] hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="h-3 w-3" /> Add New Artwork
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
-          {paintings.map((painting) => {
+          {paintings.map((painting, index) => {
             const count = references.filter((r) => String(r.painting_id) === String(painting.id)).length
             const isSelected = selectedPainting?.id === painting.id
+            const isDragging = draggedIndex === index
+            const isDragOver = dragOverIndex === index
             return (
-              <button
+              <div
                 key={painting.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragEnter={(e) => handleDragEnter(e, index)}
+                onDragLeave={handleDragLeave}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
                 onClick={() => {
                   setSelectedPainting(painting)
                   setError('')
                   setSuccess('')
                 }}
-                className={`group relative flex flex-col items-center rounded-xl border p-2 transition cursor-pointer text-left ${
-                  isSelected
+                className={`group relative flex flex-col items-center rounded-xl border p-2 transition cursor-grab active:cursor-grabbing text-left select-none ${
+                  isDragging
+                    ? 'opacity-40 scale-95 border-[#c9934a]/50 bg-[rgba(201,147,74,0.05)]'
+                    : isDragOver
+                    ? 'border-[#c9934a] bg-[rgba(201,147,74,0.15)] shadow-lg scale-105 ring-2 ring-[#c9934a]/30'
+                    : isSelected
                     ? 'border-[#c9934a] bg-[rgba(201,147,74,0.12)] shadow-md'
                     : 'border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]'
                 }`}
               >
+                {/* Position Number Badge */}
+                <span className="absolute top-1 left-1 flex h-4 min-w-[16px] items-center justify-center rounded-md bg-white/10 px-1 font-body text-[9px] font-bold text-white/60 z-10">
+                  {index + 1}
+                </span>
+
+                {/* Drag Grip Icon */}
+                <div className="absolute top-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-70 transition text-white/40 z-10">
+                  <GripVertical className="h-3.5 w-3.5" />
+                </div>
+
+                {/* Mobile Move Arrows */}
+                <div className="absolute -right-0 top-0 flex flex-col gap-0.5 z-10 sm:hidden">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); handleMoveUp(index) }}
+                    disabled={index === 0 || savingOrder}
+                    className="rounded bg-white/10 p-0.5 text-white/50 hover:bg-white/20 hover:text-white disabled:opacity-20 text-[10px] leading-none"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); handleMoveDown(index) }}
+                    disabled={index >= paintings.length - 1 || savingOrder}
+                    className="rounded bg-white/10 p-0.5 text-white/50 hover:bg-white/20 hover:text-white disabled:opacity-20 text-[10px] leading-none"
+                  >
+                    ▼
+                  </button>
+                </div>
+
                 <img
                   src={publicUrl(painting.image)}
                   alt={painting.title}
-                  className="h-16 w-full rounded-lg object-cover"
+                  className="h-16 w-full rounded-lg object-cover pointer-events-none"
                 />
                 <span className="mt-2 w-full truncate font-display text-xs text-white text-center">
                   {painting.title}
@@ -349,7 +513,7 @@ export default function GalleryReferencesAdmin() {
                     {count}
                   </span>
                 )}
-              </button>
+              </div>
             )
           })}
         </div>

@@ -15,7 +15,7 @@ const founderLinks = [
     href: 'https://www.linkedin.com/in/hammadriyaz',
     display: 'linkedin.com/in/hammadriyaz',
   },
-  {label: 'Whatsapp', href: 'https://wa.me/+919541666449', display: 'Chat on WhatsApp' }
+  { label: 'Whatsapp', href: 'https://wa.me/+919541666449', display: 'Chat on WhatsApp' }
 ]
 
 
@@ -28,7 +28,7 @@ function SiteFooter() {
           {/* Column 1: About */}
           <section>
             <h2 className="font-display text-lg font-semibold tracking-tight text-[var(--brand-dark)] sm:text-xl">
-              About Artlor
+              About Artlor.
             </h2>
             <p className="mt-3 text-xs leading-relaxed text-[var(--brand-brown)]">
               Artlor connects you with talented local artists across India to create custom handpainted wall paintings, calligraphy art, canvas paintings & wall art for your home.
@@ -114,8 +114,8 @@ function SiteFooter() {
                 ))}
               </ul>
             </div>
-            
-            </section>
+
+          </section>
         </div>
 
         <p className="mt-10 border-t border-[rgba(31,31,31,0.08)] pt-8 text-center text-xs text-[var(--brand-brown)]/90">

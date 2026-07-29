@@ -18,7 +18,7 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     // Strict backend-style validations before submitting
     if (!isValidAuthenticName(formData.name)) {
       alert('Please enter an authentic name. Mock names and repeating characters are blocked.')
@@ -37,7 +37,7 @@ export default function Contact() {
       return
     }
 
-    const hasBlocked = BLOCKED_WORDS.some(word => 
+    const hasBlocked = BLOCKED_WORDS.some(word =>
       new RegExp('\\b' + word + '\\b', 'i').test(msg)
     )
     if (hasBlocked) {
@@ -65,12 +65,12 @@ export default function Contact() {
 
   // Real-time state validation
   const emailVal = isValidAuthenticEmail(formData.email)
-  const isMessageValid = formData.message.trim().length >= 10 && !BLOCKED_WORDS.some(word => 
+  const isMessageValid = formData.message.trim().length >= 10 && !BLOCKED_WORDS.some(word =>
     new RegExp('\\b' + word + '\\b', 'i').test(formData.message)
   )
-  const isFormValid = 
-    isValidAuthenticName(formData.name) && 
-    emailVal.isValid && 
+  const isFormValid =
+    isValidAuthenticName(formData.name) &&
+    emailVal.isValid &&
     isMessageValid
 
 
@@ -155,7 +155,7 @@ export default function Contact() {
             Connect With Artlor
           </h1>
           <p className="text-brand-brown/85 mt-4 max-w-xl mx-auto font-body text-base">
-            Have a custom painting request, sizing query, or special gifting order? Reach out to our team and local artist network.
+            Have a custom painting request, sizing query, or special gifting order? Reach out to our team we will respond ASAP.
           </p>
         </div>
 
@@ -164,7 +164,7 @@ export default function Contact() {
           <div className="lg:col-span-5 space-y-6">
             <article className="card-surface p-6 sm:p-8">
               <h2 className="font-display text-2xl text-[var(--brand-dark)] mb-6">Contact Channels</h2>
-              
+
               <ul className="space-y-6">
                 <li className="flex items-start gap-4">
                   <span className="icon-orb shrink-0 h-10 w-10">
@@ -223,7 +223,7 @@ export default function Contact() {
           <div className="lg:col-span-7">
             <article className="form-shell p-6 sm:p-8">
               <h2 className="font-display text-2xl text-[var(--brand-dark)] mb-6">Send an Inquiry</h2>
-              
+
               {submitted ? (
                 <motion.div
                   initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.95 }}
@@ -267,7 +267,7 @@ export default function Contact() {
                       </p>
                     )}
                   </div>
- 
+
                   <div>
                     <label className="block mb-2 font-body text-xs font-semibold text-[var(--brand-dark)]/80">
                       Email Address <span className="text-rose-500">*</span>
@@ -286,7 +286,7 @@ export default function Contact() {
                       </p>
                     )}
                   </div>
- 
+
                   <div>
                     <label className="block mb-2 font-body text-xs font-semibold text-[var(--brand-dark)]/80">
                       Subject
@@ -299,7 +299,7 @@ export default function Contact() {
                       className="w-full rounded-full border border-[var(--brand-light)] bg-[var(--brand-cream)] px-5 py-3 font-body text-sm text-[var(--brand-dark)] outline-none focus:border-[var(--brand-brown)] focus:ring-2 focus:ring-[var(--brand-brown)]/20"
                     />
                   </div>
- 
+
                   <div>
                     <label className="block mb-2 font-body text-xs font-semibold text-[var(--brand-dark)]/80">
                       Message <span className="text-rose-500">*</span>
@@ -323,7 +323,7 @@ export default function Contact() {
                       </p>
                     )}
                   </div>
- 
+
                   <button
                     type="submit"
                     disabled={!isFormValid || sending}

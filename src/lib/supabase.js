@@ -220,21 +220,112 @@ export async function supabaseDeleteGalleryReference(id) {
 }
 
 /**
- * Upload a reference file to Supabase Storage bucket `gallery-references`.
+ * Compress an image file on the client side before uploading.
+ * This is critical for iPhone/mobile uploads where photos can be 3-10+ MB.
+ * Resizes to max dimensions and compresses to JPEG to reduce file size dramatically.
+ *
+ * @param {File} file - Browser File object (image)
+ * @param {object} [options]
+ * @param {number} [options.maxWidth=1600] - Max width in pixels
+ * @param {number} [options.maxHeight=1600] - Max height in pixels
+ * @param {number} [options.quality=0.7] - JPEG quality (0-1)
+ * @param {number} [options.maxSizeKB=500] - Target max file size in KB
+ * @returns {Promise<File>} - Compressed File object
+ */
+async function compressImageFile(file, options = {}) {
+  const {
+    maxWidth = 1600,
+    maxHeight = 1600,
+    quality = 0.7,
+    maxSizeKB = 500,
+  } = options
 
+  // Skip compression for small files (under 500KB) or non-image files
+  if (file.size <= maxSizeKB * 1024 || !file.type.startsWith('image/')) {
+    return file
+  }
+
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+
+      let { width, height } = img
+
+      // Calculate new dimensions maintaining aspect ratio
+      if (width > maxWidth || height > maxHeight) {
+        const ratio = Math.min(maxWidth / width, maxHeight / height)
+        width = Math.round(width * ratio)
+        height = Math.round(height * ratio)
+      }
+
+      // Draw to canvas
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, width, height)
+
+      // Convert to blob with compression
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            console.warn('[Compress] Canvas toBlob returned null, using original file')
+            resolve(file)
+            return
+          }
+
+          // Create a new File from the blob, always use .jpg extension
+          const compressedName = file.name.replace(/\.[^.]+$/, '') + '.jpg'
+          const compressedFile = new File([blob], compressedName, {
+            type: 'image/jpeg',
+            lastModified: Date.now(),
+          })
+
+          console.log(
+            `[Compress] ${file.name}: ${(file.size / 1024).toFixed(0)}KB → ${(compressedFile.size / 1024).toFixed(0)}KB (${Math.round((1 - compressedFile.size / file.size) * 100)}% reduction)`
+          )
+
+          resolve(compressedFile)
+        },
+        'image/jpeg',
+        quality
+      )
+    }
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      console.warn('[Compress] Failed to load image for compression, using original')
+      resolve(file) // Fallback to original file instead of rejecting
+    }
+
+    img.src = url
+  })
+}
+
+/**
+ * Upload a reference file to Supabase Storage bucket `gallery-references`.
+ * Automatically compresses large images (especially from iPhone/mobile cameras)
+ * before uploading to avoid quota issues.
+ *
  * Returns the public URL of the uploaded image. Fallbacks to Data URL if storage not set up.
  *
  * @param {File} file - Browser File object
  * @returns {Promise<string>} - Public image URL
  */
 export async function supabaseUploadGalleryReferenceFile(file) {
-  const sanitizeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
+  // Compress image before uploading (critical for iPhone photos that can be 5-10+ MB)
+  const compressedFile = await compressImageFile(file)
+
+  const sanitizeName = compressedFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')
   const fileName = `${Date.now()}_${sanitizeName}`
 
   try {
     const { data, error } = await supabase.storage
       .from('gallery-references')
-      .upload(fileName, file, {
+      .upload(fileName, compressedFile, {
         cacheControl: '3600',
         upsert: true,
       })
@@ -255,18 +346,19 @@ export async function supabaseUploadGalleryReferenceFile(file) {
     console.warn('[Supabase Storage] Storage upload failed, falling back to data URL:', err.message)
   }
 
-  // Fallback: Convert small/medium images to Data URL (Base64) so image works immediately!
+  // Fallback: Convert compressed image to Data URL (Base64) so image works immediately
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result)
     reader.onerror = (err) => reject(err)
-    reader.readAsDataURL(file)
+    reader.readAsDataURL(compressedFile)
   })
 }
 
 
 /**
  * Fetch all gallery paintings from `gallery_paintings` table (or static fallback + custom local paintings).
+ * Results are sorted by sort_order ascending (lowest sort_order = first in gallery).
  *
  * @returns {Promise<Array>}
  */
@@ -275,7 +367,7 @@ export async function supabaseGetGalleryPaintings() {
   let paintingsList = [...galleryPaintings]
 
   try {
-    const data = await supabaseSelect('gallery_paintings', 'order=id.asc')
+    const data = await supabaseSelect('gallery_paintings', 'order=sort_order.asc,id.asc')
     if (data && data.length > 0) {
       paintingsList = data
     }
@@ -296,10 +388,27 @@ export async function supabaseGetGalleryPaintings() {
 
   // Apply edits (titles/categories)
   const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
-  return merged.map((p) => ({
+
+  // Apply local sort order override if it exists
+  const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]')
+
+  let result = merged.map((p) => ({
     ...p,
     ...(localEdits[p.id] || {}),
   }))
+
+  // If we have a saved local order, sort by that order
+  if (localOrder.length > 0) {
+    const orderMap = {}
+    localOrder.forEach((id, index) => { orderMap[String(id)] = index })
+    result.sort((a, b) => {
+      const orderA = orderMap[String(a.id)] !== undefined ? orderMap[String(a.id)] : 99999
+      const orderB = orderMap[String(b.id)] !== undefined ? orderMap[String(b.id)] : 99999
+      return orderA - orderB
+    })
+  }
+
+  return result
 }
 
 /**
@@ -358,6 +467,7 @@ export async function supabaseAddGalleryPainting(paintingData) {
     style: paintingData.style,
     artist: paintingData.artist || 'Artlor Artist',
     image: paintingData.image,
+    sort_order: 0, // New paintings always appear first
     created_at: new Date().toISOString(),
   }
 
@@ -366,6 +476,11 @@ export async function supabaseAddGalleryPainting(paintingData) {
   customPaintings.push(newPainting)
   localStorage.setItem('artlor_custom_paintings', JSON.stringify(customPaintings))
 
+  // Prepend new painting id to local order so it shows first
+  const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]')
+  const updatedOrder = [newPainting.id, ...localOrder.filter((id) => String(id) !== String(newPainting.id))]
+  localStorage.setItem('artlor_painting_order', JSON.stringify(updatedOrder))
+
   // Try inserting into Supabase table
   try {
     const data = await supabaseInsert('gallery_paintings', {
@@ -373,8 +488,21 @@ export async function supabaseAddGalleryPainting(paintingData) {
       style: newPainting.style,
       artist: newPainting.artist,
       image: newPainting.image,
+      sort_order: 0,
     })
     if (data && data.length > 0) {
+      // Update local order with the real Supabase ID
+      const realId = data[0].id
+      const fixedOrder = updatedOrder.map((id) => String(id) === String(newPainting.id) ? realId : id)
+      localStorage.setItem('artlor_painting_order', JSON.stringify(fixedOrder))
+
+      // Bump sort_order of all other paintings so this one stays first
+      try {
+        await supabaseBumpSortOrders(realId)
+      } catch (e) {
+        console.warn('[Supabase] Could not bump sort orders:', e.message)
+      }
+
       return data[0]
     }
   } catch (err) {
@@ -382,6 +510,72 @@ export async function supabaseAddGalleryPainting(paintingData) {
   }
 
   return newPainting
+}
+
+/**
+ * Bump the sort_order of all paintings except the given one, so the given painting stays first (sort_order=0).
+ * @param {number|string} exceptId - The ID of the painting to keep at position 0
+ */
+async function supabaseBumpSortOrders(exceptId) {
+  // We use a raw SQL call via PostgREST RPC if available, otherwise update individually
+  // Simple approach: fetch all, increment others, batch update
+  try {
+    const all = await supabaseSelect('gallery_paintings', 'order=sort_order.asc,id.asc')
+    const updates = all
+      .filter((p) => String(p.id) !== String(exceptId))
+      .map((p, i) => ({ id: p.id, sort_order: i + 1 }))
+
+    // Update each painting's sort_order
+    await Promise.all(
+      updates.map(({ id, sort_order }) =>
+        fetch(`${SUPABASE_URL}/gallery_paintings?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: SUPABASE_ANON,
+            Authorization: `Bearer ${SUPABASE_ANON}`,
+          },
+          body: JSON.stringify({ sort_order }),
+        })
+      )
+    )
+  } catch (err) {
+    console.warn('[Supabase] supabaseBumpSortOrders failed:', err.message)
+  }
+}
+
+/**
+ * Reorder gallery paintings by saving the new order.
+ * Accepts an array of painting IDs in the desired display order.
+ *
+ * @param {Array<number|string>} orderedIds - Array of painting IDs in desired order
+ * @returns {Promise<boolean>}
+ */
+export async function supabaseReorderGalleryPaintings(orderedIds) {
+  // Save order to localStorage for instant effect
+  localStorage.setItem('artlor_painting_order', JSON.stringify(orderedIds))
+
+  // Try persisting to Supabase
+  try {
+    await Promise.all(
+      orderedIds.map((id, index) =>
+        fetch(`${SUPABASE_URL}/gallery_paintings?id=eq.${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: SUPABASE_ANON,
+            Authorization: `Bearer ${SUPABASE_ANON}`,
+          },
+          body: JSON.stringify({ sort_order: index }),
+        })
+      )
+    )
+    console.log('[Supabase] Gallery painting order saved successfully')
+  } catch (err) {
+    console.warn('[Supabase] Could not save painting order to Supabase:', err.message)
+  }
+
+  return true
 }
 
 

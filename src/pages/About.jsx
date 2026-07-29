@@ -9,17 +9,10 @@ import { galleryImages } from '../galleryPaintings'
 const founders = [
   {
     name: 'Hammad Riyaz',
-    role: 'Co-Founder & Lead Curator',
+    role: 'Founder & Lead Curator',
     bio: 'An art enthusiast dedicated to bridging the gap between local master painters and art collectors. Hammad oversees curation and artist collaborations, ensuring every commissioned canvas aligns with our collectors\' highest standards.',
     social: 'https://instagram.com/hammadriyaz_',
     linkedin: 'https://www.linkedin.com/in/hammadriyaz',
-  },
-  {
-    name: 'Muhammad Muneef',
-    role: 'Co-Founder & Technology Lead',
-    bio: 'Dedicated to building a seamless digital experience that connects collectors with local creative talent. Muhammad Muneef (Muneef) guides the product development, technology architecture, and logistics pipeline, ensuring safe, ready-to-hang deliveries across India.',
-    social: 'https://instagram.com/m__un__ee_f',
-    linkedin: 'https://in.linkedin.com/in/muhammad-muneef',
   },
 ]
 
@@ -64,7 +57,7 @@ export default function About() {
     '@id': `${origin}/about/#webpage`,
     'url': `${origin}/about`,
     'name': 'About Artlor — Supporting Local Indian Artists',
-    'description': 'Meet the founders Hammad Riyaz and Muhammad Muneef, and our curated platform that connects artists and clients across India to create bespoke handpainted canvases.',
+    'description': 'Meet founder Hammad Riyaz, and our curated platform that connects artists and clients across India to create bespoke handpainted canvases.',
     'isPartOf': {
       '@id': `${origin}/#website`
     },
@@ -86,7 +79,7 @@ export default function About() {
     '@type': 'Person',
     '@id': `${origin}/about/#hammad`,
     'name': 'Hammad Riyaz',
-    'jobTitle': 'Co-Founder & Lead Curator',
+    'jobTitle': 'Founder & Lead Curator',
     'worksFor': {
       '@type': 'Organization',
       'name': 'Artlor',
@@ -97,29 +90,10 @@ export default function About() {
       'https://www.linkedin.com/in/hammadriyaz',
       'https://instagram.com/hammadriyaz_'
     ],
-    'description': 'Hammad Riyaz is the Co-Founder & Lead Curator at Artlor, leading artist curation, fine art partnerships, and quality standards for custom art commissions.'
+    'description': 'Hammad Riyaz is the Founder & Lead Curator at Artlor, leading artist curation, fine art partnerships, and quality standards for custom art commissions.'
   }
 
-  const muneefPersonSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    '@id': `${origin}/about/#muneef`,
-    'name': 'Muhammad Muneef',
-    'alternateName': ['Muneef', 'Muhammad Muneef Artlor', 'Muneef Artlor'],
-    'jobTitle': 'Co-Founder & Technology Lead',
-    'worksFor': {
-      '@type': 'Organization',
-      'name': 'Artlor',
-      'url': origin
-    },
-    'url': `${origin}/about`,
-    'sameAs': [
-      'https://in.linkedin.com/in/muhammad-muneef',
-      'https://instagram.com/m__un__ee_f',
-      'mailto:muhammadmuneef2928@gmail.com'
-    ],
-    'description': 'Muhammad Muneef is the Co-Founder & Technology Lead at Artlor, responsible for building the digital art commission platform and scaling technology operations for handpainted art in India.'
-  }
+
 
   const artistProfilesSchema = artists.map((artist, idx) => ({
     '@context': 'https://schema.org',
@@ -144,9 +118,9 @@ export default function About() {
     <main className="paper-bg page-pad min-h-screen">
       <SEO
         title="About Us — Platform Connecting Artists & Clients"
-        description="Learn about Artlor, a platform that connects artists and clients in India. Meet founders Hammad Riyaz & Muhammad Muneef and see our team of master painters."
-        keywords="about artlor, hammad riyaz, muneef, muhammad muneef, muhammad muneef artlor, muneef artlor, co-founder muneef, custom art india, local art network, calligraphy artists delhi, scenery painters mumbai, local artists India, handmade paintings India, buy paintings online, wall art artists, canvas paintings India"
-        schemaData={[aboutSchema, hammadPersonSchema, muneefPersonSchema, ...artistProfilesSchema]}
+        description="Learn about Artlor, a platform that connects artists and clients in India. Meet founder Hammad Riyaz and see our team of master painters."
+        keywords="about artlor, hammad riyaz, custom art india, local art network, calligraphy artists delhi, scenery painters mumbai, local artists India, handmade paintings India, buy paintings online, wall art artists, canvas paintings India"
+        schemaData={[aboutSchema, hammadPersonSchema, ...artistProfilesSchema]}
         breadcrumbPaths={breadcrumbs}
       />
       <BrandHeader />
@@ -225,7 +199,7 @@ export default function About() {
 
         {/* Founders Section */}
         <section className="mb-16">
-          <h2 className="font-display text-brand-dark text-3xl text-center mb-8">Meet the Founders</h2>
+          <h2 className="font-display text-brand-dark text-3xl text-center mb-8">Meet the Founder</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {founders.map((founder, idx) => (
               <article key={founder.name} className="card-surface p-6 sm:p-8 flex flex-col justify-between">
