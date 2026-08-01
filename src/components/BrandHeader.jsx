@@ -70,15 +70,15 @@ function BrandHeader() {
       initial={prefersReducedMotion ? false : { opacity: 0, y: -18 }}
       animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
       transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
-      className="content-max mb-6 w-full rounded-[28px] border border-[rgba(31,31,31,0.08)] bg-[rgba(255,255,255,0.78)] px-2.5 py-2.5 shadow-[0_14px_35px_rgba(0,0,0,0.09)] backdrop-blur-md sm:mb-8 sm:px-4 sm:py-3 md:px-5"
+      className="content-max mb-6 w-full rounded-[32px] border border-[rgba(122,74,46,0.16)] bg-[rgba(253,250,246,0.85)] px-3 py-2.5 shadow-[0_16px_40px_rgba(90,48,27,0.08)] backdrop-blur-xl sm:mb-8 sm:px-5 sm:py-3.5"
       role="banner"
     >
-      <div className="grid min-h-[3.2rem] grid-cols-[auto_1fr_auto] items-center gap-2 md:gap-4">
-        <Link to="/" className="flex items-center justify-self-start" aria-label="Artlor home">
-          <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor Logo" className="brand-logo-round brand-logo-sm" />
+      <div className="flex items-center justify-between gap-2 md:grid md:grid-cols-[auto_1fr_auto] md:gap-4">
+        <Link to="/" className="flex items-center justify-self-start group" aria-label="Artlor home">
+          <img src={publicUrl('brand/artlor-logo.png')} alt="Artlor Logo" className="brand-logo-round brand-logo-sm transition-transform duration-300 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(201,147,74,0.4)]" />
         </Link>
  
-        <nav className="no-scrollbar mx-1 flex min-w-0 items-center gap-2 overflow-x-auto px-1 md:mx-auto md:justify-center" aria-label="Main Navigation">
+        <nav className="no-scrollbar mx-1 hidden min-w-0 items-center gap-1.5 overflow-x-auto px-1 md:flex md:mx-auto md:justify-center" aria-label="Main Navigation">
           {links.map((item) => {
             const active = item.to === location.pathname
             return (
@@ -86,14 +86,13 @@ function BrandHeader() {
                 key={item.to}
                 to={item.to}
                 aria-current={active ? 'page' : undefined}
-                className={`pill-btn inline-flex h-9 shrink-0 items-center justify-center px-3 py-2 text-[11px] sm:h-10 sm:px-4 sm:text-sm ${
+                className={`pill-btn inline-flex h-9 shrink-0 items-center justify-center px-3.5 py-2 text-[11px] font-semibold transition-all duration-300 sm:h-10 sm:px-4.5 sm:text-xs tracking-wide ${
                   active
-                    ? 'bg-[var(--brand-dark)] text-[var(--brand-cream)]'
-                    : 'text-[var(--brand-dark)] hover:bg-[var(--brand-light)]'
+                    ? 'bg-gradient-to-r from-[var(--brand-brown-deep)] via-[var(--brand-brown)] to-[var(--brand-gold)] text-white shadow-[0_6px_20px_rgba(122,74,46,0.3)]'
+                    : 'text-[var(--brand-dark)] hover:bg-[var(--brand-cream)] hover:text-[var(--brand-brown)]'
                 }`}
               >
-                <span className="sm:hidden">{item.mobileLabel}</span>
-                <span className="hidden sm:inline">{item.label}</span>
+                <span>{item.label}</span>
               </Link>
             )
           })}
@@ -104,7 +103,7 @@ function BrandHeader() {
             <Link
               to="/customer-dashboard"
               title="View Dashboard"
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--brand-gold)] bg-[var(--brand-cream)] px-2.5 text-[11px] font-bold text-[var(--brand-brown)] transition-all hover:bg-[var(--brand-light)] sm:h-10 sm:px-4 sm:text-xs outline-none"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-[var(--brand-gold)]/40 bg-[var(--brand-cream)] px-3 text-[11px] font-bold text-[var(--brand-brown)] shadow-sm transition-all hover:bg-white hover:shadow-md sm:h-10 sm:px-4 sm:text-xs outline-none"
             >
               {user.user_metadata?.avatar_url || user.user_metadata?.picture ? (
                 <img
@@ -120,7 +119,7 @@ function BrandHeader() {
           ) : (
             <Link
               to="/login"
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[var(--brand-dark)] px-3 text-[11px] font-bold text-[var(--brand-cream)] transition-all hover:bg-[var(--brand-brown)] sm:h-10 sm:px-4.5 sm:text-xs outline-none"
+              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[var(--brand-dark)] px-3 text-[11px] font-bold text-[var(--brand-cream)] shadow-sm transition-all hover:bg-[var(--brand-brown)] sm:h-10 sm:px-4.5 sm:text-xs outline-none"
             >
               <User className="h-3.5 w-3.5 shrink-0" />
               Sign In
@@ -133,7 +132,7 @@ function BrandHeader() {
             rel="noreferrer"
             aria-label="Instagram: artlor.co"
             title="Instagram: artlor.co"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brand-light)] bg-white/80 text-[var(--brand-brown)] transition hover:border-[var(--brand-brown)] hover:bg-[var(--brand-light)] sm:h-10 sm:w-10"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(122,74,46,0.14)] bg-white/90 text-[var(--brand-brown)] shadow-xs transition duration-300 hover:border-[var(--brand-gold)] hover:bg-[var(--brand-cream)] hover:scale-105 sm:h-10 sm:w-10"
           >
             <InstagramGlyph />
           </a>
@@ -143,7 +142,7 @@ function BrandHeader() {
             rel="noreferrer"
             aria-label="Facebook: artlor"
             title="Facebook: artlor"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brand-light)] bg-white/80 text-[var(--brand-brown)] transition hover:border-[var(--brand-brown)] hover:bg-[var(--brand-light)] sm:h-10 sm:w-10"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(122,74,46,0.14)] bg-white/90 text-[var(--brand-brown)] shadow-xs transition duration-300 hover:border-[var(--brand-gold)] hover:bg-[var(--brand-cream)] hover:scale-105 sm:h-10 sm:w-10"
           >
             <FacebookGlyph />
           </a>
@@ -151,7 +150,7 @@ function BrandHeader() {
             href="mailto:artlor.co.in@gmail.com"
             aria-label="Email: artlor.co.in@gmail.com"
             title="Email: artlor.co.in@gmail.com"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brand-light)] bg-white/80 text-[var(--brand-brown)] transition hover:border-[var(--brand-brown)] hover:bg-[var(--brand-light)] sm:h-10 sm:w-10"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(122,74,46,0.14)] bg-white/90 text-[var(--brand-brown)] shadow-xs transition duration-300 hover:border-[var(--brand-gold)] hover:bg-[var(--brand-cream)] hover:scale-105 sm:h-10 sm:w-10"
           >
             <Mail className="h-[1.2rem] w-[1.2rem] sm:h-[1.35rem] sm:w-[1.35rem]" />
           </a>
@@ -161,7 +160,7 @@ function BrandHeader() {
             rel="noreferrer"
             aria-label="LinkedIn: artlor"
             title="LinkedIn: artlor"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--brand-light)] bg-white/80 text-[var(--brand-brown)] transition hover:border-[var(--brand-brown)] hover:bg-[var(--brand-light)] sm:h-10 sm:w-10"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(122,74,46,0.14)] bg-white/90 text-[var(--brand-brown)] shadow-xs transition duration-300 hover:border-[var(--brand-gold)] hover:bg-[var(--brand-cream)] hover:scale-105 sm:h-10 sm:w-10"
           >
             <LinkedInGlyph />
           </a>

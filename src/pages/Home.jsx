@@ -271,6 +271,54 @@ function Home() {
         </div>
       </section>
 
+      {/* Founder's Message Section */}
+      <section className="content-max mt-14 mb-10 max-w-5xl">
+        <div className="luxe-glass-card relative overflow-hidden rounded-[28px] border border-[rgba(122,74,46,0.18)] p-7 sm:p-10 bg-gradient-to-br from-white/95 via-[var(--brand-cream)]/70 to-white/95 shadow-[0_16px_45px_rgba(122,74,46,0.1)]">
+          <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8">
+            <div className="relative flex-shrink-0">
+              <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[var(--brand-gold)] to-[var(--brand-brown)] blur-sm opacity-50" />
+              <img
+                src={publicUrl('brand/hammad-riyaz.jpg')}
+                alt="Hammad Riyaz - Founder of Artlor"
+                className="relative h-28 w-28 sm:h-36 sm:w-36 rounded-full border-4 border-white object-cover shadow-xl"
+              />
+              <span className="absolute bottom-1 right-1 rounded-full border border-[var(--brand-gold)] bg-black/85 px-2.5 py-0.5 font-body text-[10px] font-bold text-amber-200 backdrop-blur-md">
+                Founder
+              </span>
+            </div>
+
+            <div className="flex-1 space-y-3 text-left">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-[var(--brand-gold)] animate-pulse" />
+                <span className="font-body text-xs font-bold uppercase tracking-[0.2em] text-[var(--brand-gold)]">
+                  A Message from Our Founder
+                </span>
+              </div>
+
+              <blockquote className="font-display text-base sm:text-lg text-[var(--brand-dark)] italic leading-relaxed pl-1">
+                &quot;In India, buying Paintings has never been easy. You are either forced to choose between buying million-dollar artworks or cheap, soul-less machine prints.
+                Despite India being home to an incredible abundance of talented local artists, most artists lack the exposure to be discovered.
+                I founded Artlor to bridge this gap. We bring passionate art enthusiasts and handpicked local artists under one unified roof, matching you with the perfect artist for your vision.&quot;
+              </blockquote>
+
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-4 border-t border-[rgba(122,74,46,0.14)] pt-3">
+                <div>
+                  <h4 className="font-display text-sm font-bold text-[var(--brand-dark)]">Hammad Riyaz</h4>
+                  <p className="font-body text-xs text-[var(--brand-brown)]/70">Founder &amp; Lead Curator, Artlor</p>
+                </div>
+
+                <Link
+                  to="/about"
+                  className="font-body text-xs font-bold text-[var(--brand-brown)] hover:text-[var(--brand-gold)] transition-colors flex items-center gap-1"
+                >
+                  Learn More About Our Journey →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Visually Stunning, Highly Premium & SEO-Optimized FAQ Section */}
       <section className="content-max mt-16 mb-12 max-w-4xl border-t border-[rgba(122,74,46,0.12)] pt-12 sm:mt-20">
         <h2 className="font-display text-brand-dark mb-8 text-center text-3xl sm:text-4xl">

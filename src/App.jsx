@@ -11,6 +11,7 @@ import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import EidCelebration from './components/EidCelebration'
+import MobileBottomNav from './components/MobileBottomNav'
 import LiveTracker from './pages/LiveTracker'
 import ArtistPortal from './pages/ArtistPortal'
 import DesignSystemShowcase from './pages/DesignSystemShowcase'
@@ -165,9 +166,10 @@ function AnimatedRoutes() {
 
 function App() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20 md:pb-0">
       <AnimatedRoutes />
       <EidCelebration />
+      <MobileBottomNav />
     </div>
   )
 }

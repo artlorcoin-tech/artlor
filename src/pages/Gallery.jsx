@@ -50,7 +50,7 @@ function Gallery() {
     if (filter === 'All') {
       setSearchParams({})
       return
-    } 
+    }
     setSearchParams({ style: filter })
   }
 
@@ -108,7 +108,7 @@ function Gallery() {
 
   return (
     <main className="paper-bg page-pad min-h-screen">
-      <SEO 
+      <SEO
         title={`${activeFilter === 'All' ? 'Paintings Gallery' : activeFilter + ' Paintings'} | Buy Wall Art Online India`}
         description={`Browse and buy handpainted ${activeFilter === 'All' ? 'sceneries, calligraphy, abstract and still life' : activeFilter.toLowerCase()} paintings online. Wall art & canvas paintings by local Indian artists.`}
         keywords={`buy paintings online India, ${activeFilter.toLowerCase()} paintings, wall paintings, canvas art, handmade paintings, wall art India, home decor paintings`}
@@ -117,61 +117,77 @@ function Gallery() {
       />
       <BrandHeader />
       <section className="content-max max-w-6xl">
-        <article className="dark-luxe-card mb-7 p-5 sm:mb-8 sm:p-7">
-          <p className="font-body text-xs uppercase tracking-[0.18em] text-[var(--brand-gold)]">
+        <article className="art-frame-shadow relative overflow-hidden rounded-[32px] bg-gradient-to-r from-[var(--brand-dark)] via-[#361f14] to-[var(--brand-brown-deep)] mb-8 p-6 text-white sm:p-9 shadow-[0_20px_50px_rgba(31,31,31,0.25)]">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-radial from-[var(--brand-gold)]/20 to-transparent pointer-events-none" />
+          <p className="font-body text-xs font-bold uppercase tracking-[0.22em] text-[var(--brand-gold)]">
             Curated Collection
           </p>
-          <h1 className="font-display mt-2 text-3xl leading-tight sm:text-4xl lg:text-5xl">
+          <h1 className="font-display mt-2 text-3xl font-extrabold leading-tight sm:text-4xl lg:text-5xl text-white">
             Find the piece that belongs to your wall.
           </h1>
-          <p className="mt-2 max-w-2xl font-body text-sm text-[rgba(244,239,234,0.86)]">
-            Browse by style, inspect real customer reference photos, or request a custom interpretation from nearby artists.
+          <p className="mt-3 max-w-2xl font-body text-sm font-medium text-white/80 leading-relaxed">
+            Browse by style, inspect real customer reference photos, or request a custom interpretation from nearby Indian artists.
           </p>
         </article>
 
         <motion.div
-          className="mb-7 flex justify-center sm:mb-8"
+          className="mb-10 flex justify-center"
           animate={
             prefersReducedMotion
               ? {}
               : {
-                  y: [0, -4, 0],
-                }
+                y: [0, -6, 0],
+                rotate: [-1, 0, -1],
+                scale: [1, 1.02, 1],
+              }
           }
           transition={
             prefersReducedMotion
               ? {}
               : {
-                  duration: 2.4,
-                  ease: 'easeInOut',
-                  repeat: Infinity,
-                }
+                duration: 3,
+                ease: 'easeInOut',
+                repeat: Infinity,
+              }
           }
         >
           <motion.button
             type="button"
             onClick={() => navigate('/order')}
-            whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
-            whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+            whileHover={prefersReducedMotion ? {} : { scale: 1.06, rotate: -1.5 }}
+            whileTap={prefersReducedMotion ? {} : { scale: 0.96 }}
             animate={
               prefersReducedMotion
                 ? {}
                 : {
-                    boxShadow: [
-                      '0 14px 28px rgba(122, 74, 46, 0.28), 0 0 0 rgba(201, 147, 74, 0)',
-                      '0 22px 42px rgba(92, 49, 28, 0.36), 0 0 24px rgba(201, 147, 74, 0.25)',
-                      '0 14px 28px rgba(122, 74, 46, 0.28), 0 0 0 rgba(201, 147, 74, 0)',
-                    ],
-                  }
+                  boxShadow: [
+                    '0 12px 35px rgba(31, 14, 7, 0.7), 0 0 15px rgba(201, 147, 74, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.25)',
+                    '0 20px 50px rgba(31, 14, 7, 0.9), 0 0 28px rgba(201, 147, 74, 0.6), inset 0 3px 6px rgba(255, 255, 255, 0.35)',
+                    '0 12px 35px rgba(31, 14, 7, 0.7), 0 0 15px rgba(201, 147, 74, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.25)',
+                  ],
+                }
             }
             transition={prefersReducedMotion ? {} : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-            className="pill-btn rounded-full border border-[var(--brand-gold)]/45 bg-[linear-gradient(125deg,var(--brand-brown-deep)_0%,var(--brand-brown)_52%,var(--brand-gold)_100%)] px-7 py-3 text-sm font-semibold tracking-[0.01em] text-[var(--brand-cream)] sm:px-8 sm:text-base"
+            className="group relative -rotate-1 inline-flex items-center justify-center rounded-full border-2 border-[var(--brand-gold)] bg-[linear-gradient(135deg,#1f0e07_0%,#3d1e10_50%,#26130a_100%)] backdrop-blur-2xl px-6 py-2.5 shadow-2xl transition-all duration-300 sm:px-8 sm:py-3 cursor-pointer overflow-hidden"
           >
-            Customize Your Own
+            {/* Deep Dark Brown Ambient Glass Glow */}
+            <span className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-[var(--brand-brown-deep)]/80 via-[var(--brand-gold)]/50 to-[#1f0e07]/90 blur-lg opacity-85 group-hover:opacity-100 transition duration-500 animate-pulse pointer-events-none" />
+
+            {/* Top Glossy Glass Reflection */}
+            <span className="absolute inset-x-0 top-0 h-1/2 rounded-t-full bg-gradient-to-b from-white/30 via-white/5 to-transparent pointer-events-none" />
+
+            {/* High-Contrast Fluff Plush Font Text */}
+            <span
+              className="relative z-10 font-plush text-lg font-bold tracking-wider text-[#fef3c7] drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)] sm:text-xl"
+              style={{ fontFamily: "'Fluff Plush', 'FluffPlush', 'DynaPuff', 'Bubblegum Sans', 'Sniglet', cursive, sans-serif" }}
+            >
+              Customise from Scratch!
+            </span>
           </motion.button>
         </motion.div>
 
-        <div className="no-scrollbar mb-8 flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:gap-3">
+        {/* Filter Pills */}
+        <div className="no-scrollbar mb-8 flex gap-2.5 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:gap-3">
           {filters.map((filter) => {
             const active = filter === activeFilter
             return (
@@ -179,11 +195,10 @@ function Gallery() {
                 key={filter}
                 type="button"
                 onClick={() => selectFilter(filter)}
-                className={`pill-btn shrink-0 border px-4 py-2 text-xs font-medium transition-colors duration-300 sm:px-5 sm:text-sm ${
-                  active
-                    ? 'bg-brand-brown border-brand-brown text-brand-cream'
-                    : 'border-brand-brown text-brand-brown hover:bg-brand-brown/10'
-                }`}
+                className={`pill-btn shrink-0 rounded-full border px-5 py-2 text-xs font-semibold tracking-wide transition-all duration-300 sm:px-6 sm:text-sm ${active
+                  ? 'bg-gradient-to-r from-[var(--brand-brown-deep)] to-[var(--brand-gold)] text-white border-transparent shadow-[0_6px_20px_rgba(122,74,46,0.3)]'
+                  : 'border-[rgba(122,74,46,0.2)] bg-white/80 text-[var(--brand-brown)] hover:bg-[var(--brand-cream)] hover:border-[var(--brand-gold)]'
+                  }`}
               >
                 {filter}
               </button>
@@ -191,7 +206,8 @@ function Gallery() {
           })}
         </div>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Artwork Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {paintings.map((painting, index) => {
             const itemRefs = references.filter((r) => String(r.painting_id) === String(painting.id))
             const refCount = itemRefs.length
@@ -202,52 +218,44 @@ function Gallery() {
                 initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
                 animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
                 transition={{ duration: 0.32, delay: index * 0.05, ease: [0.4, 0, 0.2, 1] }}
-                whileHover={
-                  prefersReducedMotion
-                    ? {}
-                    : {
-                        scale: 1.03,
-                        boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-                      }
-                }
-                className="group card-surface overflow-hidden border-[rgba(31,31,31,0.12)] cursor-pointer"
+                className="art-frame-shadow group relative overflow-hidden rounded-[24px] bg-white cursor-pointer"
                 onClick={() => setSelectedPaintingForModal(painting)}
               >
                 <div className="relative overflow-hidden">
                   <img
                     src={publicUrl(painting.image)}
                     alt={`${painting.title} by ${painting.artist}`}
-                    className="aspect-[4/3] w-full object-cover"
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading={index < 3 ? 'eager' : 'lazy'}
                     decoding="async"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
-                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
+
                   {/* Style Badge */}
-                  <span className="absolute top-3 left-3 rounded-full bg-[rgba(122,74,46,0.85)] px-3 py-1 font-body text-[11px] text-white backdrop-blur-md">
+                  <span className="absolute top-3 left-3 rounded-full border border-white/20 bg-black/50 px-3 py-1 font-body text-[11px] font-semibold text-white backdrop-blur-md">
                     {painting.style}
                   </span>
 
                   {/* Reference Photos Count Badge */}
                   {refCount > 0 && (
-                    <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full border border-white/30 bg-black/60 px-2.5 py-1 font-body text-[10px] text-amber-200 backdrop-blur-md">
-                      <ImageIcon className="h-3 w-3" />
+                    <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full border border-[var(--brand-gold)]/40 bg-black/65 px-2.5 py-1 font-body text-[10px] font-bold text-amber-200 backdrop-blur-md">
+                      <ImageIcon className="h-3 w-3 text-[var(--brand-gold)]" />
                       {refCount} {refCount === 1 ? 'Reference' : 'References'}
                     </span>
                   )}
 
-                  {/* Hover Overlay Action Buttons */}
+                  {/* Quick Action Overlay */}
                   <div className="pointer-events-auto absolute inset-x-0 bottom-0 p-3 opacity-100 transition duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
-                    <div className="flex gap-2 rounded-2xl border border-white/40 bg-black/40 p-2 backdrop-blur-md">
+                    <div className="flex gap-2 rounded-2xl border border-white/30 bg-black/50 p-2 backdrop-blur-md">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation()
                           setSelectedPaintingForModal(painting)
                         }}
-                        className="flex-1 rounded-xl border border-white/20 bg-white/10 py-2 text-xs font-medium text-white hover:bg-white/20"
+                        className="flex-1 rounded-xl border border-white/20 bg-white/10 py-2 text-xs font-semibold text-white hover:bg-white/25 transition"
                       >
-                        View References
+                        Inspect Details
                       </button>
                       <button
                         type="button"
@@ -255,21 +263,22 @@ function Gallery() {
                           e.stopPropagation()
                           navigate('/quick-order', { state: { painting } })
                         }}
-                        className="pill-btn pill-btn-primary flex-1 py-2 text-xs"
+                        className="pill-btn pill-btn-primary flex-1 py-2 text-xs font-bold shadow-md"
                       >
                         Order This
                       </button>
                     </div>
                   </div>
                 </div>
-                <div className="p-4 flex items-center justify-between">
+
+                <div className="p-4 flex items-center justify-between bg-white">
                   <div>
-                    <h3 className="font-display text-brand-dark text-xl">{painting.title || painting.style || 'Artwork'}</h3>
-                    <p className="text-brand-brown/80 mt-0.5 font-body text-xs">{painting.style} by {painting.artist || 'Artlor Artist'}</p>
+                    <h3 className="font-display text-[var(--brand-dark)] text-xl font-bold">{painting.title || painting.style || 'Artwork'}</h3>
+                    <p className="text-[var(--brand-brown)]/80 mt-0.5 font-body text-xs font-medium">{painting.style} by {painting.artist || 'Artlor Artist'}</p>
                   </div>
 
                   {refCount > 0 && (
-                    <span className="text-[10px] font-body text-[var(--brand-brown)] bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                    <span className="text-[10px] font-body font-bold text-[var(--brand-brown)] bg-[var(--brand-cream)] px-2.5 py-1 rounded-full border border-[var(--brand-gold)]/30">
                       {refCount} photos
                     </span>
                   )}

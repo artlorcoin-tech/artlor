@@ -13,7 +13,8 @@ import {
   supabaseAddGalleryReference,
   supabaseDeleteGalleryReference,
   supabaseUploadGalleryReferenceFile,
-  supabaseReorderGalleryPaintings
+  supabaseReorderGalleryPaintings,
+  supabaseDeleteGalleryPainting
 } from '../../lib/supabase'
 
 export default function GalleryReferencesAdmin() {
@@ -24,6 +25,7 @@ export default function GalleryReferencesAdmin() {
   const [savingPainting, setSavingPainting] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [creatingPainting, setCreatingPainting] = useState(false)
+  const [deletingPainting, setDeletingPainting] = useState(false)
   const [showAddPaintingModal, setShowAddPaintingModal] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -288,6 +290,30 @@ export default function GalleryReferencesAdmin() {
       setError('Failed to update painting details.')
     } finally {
       setSavingPainting(false)
+    }
+  }
+
+  // Handle Deleting Artwork
+  const handleDeletePainting = async () => {
+    if (!selectedPainting) return
+    const paintingTitle = selectedPainting.title || 'this painting'
+    if (!window.confirm(`Are you sure you want to delete "${paintingTitle}" from the gallery? This action cannot be undone.`)) {
+      return
+    }
+
+    setDeletingPainting(true)
+    setError('')
+    setSuccess('')
+    try {
+      await supabaseDeleteGalleryPainting(selectedPainting.id)
+      setSuccess(`🗑️ Successfully deleted "${paintingTitle}" from the gallery!`)
+      setSelectedPainting(null)
+      await loadData()
+    } catch (err) {
+      console.error(err)
+      setError('Failed to delete painting.')
+    } finally {
+      setDeletingPainting(false)
     }
   }
 
@@ -602,23 +628,40 @@ export default function GalleryReferencesAdmin() {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={savingPainting}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#c9934a]/40 bg-[rgba(201,147,74,0.15)] px-4 py-2.5 font-body text-xs font-semibold text-[#c9934a] hover:bg-[rgba(201,147,74,0.25)] transition cursor-pointer disabled:opacity-50"
-                >
-                  {savingPainting ? (
-                    <>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={savingPainting}
+                    className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-[#c9934a]/40 bg-[rgba(201,147,74,0.15)] px-4 py-2.5 font-body text-xs font-semibold text-[#c9934a] hover:bg-[rgba(201,147,74,0.25)] transition cursor-pointer disabled:opacity-50"
+                  >
+                    {savingPainting ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4" />
+                        Save Details
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleDeletePainting}
+                    disabled={deletingPainting}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-2.5 font-body text-xs font-semibold text-rose-400 hover:bg-rose-500/20 transition cursor-pointer disabled:opacity-50"
+                    title="Delete this artwork permanently"
+                  >
+                    {deletingPainting ? (
                       <RefreshCw className="h-4 w-4 animate-spin" />
-                      Saving Details...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4" />
-                      Save Title &amp; Category Edits
-                    </>
-                  )}
-                </button>
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                    Delete Artwork
+                  </button>
+                </div>
               </form>
             </div>
 

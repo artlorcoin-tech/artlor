@@ -386,13 +386,17 @@ export async function supabaseGetGalleryPaintings() {
     }
   })
 
+  // Filter out deleted paintings
+  const deletedIds = JSON.parse(localStorage.getItem('artlor_deleted_paintings') || '[]').map(String)
+  const activePaintings = merged.filter((p) => !deletedIds.includes(String(p.id)))
+
   // Apply edits (titles/categories)
   const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
 
   // Apply local sort order override if it exists
   const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]')
 
-  let result = merged.map((p) => ({
+  let result = activePaintings.map((p) => ({
     ...p,
     ...(localEdits[p.id] || {}),
   }))
@@ -573,6 +577,53 @@ export async function supabaseReorderGalleryPaintings(orderedIds) {
     console.log('[Supabase] Gallery painting order saved successfully')
   } catch (err) {
     console.warn('[Supabase] Could not save painting order to Supabase:', err.message)
+  }
+
+  return true
+}
+
+/**
+ * Delete a gallery painting by ID (from Supabase table and local cache).
+ *
+ * @param {number|string} id - Painting ID
+ * @returns {Promise<boolean>}
+ */
+export async function supabaseDeleteGalleryPainting(id) {
+  const strId = String(id)
+
+  // 1. Mark as deleted in local storage
+  const deletedIds = JSON.parse(localStorage.getItem('artlor_deleted_paintings') || '[]').map(String)
+  if (!deletedIds.includes(strId)) {
+    deletedIds.push(strId)
+    localStorage.setItem('artlor_deleted_paintings', JSON.stringify(deletedIds))
+  }
+
+  // 2. Remove from custom paintings if present
+  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const updatedCustoms = customPaintings.filter((c) => String(c.id) !== strId)
+  localStorage.setItem('artlor_custom_paintings', JSON.stringify(updatedCustoms))
+
+  // 3. Remove from order list
+  const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]').map(String)
+  const updatedOrder = localOrder.filter((oId) => oId !== strId)
+  localStorage.setItem('artlor_painting_order', JSON.stringify(updatedOrder))
+
+  // 4. Delete from Supabase table
+  try {
+    const url = `${SUPABASE_URL}/gallery_paintings?id=eq.${id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        apikey: SUPABASE_ANON,
+        Authorization: `Bearer ${SUPABASE_ANON}`,
+      },
+    })
+
+    if (!response.ok) {
+      console.warn('[Supabase] Delete remote painting returned status:', response.status)
+    }
+  } catch (err) {
+    console.warn('[Supabase] Delete remote painting failed:', err.message)
   }
 
   return true
