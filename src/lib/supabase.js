@@ -220,32 +220,100 @@ export async function supabaseDeleteGalleryReference(id) {
 }
 
 /**
+ * Safely set item in localStorage with quota error handling & automatic base64 pruning.
+ * Prevents QuotaExceededError DOMException from crashing the application.
+ *
+ * @param {string} key
+ * @param {string} value
+ * @returns {boolean}
+ */
+export function safeLocalStorageSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value)
+    return true
+  } catch (err) {
+    console.warn(`[Storage] localStorage.setItem failed for key "${key}":`, err?.message || err)
+
+    const isQuotaError =
+      err &&
+      (err.name === 'QuotaExceededError' ||
+        err.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+        err.code === 22 ||
+        err.code === 1014)
+
+    if (isQuotaError) {
+      console.warn('[Storage] Quota exceeded. Pruning base64 image data from localStorage cache...')
+      try {
+        // 1. Remove base64 data URLs from custom paintings local cache
+        const rawCustom = localStorage.getItem('artlor_custom_paintings')
+        if (rawCustom) {
+          const customPaintings = JSON.parse(rawCustom)
+          if (Array.isArray(customPaintings)) {
+            const sanitized = customPaintings.map((p) => {
+              if (typeof p.image === 'string' && p.image.startsWith('data:image/')) {
+                return { ...p, image: '' }
+              }
+              return p
+            })
+            localStorage.setItem('artlor_custom_paintings', JSON.stringify(sanitized))
+          }
+        }
+
+        // 2. Retry saving target item
+        localStorage.setItem(key, value)
+        console.log('[Storage] Successfully saved after clearing base64 cache!')
+        return true
+      } catch (retryErr) {
+        console.warn('[Storage] Could not save to localStorage even after pruning:', retryErr?.message || retryErr)
+      }
+    }
+    return false
+  }
+}
+
+/**
+ * Safely get item from localStorage without throwing exceptions.
+ *
+ * @param {string} key
+ * @param {string|null} [fallback=null]
+ * @returns {string|null}
+ */
+export function safeLocalStorageGetItem(key, fallback = null) {
+  try {
+    const val = localStorage.getItem(key)
+    return val !== null ? val : fallback
+  } catch (e) {
+    console.warn(`[Storage] localStorage.getItem failed for key "${key}":`, e?.message)
+    return fallback
+  }
+}
+
+/**
  * Compress an image file on the client side before uploading.
- * This is critical for iPhone/mobile uploads where photos can be 3-10+ MB.
- * Resizes to max dimensions and compresses to JPEG to reduce file size dramatically.
+ * Optimized for high performance and low file size (<150KB JPEG, 1000px max).
  *
  * @param {File} file - Browser File object (image)
  * @param {object} [options]
- * @param {number} [options.maxWidth=1600] - Max width in pixels
- * @param {number} [options.maxHeight=1600] - Max height in pixels
- * @param {number} [options.quality=0.7] - JPEG quality (0-1)
- * @param {number} [options.maxSizeKB=500] - Target max file size in KB
+ * @param {number} [options.maxWidth=1000] - Max width in pixels
+ * @param {number} [options.maxHeight=1000] - Max height in pixels
+ * @param {number} [options.quality=0.6] - JPEG quality (0-1)
+ * @param {number} [options.maxSizeKB=150] - Target max file size in KB
  * @returns {Promise<File>} - Compressed File object
  */
 async function compressImageFile(file, options = {}) {
   const {
-    maxWidth = 1600,
-    maxHeight = 1600,
-    quality = 0.7,
-    maxSizeKB = 500,
+    maxWidth = 1000,
+    maxHeight = 1000,
+    quality = 0.6,
+    maxSizeKB = 150,
   } = options
 
-  // Skip compression for small files (under 500KB) or non-image files
+  // Skip compression only for very small image files (under 150KB) or non-images
   if (file.size <= maxSizeKB * 1024 || !file.type.startsWith('image/')) {
     return file
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const img = new Image()
     const url = URL.createObjectURL(file)
 
@@ -268,7 +336,7 @@ async function compressImageFile(file, options = {}) {
       const ctx = canvas.getContext('2d')
       ctx.drawImage(img, 0, 0, width, height)
 
-      // Convert to blob with compression
+      // Convert to blob with JPEG compression
       canvas.toBlob(
         (blob) => {
           if (!blob) {
@@ -277,7 +345,6 @@ async function compressImageFile(file, options = {}) {
             return
           }
 
-          // Create a new File from the blob, always use .jpg extension
           const compressedName = file.name.replace(/\.[^.]+$/, '') + '.jpg'
           const compressedFile = new File([blob], compressedName, {
             type: 'image/jpeg',
@@ -298,7 +365,7 @@ async function compressImageFile(file, options = {}) {
     img.onerror = () => {
       URL.revokeObjectURL(url)
       console.warn('[Compress] Failed to load image for compression, using original')
-      resolve(file) // Fallback to original file instead of rejecting
+      resolve(file)
     }
 
     img.src = url
@@ -376,7 +443,7 @@ export async function supabaseGetGalleryPaintings() {
   }
 
   // Combine custom newly created paintings stored locally
-  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
   const merged = [...paintingsList]
 
   // Add custom paintings if not already in list
@@ -387,14 +454,14 @@ export async function supabaseGetGalleryPaintings() {
   })
 
   // Filter out deleted paintings
-  const deletedIds = JSON.parse(localStorage.getItem('artlor_deleted_paintings') || '[]').map(String)
+  const deletedIds = JSON.parse(safeLocalStorageGetItem('artlor_deleted_paintings', '[]')).map(String)
   const activePaintings = merged.filter((p) => !deletedIds.includes(String(p.id)))
 
   // Apply edits (titles/categories)
-  const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
+  const localEdits = JSON.parse(safeLocalStorageGetItem('artlor_painting_edits', '{}'))
 
   // Apply local sort order override if it exists
-  const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]')
+  const localOrder = JSON.parse(safeLocalStorageGetItem('artlor_painting_order', '[]'))
 
   let result = activePaintings.map((p) => ({
     ...p,
@@ -424,14 +491,14 @@ export async function supabaseGetGalleryPaintings() {
  */
 export async function supabaseUpdateGalleryPainting(id, updates) {
   // Update local cache fallback
-  const localEdits = JSON.parse(localStorage.getItem('artlor_painting_edits') || '{}')
+  const localEdits = JSON.parse(safeLocalStorageGetItem('artlor_painting_edits', '{}'))
   localEdits[id] = { ...(localEdits[id] || {}), ...updates }
-  localStorage.setItem('artlor_painting_edits', JSON.stringify(localEdits))
+  safeLocalStorageSetItem('artlor_painting_edits', JSON.stringify(localEdits))
 
   // Update in custom paintings if present
-  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
   const updatedCustoms = customPaintings.map((c) => (String(c.id) === String(id) ? { ...c, ...updates } : c))
-  localStorage.setItem('artlor_custom_paintings', JSON.stringify(updatedCustoms))
+  safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(updatedCustoms))
 
   // Try updating Supabase table
   try {
@@ -476,14 +543,14 @@ export async function supabaseAddGalleryPainting(paintingData) {
   }
 
   // Always save to custom local cache for instant UI rendering
-  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
   customPaintings.push(newPainting)
-  localStorage.setItem('artlor_custom_paintings', JSON.stringify(customPaintings))
+  safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(customPaintings))
 
   // Prepend new painting id to local order so it shows first
-  const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]')
+  const localOrder = JSON.parse(safeLocalStorageGetItem('artlor_painting_order', '[]'))
   const updatedOrder = [newPainting.id, ...localOrder.filter((id) => String(id) !== String(newPainting.id))]
-  localStorage.setItem('artlor_painting_order', JSON.stringify(updatedOrder))
+  safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(updatedOrder))
 
   // Try inserting into Supabase table
   try {
@@ -498,7 +565,7 @@ export async function supabaseAddGalleryPainting(paintingData) {
       // Update local order with the real Supabase ID
       const realId = data[0].id
       const fixedOrder = updatedOrder.map((id) => String(id) === String(newPainting.id) ? realId : id)
-      localStorage.setItem('artlor_painting_order', JSON.stringify(fixedOrder))
+      safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(fixedOrder))
 
       // Bump sort_order of all other paintings so this one stays first
       try {
@@ -557,7 +624,7 @@ async function supabaseBumpSortOrders(exceptId) {
  */
 export async function supabaseReorderGalleryPaintings(orderedIds) {
   // Save order to localStorage for instant effect
-  localStorage.setItem('artlor_painting_order', JSON.stringify(orderedIds))
+  safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(orderedIds))
 
   // Try persisting to Supabase
   try {
@@ -592,21 +659,21 @@ export async function supabaseDeleteGalleryPainting(id) {
   const strId = String(id)
 
   // 1. Mark as deleted in local storage
-  const deletedIds = JSON.parse(localStorage.getItem('artlor_deleted_paintings') || '[]').map(String)
+  const deletedIds = JSON.parse(safeLocalStorageGetItem('artlor_deleted_paintings', '[]')).map(String)
   if (!deletedIds.includes(strId)) {
     deletedIds.push(strId)
-    localStorage.setItem('artlor_deleted_paintings', JSON.stringify(deletedIds))
+    safeLocalStorageSetItem('artlor_deleted_paintings', JSON.stringify(deletedIds))
   }
 
   // 2. Remove from custom paintings if present
-  const customPaintings = JSON.parse(localStorage.getItem('artlor_custom_paintings') || '[]')
+  const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
   const updatedCustoms = customPaintings.filter((c) => String(c.id) !== strId)
-  localStorage.setItem('artlor_custom_paintings', JSON.stringify(updatedCustoms))
+  safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(updatedCustoms))
 
   // 3. Remove from order list
-  const localOrder = JSON.parse(localStorage.getItem('artlor_painting_order') || '[]').map(String)
+  const localOrder = JSON.parse(safeLocalStorageGetItem('artlor_painting_order', '[]')).map(String)
   const updatedOrder = localOrder.filter((oId) => oId !== strId)
-  localStorage.setItem('artlor_painting_order', JSON.stringify(updatedOrder))
+  safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(updatedOrder))
 
   // 4. Delete from Supabase table
   try {

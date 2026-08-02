@@ -49,7 +49,11 @@ export default function PinGate({ onUnlock }) {
   const verify = (value = pin) => {
     if (value === CORRECT_PIN) {
       setSuccess(true)
-      sessionStorage.setItem(SESSION_KEY, 'true')
+      try {
+        sessionStorage.setItem(SESSION_KEY, 'true')
+      } catch (e) {
+        console.warn('[PinGate] Could not set session auth:', e)
+      }
       setTimeout(() => onUnlock(), 800)
     } else {
       setShake(true)
