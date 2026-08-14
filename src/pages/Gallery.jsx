@@ -187,7 +187,7 @@ function Gallery() {
         </motion.div>
 
         {/* Filter Pills */}
-        <div className="no-scrollbar mb-8 flex gap-2.5 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:gap-3">
+        <div className="no-scrollbar mb-8 flex gap-2.5 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:gap-3 items-center">
           {filters.map((filter) => {
             const active = filter === activeFilter
             return (
@@ -204,6 +204,20 @@ function Gallery() {
               </button>
             )
           })}
+
+          {/* Distinct Visual Separator */}
+          <div className="h-6 w-px bg-[rgba(122,74,46,0.3)] shrink-0 mx-1 hidden sm:block" />
+
+          {/* Shortcut to 'Artworks by Our Artists' Section */}
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById('our-artists')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            className="pill-btn shrink-0 rounded-full border border-[var(--brand-gold)] bg-[linear-gradient(135deg,#1f0e07_0%,#3d1e10_100%)] text-amber-200 hover:text-white px-5 py-2 text-xs font-bold tracking-wide shadow-md transition-all duration-300 sm:px-6 sm:text-sm flex items-center gap-1.5 cursor-pointer"
+          >
+            <span className="text-xs">🎨</span> By Our Artists ↓
+          </button>
         </div>
 
         {/* Artwork Grid */}
@@ -283,7 +297,7 @@ function Gallery() {
         </div>
 
         {/* Artworks by Our Artists Section */}
-        <section className="mt-16 sm:mt-24 border-t border-[rgba(122,74,46,0.15)] pt-12">
+        <section id="our-artists" className="mt-16 sm:mt-24 border-t border-[rgba(122,74,46,0.15)] pt-12">
           <article className="art-frame-shadow relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#1f0e07] via-[#2d160b] to-[#170a05] p-6 text-white sm:p-9 shadow-[0_20px_50px_rgba(31,31,31,0.25)] mb-10 border border-[var(--brand-gold)]/25">
             <div className="absolute top-0 right-0 w-72 h-72 bg-radial from-[var(--brand-gold)]/25 to-transparent pointer-events-none" />
             <div className="flex items-center gap-2 mb-2">
