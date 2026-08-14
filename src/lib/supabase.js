@@ -432,17 +432,57 @@ export async function supabaseUploadGalleryReferenceFile(file) {
 export async function supabaseGetGalleryPaintings() {
   const { galleryPaintings } = await import('../galleryPaintings')
   let paintingsList = [...galleryPaintings]
+  let fetchedFromRemote = false
 
   try {
     const data = await supabaseSelect('gallery_paintings', 'order=sort_order.asc,id.asc')
-    if (data && data.length > 0) {
+    if (data && Array.isArray(data) && data.length > 0) {
       paintingsList = data
+      fetchedFromRemote = true
     }
   } catch (err) {
-    console.warn('[Supabase] Fetch gallery_paintings table failed, using fallback:', err.message)
+    console.warn('[Supabase] Fetch gallery_paintings table failed, using local fallback:', err.message)
   }
 
-  // Combine custom newly created paintings stored locally
+  // When Supabase DB successfully provides gallery paintings, use it as the single source of truth across all devices!
+  if (fetchedFromRemote) {
+    // Purge any stale local custom entries that are already present in Supabase DB
+    const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
+    if (customPaintings.length > 0) {
+      const remainingCustoms = customPaintings.filter((custom) => {
+        return !paintingsList.some(
+          (remote) =>
+            String(remote.id) === String(custom.id) ||
+            (custom.image && remote.image === custom.image) ||
+            (custom.title && remote.title && remote.title.toLowerCase() === custom.title.toLowerCase() && remote.style === custom.style)
+        )
+      })
+      safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(remainingCustoms))
+    }
+
+    // Deduplicate paintingsList by ID, image, and Title+Style combination to guarantee 1 copy per artwork
+    const seenKeys = new Set()
+    const deduplicated = []
+
+    for (const p of paintingsList) {
+      const idKey = `id:${p.id}`
+      const imgKey = p.image ? `img:${String(p.image).trim()}` : null
+      const titleKey = p.title ? p.title.trim().toLowerCase() : ''
+      const styleKey = p.style ? p.style.trim().toLowerCase() : ''
+      const comboKey = titleKey && styleKey ? `combo:${titleKey}:::${styleKey}` : null
+
+      if (!seenKeys.has(idKey) && (!imgKey || !seenKeys.has(imgKey)) && (!comboKey || !seenKeys.has(comboKey))) {
+        seenKeys.add(idKey)
+        if (imgKey) seenKeys.add(imgKey)
+        if (comboKey) seenKeys.add(comboKey)
+        deduplicated.push(p)
+      }
+    }
+
+    return deduplicated
+  }
+
+  // Fallback for offline / before table creation in Supabase:
   const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
   const merged = [...paintingsList]
 
@@ -479,7 +519,21 @@ export async function supabaseGetGalleryPaintings() {
     })
   }
 
-  return result
+  // Deduplicate fallback list
+  const seenIds = new Set()
+  const seenImages = new Set()
+  const deduplicatedFallback = []
+  for (const p of result) {
+    const idKey = String(p.id)
+    const imgKey = p.image ? String(p.image).trim() : null
+    if (!seenIds.has(idKey) && (!imgKey || !seenImages.has(imgKey))) {
+      seenIds.add(idKey)
+      if (imgKey) seenImages.add(imgKey)
+      deduplicatedFallback.push(p)
+    }
+  }
+
+  return deduplicatedFallback
 }
 
 /**
@@ -532,8 +586,9 @@ export async function supabaseUpdateGalleryPainting(id, updates) {
  * @returns {Promise<object>}
  */
 export async function supabaseAddGalleryPainting(paintingData) {
+  const tempId = Date.now()
   const newPainting = {
-    id: Date.now(),
+    id: tempId,
     title: paintingData.title,
     style: paintingData.style,
     artist: paintingData.artist || '',
@@ -542,15 +597,10 @@ export async function supabaseAddGalleryPainting(paintingData) {
     created_at: new Date().toISOString(),
   }
 
-  // Always save to custom local cache for instant UI rendering
+  // Save to custom local cache for instant UI feedback before remote response
   const customPaintings = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
   customPaintings.push(newPainting)
   safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(customPaintings))
-
-  // Prepend new painting id to local order so it shows first
-  const localOrder = JSON.parse(safeLocalStorageGetItem('artlor_painting_order', '[]'))
-  const updatedOrder = [newPainting.id, ...localOrder.filter((id) => String(id) !== String(newPainting.id))]
-  safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(updatedOrder))
 
   // Try inserting into Supabase table
   try {
@@ -562,22 +612,24 @@ export async function supabaseAddGalleryPainting(paintingData) {
       sort_order: 0,
     })
     if (data && data.length > 0) {
-      // Update local order with the real Supabase ID
-      const realId = data[0].id
-      const fixedOrder = updatedOrder.map((id) => String(id) === String(newPainting.id) ? realId : id)
-      safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(fixedOrder))
+      const realPainting = data[0]
 
-      // Bump sort_order of all other paintings so this one stays first
+      // Clean up temporary local entry now that it's persisted in Supabase DB
+      const customs = JSON.parse(safeLocalStorageGetItem('artlor_custom_paintings', '[]'))
+      const cleanedCustoms = customs.filter((c) => String(c.id) !== String(tempId))
+      safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(cleanedCustoms))
+
+      // Bump sort_order of existing paintings so this new one stays at position 0
       try {
-        await supabaseBumpSortOrders(realId)
+        await supabaseBumpSortOrders(realPainting.id)
       } catch (e) {
         console.warn('[Supabase] Could not bump sort orders:', e.message)
       }
 
-      return data[0]
+      return realPainting
     }
   } catch (err) {
-    console.warn('[Supabase] Add gallery painting to table failed, using local cache:', err.message)
+    console.warn('[Supabase] Add gallery painting to table failed, using local cache fallback:', err.message)
   }
 
   return newPainting
@@ -588,15 +640,12 @@ export async function supabaseAddGalleryPainting(paintingData) {
  * @param {number|string} exceptId - The ID of the painting to keep at position 0
  */
 async function supabaseBumpSortOrders(exceptId) {
-  // We use a raw SQL call via PostgREST RPC if available, otherwise update individually
-  // Simple approach: fetch all, increment others, batch update
   try {
     const all = await supabaseSelect('gallery_paintings', 'order=sort_order.asc,id.asc')
     const updates = all
       .filter((p) => String(p.id) !== String(exceptId))
       .map((p, i) => ({ id: p.id, sort_order: i + 1 }))
 
-    // Update each painting's sort_order
     await Promise.all(
       updates.map(({ id, sort_order }) =>
         fetch(`${SUPABASE_URL}/gallery_paintings?id=eq.${id}`, {
@@ -616,17 +665,17 @@ async function supabaseBumpSortOrders(exceptId) {
 }
 
 /**
- * Reorder gallery paintings by saving the new order.
+ * Reorder gallery paintings by saving the new order to Supabase.
  * Accepts an array of painting IDs in the desired display order.
  *
  * @param {Array<number|string>} orderedIds - Array of painting IDs in desired order
  * @returns {Promise<boolean>}
  */
 export async function supabaseReorderGalleryPaintings(orderedIds) {
-  // Save order to localStorage for instant effect
+  // Save order to localStorage for instant UI response
   safeLocalStorageSetItem('artlor_painting_order', JSON.stringify(orderedIds))
 
-  // Try persisting to Supabase
+  // Persist new sort_order to Supabase DB for each painting
   try {
     await Promise.all(
       orderedIds.map((id, index) =>
@@ -641,7 +690,7 @@ export async function supabaseReorderGalleryPaintings(orderedIds) {
         })
       )
     )
-    console.log('[Supabase] Gallery painting order saved successfully')
+    console.log('[Supabase] Gallery painting order saved successfully to DB!')
   } catch (err) {
     console.warn('[Supabase] Could not save painting order to Supabase:', err.message)
   }
@@ -695,6 +744,7 @@ export async function supabaseDeleteGalleryPainting(id) {
 
   return true
 }
+
 
 
 

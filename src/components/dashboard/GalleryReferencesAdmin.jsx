@@ -206,7 +206,8 @@ export default function GalleryReferencesAdmin() {
 
   // Handle Creating a Brand New Painting
   const handleCreatePainting = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
+    if (creatingPainting) return
     setCreatingPainting(true)
     setError('')
     setSuccess('')
