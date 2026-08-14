@@ -217,24 +217,37 @@ function Home() {
               initial={prefersReducedMotion ? false : { opacity: 0, y: 20, scale: 0.9 }}
               animate={prefersReducedMotion ? {} : { opacity: 1, y: 0, scale: 1 }}
               transition={{ duration: 0.45, delay: 0.35, ease: [0.4, 0, 0.2, 1] }}
-              className="mt-6 sm:mt-8"
+              className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5"
             >
               <motion.div
-                whileHover={prefersReducedMotion ? {} : { scale: 1.08, rotateZ: 1 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.08, rotateZ: -1 }}
                 whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
-                className="inline-flex rounded-full shadow-[0_12px_30px_rgba(201,147,74,0.3)]"
+                className="inline-flex rounded-full shadow-[0_12px_35px_rgba(201,147,74,0.4)]"
               >
                 <Link
                   to="/gallery"
-                  className="pill-btn pill-btn-primary rounded-full px-10 py-4 text-base sm:px-9 sm:py-3.5 sm:text-base font-bold tracking-wide"
+                  className="pill-btn pill-btn-primary rounded-full px-9 py-3.5 text-base font-extrabold tracking-wide flex items-center gap-2.5 shadow-xl"
                 >
-                  Order Now →
+                  <Sparkles className="h-4.5 w-4.5 text-amber-200" />
+                  Explore Gallery
                 </Link>
               </motion.div>
-              <p className="text-brand-brown/80 mt-4 font-body text-sm italic font-medium">
-                Sceneries · Calligraphy · Abstract · Still Life
-              </p>
+
+              <motion.div
+                whileHover={prefersReducedMotion ? {} : { scale: 1.06, rotateZ: 1 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
+              >
+                <Link
+                  to="/order"
+                  className="pill-btn rounded-full border-2 border-[var(--brand-brown)] bg-white/85 px-8 py-3.5 text-base font-bold tracking-wide text-[var(--brand-brown)] hover:bg-[var(--brand-brown)] hover:text-white transition-all shadow-md backdrop-blur-md flex items-center gap-2"
+                >
+                  Order Custom Art →
+                </Link>
+              </motion.div>
             </motion.div>
+            <p className="text-brand-brown/80 mt-4 font-body text-xs sm:text-sm italic font-medium">
+              Sceneries · Calligraphy · Abstract · Still Life
+            </p>
           </div>
         </motion.section>
       </div>
@@ -288,9 +301,22 @@ function Home() {
       </section>
 
       <section className="content-max mt-12 mb-8 max-w-6xl sm:mt-16 sm:mb-10 [perspective:1000px]">
-        <h2 className="font-display text-brand-dark mb-6 text-center text-3xl sm:text-4xl font-bold">
-          Explore Art Styles
-        </h2>
+        <div className="mb-6 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
+          <div>
+            <h2 className="font-display text-brand-dark text-3xl sm:text-4xl font-bold">
+              Explore Art Styles
+            </h2>
+            <p className="font-body text-xs sm:text-sm text-brand-brown/80 mt-1 font-medium">
+              Curated collections handpainted by Indian artists.
+            </p>
+          </div>
+          <Link
+            to="/gallery"
+            className="pill-btn rounded-full border border-[var(--brand-brown)]/40 bg-white/80 px-5 py-2 text-xs font-bold text-[var(--brand-brown)] hover:bg-[var(--brand-brown)] hover:text-white transition-all shadow-sm flex items-center gap-1.5"
+          >
+            Explore Full Gallery →
+          </Link>
+        </div>
         <div className="no-scrollbar flex gap-5 overflow-x-auto pb-4 pt-2 px-1">
           {styleCards.map((style, idx) => (
             <motion.article
