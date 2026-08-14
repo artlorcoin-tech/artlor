@@ -67,8 +67,7 @@ function Gallery() {
         p.artist &&
         p.artist.trim().length > 0 &&
         p.artist.toLowerCase() !== 'artlor artist' &&
-        p.title &&
-        p.title.trim().length > 0
+        p.artist.toLowerCase() !== 'unknown'
     )
   }, [paintingsData])
 
