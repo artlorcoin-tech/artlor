@@ -224,17 +224,12 @@ function Gallery() {
                 <div className="relative overflow-hidden">
                   <img
                     src={publicUrl(painting.image)}
-                    alt={`${painting.title} by ${painting.artist}`}
+                    alt={`${painting.style} artwork`}
                     className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading={index < 3 ? 'eager' : 'lazy'}
                     decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
-
-                  {/* Style Badge */}
-                  <span className="absolute top-3 left-3 rounded-full border border-white/20 bg-black/50 px-3 py-1 font-body text-[11px] font-semibold text-white backdrop-blur-md">
-                    {painting.style}
-                  </span>
 
                   {/* Reference Photos Count Badge */}
                   {refCount > 0 && (
@@ -272,10 +267,9 @@ function Gallery() {
                 </div>
 
                 <div className="p-4 flex items-center justify-between bg-white">
-                  <div>
-                    <h3 className="font-display text-[var(--brand-dark)] text-xl font-bold">{painting.title || painting.style || 'Artwork'}</h3>
-                    <p className="text-[var(--brand-brown)]/80 mt-0.5 font-body text-xs font-medium">{painting.style} by {painting.artist || 'Artlor Artist'}</p>
-                  </div>
+                  <h3 className="font-display text-[var(--brand-dark)] text-lg font-bold">
+                    {painting.style || 'Artwork'}
+                  </h3>
 
                   {refCount > 0 && (
                     <span className="text-[10px] font-body font-bold text-[var(--brand-brown)] bg-[var(--brand-cream)] px-2.5 py-1 rounded-full border border-[var(--brand-gold)]/30">

@@ -258,7 +258,7 @@ function QuickOrder() {
   }
 
   const selectedArtworkLabel = painting
-    ? `${painting.title} (${painting.style})`
+    ? `${painting.style}`
     : 'Selected from gallery'
 
   const submitQuickOrder = async () => {
@@ -480,8 +480,7 @@ function QuickOrder() {
                 className="h-16 w-24 rounded-2xl object-cover sm:h-20 sm:w-28"
               />
               <div>
-                <h2 className="font-display text-brand-dark text-xl sm:text-2xl">{painting.title}</h2>
-                <p className="text-brand-brown/85 mt-1 font-body text-sm">{painting.style}</p>
+                <h2 className="font-display text-brand-dark text-xl sm:text-2xl">{painting.style}</h2>
               </div>
             </div>
           ) : (
