@@ -142,7 +142,7 @@ function Gallery() {
         </article>
 
         <motion.div
-          className="mb-10 flex justify-center"
+          className="mb-10 flex flex-col items-center justify-center gap-3"
           animate={
             prefersReducedMotion
               ? {}
@@ -195,10 +195,21 @@ function Gallery() {
               Customise from Scratch!
             </span>
           </motion.button>
+
+          {/* Shortcut to 'Artworks by Our Artists' Section below Customise button */}
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById('our-artists')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            className="pill-btn shrink-0 rounded-full border border-[var(--brand-gold)]/70 bg-[linear-gradient(135deg,#1f0e07_0%,#3d1e10_100%)] text-amber-200 hover:text-white px-5 py-2 text-xs font-bold tracking-wide shadow-md transition-all duration-300 sm:px-6 sm:text-sm flex items-center gap-1.5 cursor-pointer mt-1 hover:border-[var(--brand-gold)]"
+          >
+            <span className="text-xs">🎨</span> View Artworks by Our Artists ↓
+          </button>
         </motion.div>
 
         {/* Filter Pills */}
-        <div className="no-scrollbar mb-8 flex gap-2.5 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:gap-3 items-center">
+        <div className="no-scrollbar mb-8 flex gap-2.5 overflow-x-auto pb-2 sm:flex-wrap sm:justify-center sm:gap-3">
           {filters.map((filter) => {
             const active = filter === activeFilter
             return (
@@ -215,20 +226,6 @@ function Gallery() {
               </button>
             )
           })}
-
-          {/* Distinct Visual Separator */}
-          <div className="h-6 w-px bg-[rgba(122,74,46,0.3)] shrink-0 mx-1 hidden sm:block" />
-
-          {/* Shortcut to 'Artworks by Our Artists' Section */}
-          <button
-            type="button"
-            onClick={() => {
-              document.getElementById('our-artists')?.scrollIntoView({ behavior: 'smooth' })
-            }}
-            className="pill-btn shrink-0 rounded-full border border-[var(--brand-gold)] bg-[linear-gradient(135deg,#1f0e07_0%,#3d1e10_100%)] text-amber-200 hover:text-white px-5 py-2 text-xs font-bold tracking-wide shadow-md transition-all duration-300 sm:px-6 sm:text-sm flex items-center gap-1.5 cursor-pointer"
-          >
-            <span className="text-xs">🎨</span> By Our Artists ↓
-          </button>
         </div>
 
         {/* Artwork Grid */}
