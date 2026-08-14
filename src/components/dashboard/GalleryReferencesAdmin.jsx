@@ -40,7 +40,7 @@ export default function GalleryReferencesAdmin() {
   const [newTitle, setNewTitle] = useState('')
   const [newStyle, setNewStyle] = useState('Calligraphy')
   const [newCustomCategory, setNewCustomCategory] = useState('')
-  const [newArtist, setNewArtist] = useState('Artlor Artist')
+  const [newArtist, setNewArtist] = useState('')
   const [newImageFile, setNewImageFile] = useState(null)
   const [newImagePreview, setNewImagePreview] = useState('')
   const [newImageUrl, setNewImageUrl] = useState('')
@@ -244,6 +244,7 @@ export default function GalleryReferencesAdmin() {
       setSuccess(`🎉 Successfully added new painting "${created.title}" to Gallery!`)
       setShowAddPaintingModal(false)
       setNewTitle('')
+      setNewArtist('')
       setNewImageFile(null)
       setNewImagePreview('')
       setNewImageUrl('')
@@ -617,13 +618,13 @@ export default function GalleryReferencesAdmin() {
 
                 <div>
                   <label className="mb-1 block font-body text-xs text-white/70">
-                    Artist Name
+                    Artist Name (Optional)
                   </label>
                   <input
                     type="text"
                     value={editArtist}
                     onChange={(e) => setEditArtist(e.target.value)}
-                    placeholder="e.g. Maryam, Muntaza, Hammad"
+                    placeholder="e.g. Maryam, Muntaza, Hammad (optional)"
                     className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
                   />
                 </div>
@@ -931,11 +932,11 @@ export default function GalleryReferencesAdmin() {
               {/* Artist Name */}
               <div>
                 <label className="mb-1 block font-body text-xs font-medium text-white/80">
-                  Artist Name
+                  Artist Name (Optional)
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Maryam, Muntaza, Hammad"
+                  placeholder="e.g. Maryam, Muntaza, Hammad (optional)"
                   value={newArtist}
                   onChange={(e) => setNewArtist(e.target.value)}
                   className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5 font-body text-xs text-white placeholder-white/20 focus:border-[#c9934a] focus:outline-none"
