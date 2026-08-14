@@ -192,7 +192,7 @@ function Gallery() {
               className="relative z-10 font-plush text-lg font-bold tracking-wider text-[#fef3c7] drop-shadow-[0_3px_10px_rgba(0,0,0,0.95)] sm:text-xl"
               style={{ fontFamily: "'Fluff Plush', 'FluffPlush', 'DynaPuff', 'Bubblegum Sans', 'Sniglet', cursive, sans-serif" }}
             >
-              Customise from Scratch!
+              CUSTOMISE!
             </span>
           </motion.button>
 
