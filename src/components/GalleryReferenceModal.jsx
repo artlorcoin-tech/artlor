@@ -95,10 +95,15 @@ export default function GalleryReferenceModal({ painting, references = [], onClo
                   <span className="rounded-full bg-[rgba(201,147,74,0.15)] px-3 py-1 font-body text-[11px] font-medium text-[#c9934a] border border-[#c9934a]/30">
                     {painting.style}
                   </span>
+                  {painting.artist && (
+                    <span className="font-body text-xs text-white/50">
+                      by {painting.artist}
+                    </span>
+                  )}
                 </div>
 
                 <h2 className="font-display text-2xl sm:text-3xl text-white">
-                  {painting.style || 'Artwork'}
+                  {painting.title || painting.style || 'Artwork'}
                 </h2>
 
 

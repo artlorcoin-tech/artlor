@@ -281,6 +281,117 @@ function Gallery() {
             )
           })}
         </div>
+
+        {/* Artworks by Our Artists Section */}
+        <section className="mt-16 sm:mt-24 border-t border-[rgba(122,74,46,0.15)] pt-12">
+          <article className="art-frame-shadow relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#1f0e07] via-[#2d160b] to-[#170a05] p-6 text-white sm:p-9 shadow-[0_20px_50px_rgba(31,31,31,0.25)] mb-10 border border-[var(--brand-gold)]/25">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-radial from-[var(--brand-gold)]/25 to-transparent pointer-events-none" />
+            <div className="flex items-center gap-2 mb-2">
+              <span className="h-2 w-2 rounded-full bg-[var(--brand-gold)] animate-pulse" />
+              <p className="font-body text-xs font-bold uppercase tracking-[0.22em] text-[var(--brand-gold)]">
+                Handpicked Local Talent
+              </p>
+            </div>
+            <h2 className="font-display text-2xl font-extrabold leading-tight sm:text-3xl lg:text-4xl text-white">
+              Artworks by Our Artists
+            </h2>
+            <p className="mt-2.5 max-w-2xl font-body text-sm font-medium text-white/80 leading-relaxed">
+              Discover signature handpainted creations with credit to the local Indian artists who painted them.
+            </p>
+          </article>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {paintingsData.map((painting, index) => {
+              const itemRefs = references.filter((r) => String(r.painting_id) === String(painting.id))
+              const refCount = itemRefs.length
+
+              return (
+                <motion.article
+                  key={`artist-section-${painting.id}`}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+                  whileInView={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.32, delay: index * 0.04, ease: [0.4, 0, 0.2, 1] }}
+                  className="art-frame-shadow group relative overflow-hidden rounded-[24px] bg-white cursor-pointer border border-[rgba(122,74,46,0.12)] hover:border-[var(--brand-gold)]/50 transition-all duration-300 flex flex-col justify-between"
+                  onClick={() => setSelectedPaintingForModal(painting)}
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={publicUrl(painting.image)}
+                      alt={`${painting.title || painting.style} by ${painting.artist}`}
+                      className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 opacity-70 transition-opacity duration-300 group-hover:opacity-90" />
+
+                    {/* Niche Badge */}
+                    <span className="absolute top-3 left-3 rounded-full border border-white/20 bg-black/60 px-2.5 py-0.5 font-body text-[10px] font-semibold text-amber-100 backdrop-blur-md">
+                      {painting.style}
+                    </span>
+
+                    {/* Reference Count Badge */}
+                    {refCount > 0 && (
+                      <span className="absolute top-3 right-3 flex items-center gap-1 rounded-full border border-[var(--brand-gold)]/40 bg-black/65 px-2.5 py-0.5 font-body text-[10px] font-bold text-amber-200 backdrop-blur-md">
+                        <ImageIcon className="h-3 w-3 text-[var(--brand-gold)]" />
+                        {refCount}
+                      </span>
+                    )}
+
+                    {/* Quick Action Overlay */}
+                    <div className="pointer-events-auto absolute inset-x-0 bottom-0 p-3 opacity-100 transition duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
+                      <div className="flex gap-2 rounded-2xl border border-white/30 bg-black/50 p-2 backdrop-blur-md">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedPaintingForModal(painting)
+                          }}
+                          className="flex-1 rounded-xl border border-white/20 bg-white/10 py-1.5 text-[11px] font-semibold text-white hover:bg-white/25 transition"
+                        >
+                          Inspect
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigate('/quick-order', { state: { painting } })
+                          }}
+                          className="pill-btn pill-btn-primary flex-1 py-1.5 text-[11px] font-bold shadow-md"
+                        >
+                          Order
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-white flex flex-col justify-between flex-1">
+                    <div>
+                      <h3 className="font-display text-[var(--brand-dark)] text-base font-bold line-clamp-1">
+                        {painting.title || painting.style}
+                      </h3>
+                      <div className="mt-1 flex items-center gap-1.5 text-[var(--brand-brown)]/90 font-body text-xs font-semibold">
+                        <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[var(--brand-cream)] border border-[var(--brand-gold)]/40 text-[9px]">
+                          🎨
+                        </span>
+                        <span>by {painting.artist || 'Artlor Artist'}</span>
+                      </div>
+                    </div>
+
+                    {refCount > 0 && (
+                      <div className="mt-3 pt-2 border-t border-[rgba(122,74,46,0.08)] flex justify-between items-center text-[10px] font-body text-[var(--brand-brown)]/70">
+                        <span>Customer Photos</span>
+                        <span className="font-bold text-[var(--brand-dark)] bg-[var(--brand-cream)] px-2 py-0.5 rounded-full border border-[var(--brand-gold)]/30">
+                          {refCount} photos
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </motion.article>
+              )
+            })}
+          </div>
+        </section>
       </section>
 
       {/* Reference & Artwork Lightbox Modal */}
