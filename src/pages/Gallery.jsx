@@ -61,6 +61,17 @@ function Gallery() {
     return paintingsData.filter((painting) => painting.style === activeFilter)
   }, [activeFilter, paintingsData])
 
+  const paintingsWithArtist = useMemo(() => {
+    return paintingsData.filter(
+      (p) =>
+        p.artist &&
+        p.artist.trim().length > 0 &&
+        p.artist.toLowerCase() !== 'artlor artist' &&
+        p.title &&
+        p.title.trim().length > 0
+    )
+  }, [paintingsData])
+
 
   const gallerySchema = useMemo(() => {
     const origin = window.location.origin
@@ -315,7 +326,7 @@ function Gallery() {
           </article>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {paintingsData.map((painting, index) => {
+            {paintingsWithArtist.map((painting, index) => {
               const itemRefs = references.filter((r) => String(r.painting_id) === String(painting.id))
               const refCount = itemRefs.length
 
