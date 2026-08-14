@@ -460,21 +460,18 @@ export async function supabaseGetGalleryPaintings() {
       safeLocalStorageSetItem('artlor_custom_paintings', JSON.stringify(remainingCustoms))
     }
 
-    // Deduplicate paintingsList by ID, image, and Title+Style combination to guarantee 1 copy per artwork
-    const seenKeys = new Set()
+    // Deduplicate paintingsList strictly by ID and by image URL to guarantee 1 copy per artwork while allowing different paintings with same titles
+    const seenIds = new Set()
+    const seenImages = new Set()
     const deduplicated = []
 
     for (const p of paintingsList) {
-      const idKey = `id:${p.id}`
-      const imgKey = p.image ? `img:${String(p.image).trim()}` : null
-      const titleKey = p.title ? p.title.trim().toLowerCase() : ''
-      const styleKey = p.style ? p.style.trim().toLowerCase() : ''
-      const comboKey = titleKey && styleKey ? `combo:${titleKey}:::${styleKey}` : null
+      const idKey = String(p.id)
+      const imgKey = p.image ? String(p.image).trim() : null
 
-      if (!seenKeys.has(idKey) && (!imgKey || !seenKeys.has(imgKey)) && (!comboKey || !seenKeys.has(comboKey))) {
-        seenKeys.add(idKey)
-        if (imgKey) seenKeys.add(imgKey)
-        if (comboKey) seenKeys.add(comboKey)
+      if (!seenIds.has(idKey) && (!imgKey || !seenImages.has(imgKey))) {
+        seenIds.add(idKey)
+        if (imgKey) seenImages.add(imgKey)
         deduplicated.push(p)
       }
     }
