@@ -237,7 +237,7 @@ export default function GalleryReferencesAdmin() {
       const created = await supabaseAddGalleryPainting({
         title: titleToSave,
         style: finalStyle,
-        artist: newArtist.trim() || 'Artlor Artist',
+        artist: newArtist.trim() || '',
         image: finalImgUrl,
       })
 

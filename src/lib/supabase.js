@@ -536,7 +536,7 @@ export async function supabaseAddGalleryPainting(paintingData) {
     id: Date.now(),
     title: paintingData.title,
     style: paintingData.style,
-    artist: paintingData.artist || 'Artlor Artist',
+    artist: paintingData.artist || '',
     image: paintingData.image,
     sort_order: 0, // New paintings always appear first
     created_at: new Date().toISOString(),

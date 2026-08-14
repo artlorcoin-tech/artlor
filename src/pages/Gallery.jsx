@@ -399,7 +399,7 @@ function Gallery() {
                         <span className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[var(--brand-cream)] border border-[var(--brand-gold)]/40 text-[9px]">
                           🎨
                         </span>
-                        <span>by {painting.artist || 'Artlor Artist'}</span>
+                        <span>by {painting.artist}</span>
                       </div>
                     </div>
 
